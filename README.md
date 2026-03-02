@@ -1,0 +1,1 @@
+# Does /dev/null support sharding?
