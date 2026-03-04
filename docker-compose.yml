@@ -1,0 +1,25 @@
+services:
+  mernfrontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"   
+    depends_on:
+      - db
+  nodebackend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.backend
+    ports:
+      - "9000:9000"   
+    depends_on:
+      - db
+  db:
+    volumes:
+      - mern_db:/data/db
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+volumes:
+   mern_db:
