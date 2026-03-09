@@ -5,5 +5,5 @@ COPY ./server.js ./server.js
 # Put other js files here
 
 RUN npm install 
-EXPOSE 9000
+EXPOSE 5000
 CMD ["node", "server.js"]
