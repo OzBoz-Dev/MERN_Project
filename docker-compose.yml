@@ -6,20 +6,35 @@ services:
     ports:
       - "3000:3000"   
     depends_on:
-      - db
+      - nodebackend
+    networks:
+      - mern_net
   nodebackend:
     build:
       context: ./server
       dockerfile: Dockerfile.backend
     ports:
-      - "9000:9000"   
+      - "5000:5000"   
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - mern_net
   db:
     volumes:
       - mern_db:/data/db
     image: mongo:7.0.30
+    networks: 
+      - mern_net
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017" # Bind ONLY to the local loopback interface
+    healthcheck: # Ensures backend doesn't try to connect before DB is initialized
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 volumes:
    mern_db:
+networks:
+    mern_net:
+        driver: bridge
