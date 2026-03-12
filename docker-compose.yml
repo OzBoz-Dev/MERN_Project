@@ -31,6 +31,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      - MONGO_URI="mongodb://127.0.0.1:27017/finder_db" # It's local!
     networks:
       - mern_net
   db:

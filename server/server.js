@@ -1,7 +1,7 @@
 const express = require('express')
-// const mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const cors = require('cors')
-// require('dotenv').config()
+require('dotenv').config()
 
 const app = express()
 
@@ -14,21 +14,22 @@ app.get('/', (req, res) => {
   res.json({ message: 'MERN server is running!' })
 })
 
-app.listen(5000, () => {
-    console.log("Server running on 5000 i think lol");
-})
+// app.listen(5000, () => {
+//     console.log("Server running on 5000 i think lol");
+// })
 
-// // MongoDB connection
-// const PORT = process.env.PORT || 5000
-// mongoose
-//   .connect(process.env.MONGO_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => {
-//     console.log('MongoDB connected')
-//     app.listen(PORT, () => {
-//       console.log(`Server running on port ${PORT}`)
-//     })
-//   })
-//   .catch(err => console.log(err))
+// MongoDB connection
+const PORT = 5000
+console.log(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('MongoDB connected!')
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}!`)
+    })
+  })
+  .catch(err => console.log(err))
