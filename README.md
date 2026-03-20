@@ -4,3 +4,5 @@ To run the stack, perform
 ```
 docker compose up --build
 ```
+
+Testing
