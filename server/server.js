@@ -6,8 +6,15 @@ require('dotenv').config()
 const app = express()
 
 // Middleware
-// app.use(cors())
-// app.use(express.json())
+app.use(cors())
+app.use(express.json())
+
+// Routers
+const commentsRouter = require('./routes/comments')
+const conversationRouter = require('./routes/conversations')
+
+app.use('/comments', commentsRouter)
+app.use('/conversations', conversationRouter)
 
 // Test route
 app.get('/', async (req, res) => {
@@ -44,3 +51,4 @@ mongoose
     })
   })
   .catch(err => console.log(err))
+
