@@ -2,6 +2,7 @@ FROM node:latest
 WORKDIR /app
 COPY ./package.json ./package.json
 COPY ./server.js ./server.js
+COPY ./routes ./routes  
 # Put other js files here
 
 RUN npm install 

@@ -10,8 +10,8 @@ app.use(cors())
 app.use(express.json())
 
 // Routers
-const commentsRouter = require('../routes/comments')
-const conversationRouter = require('../routes/conversations')
+const commentsRouter = require('./routes/comments')
+const conversationRouter = require('./routes/conversations')
 
 app.use('/comments', commentsRouter)
 app.use('/conversations', conversationRouter)
