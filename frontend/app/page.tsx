@@ -11,6 +11,8 @@ import {
   IconBookmarkFilled,
   IconFileCheck,
   IconFileCheckFilled,
+  IconHeart,
+  IconHeartFilled,
   IconSend,
   IconSendFilled,
   IconUser
@@ -94,25 +96,23 @@ function MessageButton() {
     </Button>
   );
 }
-function ExpressInterestButton() {
+function LikeButton() {
   const [clicked, toggle] = useToggle([false, true])
   return(
     <Button
     size='md'
     radius='md'
-    style={{width: 200, height: 36, padding: 0}}
+    style={{width: 40, height: 36, padding: 0}}
     justify='center'
     color={designTokens.colors.buttonPrimary}
     onClick={() => toggle()}>
       {clicked === false ? (
         <>
-        <IconFileCheck style = {{verticalAlign: 'left', marginRight: 12}}/>
-        Express Interest
+        <IconHeart style = {{verticalAlign: 'center', marginRight: 0}}/>
         </>
       ) : (
       <>
-        <IconFileCheckFilled style = {{verticalAlign: 'left', marginRight: 12}}/>
-        Express Interest
+        <IconHeartFilled style = {{verticalAlign: 'center', marginRight: 0}}/>
       </>
     )}
     </Button>
@@ -185,7 +185,7 @@ function PostComponent({postTitle, user, postTags, description, timeAgo}:
       </p>
       <div style={{ display: "flex", justifyContent:"right", alignItems: "right", gap:"16px"}}>
         <MessageButton/>
-        <ExpressInterestButton/>
+        <LikeButton/>
       </div>
     </div>
     );
