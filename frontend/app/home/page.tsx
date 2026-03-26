@@ -1,11 +1,11 @@
 'use client'
 
-import { HeaderTabs } from "@/components/HeaderTabs";
+import { Header } from "@/components/Header";
 
 export default function Home() {
   return (
     <main>
-      <HeaderTabs />
+      <Header />
     </main>
   );
 }

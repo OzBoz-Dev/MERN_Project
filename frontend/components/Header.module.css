@@ -1,0 +1,17 @@
+.tab {
+    color: rgba(0, 0, 0, 0.726);
+    background-color: #ebe6d9;
+    border-bottom: 1px solid var(--mantine-color-gray-3);
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.tab:hover {
+    color: black;
+    background-color: #fffcf3;
+}
+
+.tab[data-active] {
+    color: black;
+    background-color: #FDF8EA;
+    border-bottom: none;
+}
