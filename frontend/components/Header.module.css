@@ -2,7 +2,18 @@
     color: rgba(0, 0, 0, 0.726);
     background-color: #ebe6d9;
     border-bottom: 1px solid var(--mantine-color-gray-3);
-    transition: color 0.15s ease, background-color 0.15s ease;
+    border: 1px solid var(--mantine-color-gray-3);
+    border-top: 1px solid var(--mantine-color-gray-3);
+    border-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    transform: translateY(0px);
+    padding-inline: none;
+    transition: border-top 0.25s ease,
+                padding 0.15s ease,
+                transform 0.15s ease,
+                color 0.15s ease,
+                background-color 0.15s ease;
 }
 
 .tab:hover {
@@ -14,4 +25,7 @@
     color: black;
     background-color: #FDF8EA;
     border-bottom: none;
+    border-top: 3px solid #ffe082;
+    transform: translateY(-4px);
+    padding-inline: 25;
 }
