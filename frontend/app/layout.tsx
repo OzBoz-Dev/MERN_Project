@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import "@mantine/core/styles.css"
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps, createTheme } from '@mantine/core';
+import "@mantine/core/styles.css";
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps,
+  createTheme,
+} from "@mantine/core";
+import { Header } from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "My Mantine App",
@@ -20,8 +26,8 @@ const geistMono = Geist_Mono({
 });
 
 const theme = createTheme({
-  white: '#FDF8EA', // Sets the default light background
-  black: '#171717', // Sets the default text color
+  white: "#FDF8EA", // Sets the default light background
+  black: "#171717", // Sets the default text color
 });
 
 export default function RootLayout({
@@ -35,7 +41,12 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+          <header>
+            <Header></Header>
+          </header>
+          <main>{children}</main>
+        </MantineProvider>
       </body>
     </html>
   );
