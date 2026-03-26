@@ -12,7 +12,9 @@ app.use(express.json())
 // Routers
 const commentsRouter = require('./routes/comments')
 const conversationRouter = require('./routes/conversations')
+const authRoutes = require('./routes/auth')
 
+app.use('/api/auth', authRoutes)
 app.use('/comments', commentsRouter)
 app.use('/conversations', conversationRouter)
 
@@ -22,7 +24,7 @@ app.get('/', async (req, res) => {
     const db = mongoose.connection.db;
     const collections = await db.listCollections().toArray();
     res.json(
-      { 
+      {
         message: 'MERN server is running!',
         database_status: 'Connected!',
         db_name: db.databaseName,
@@ -31,13 +33,9 @@ app.get('/', async (req, res) => {
     );
   }
   catch (err) {
-    res.status(500).json({error: err.message});
+    res.status(500).json({ error: err.message });
   }
 });
-
-// app.listen(5000, () => {
-//     console.log("Server running on 5000 i think lol");
-// })
 
 // MongoDB connection
 const PORT = 5000
