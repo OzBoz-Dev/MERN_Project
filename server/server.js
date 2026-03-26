@@ -3,11 +3,16 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 require('dotenv').config()
 
+const authRoutes = require('./routes/auth')
+
 const app = express()
 
 // Middleware
-// app.use(cors())
-// app.use(express.json())
+app.use(cors())
+app.use(express.json())
+
+// Routes
+app.use('/api/auth', authRoutes)
 
 // Test route
 app.get('/', async (req, res) => {
@@ -15,7 +20,7 @@ app.get('/', async (req, res) => {
     const db = mongoose.connection.db;
     const collections = await db.listCollections().toArray();
     res.json(
-      { 
+      {
         message: 'MERN server is running!',
         database_status: 'Connected!',
         db_name: db.databaseName,
@@ -24,13 +29,9 @@ app.get('/', async (req, res) => {
     );
   }
   catch (err) {
-    res.status(500).json({error: err.message});
+    res.status(500).json({ error: err.message });
   }
 });
-
-// app.listen(5000, () => {
-//     console.log("Server running on 5000 i think lol");
-// })
 
 // MongoDB connection
 const PORT = 5000
