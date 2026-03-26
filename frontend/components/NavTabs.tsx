@@ -1,11 +1,11 @@
 "use client";
 
-import styles from "./Header.module.css";
+import styles from "./NavTabs.module.css";
 import { Flex, Tabs, Text } from "@mantine/core";
 import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 
-export function Header() {
+export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
   const router = useRouter();
 

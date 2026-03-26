@@ -8,7 +8,7 @@ import {
   mantineHtmlProps,
   createTheme,
 } from "@mantine/core";
-import { Header } from "@/components/Header";
+import { NavTabs } from "@/components/NavTabs";
 
 export const metadata: Metadata = {
   title: "My Mantine App",
@@ -43,7 +43,7 @@ export default function RootLayout({
       <body>
         <MantineProvider theme={theme}>
           <header>
-            <Header></Header>
+            <NavTabs />
           </header>
           <main>{children}</main>
         </MantineProvider>
