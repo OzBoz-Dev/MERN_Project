@@ -3,16 +3,20 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 require('dotenv').config()
 
-const authRoutes = require('./routes/auth')
-
 const app = express()
 
 // Middleware
 app.use(cors())
 app.use(express.json())
 
-// Routes
+// Routers
+const commentsRouter = require('./routes/comments')
+const conversationRouter = require('./routes/conversations')
+const authRoutes = require('./routes/auth')
+
 app.use('/api/auth', authRoutes)
+app.use('/comments', commentsRouter)
+app.use('/conversations', conversationRouter)
 
 // Test route
 app.get('/', async (req, res) => {
@@ -45,3 +49,4 @@ mongoose
     })
   })
   .catch(err => console.log(err))
+
