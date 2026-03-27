@@ -14,7 +14,7 @@ const commentsRouter = require('./routes/comments')
 const conversationRouter = require('./routes/conversations')
 const authRoutes = require('./routes/auth')
 
-app.use('/api/auth', authRoutes)
+app.use('/auth', authRoutes)
 app.use('/comments', commentsRouter)
 app.use('/conversations', conversationRouter)
 
