@@ -6,9 +6,10 @@ import {
   ColorSchemeScript,
   MantineProvider,
   mantineHtmlProps,
-  createTheme,
+  createTheme
 } from "@mantine/core";
 import { NavTabs } from "@/components/NavTabs";
+import { theme } from './GlobalTheme';
 
 export const metadata: Metadata = {
   title: "My Mantine App",
@@ -25,10 +26,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const theme = createTheme({
-  white: "#FDF8EA", // Sets the default light background
-  black: "#171717", // Sets the default text color
-});
+// const theme = createTheme({
+//   white: "#FDF8EA", // Sets the default light background
+//   black: "#171717", // Sets the default text color
+// });
 
 export default function RootLayout({
   children,
