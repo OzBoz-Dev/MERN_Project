@@ -1,7 +1,7 @@
 'use client'
 
 import { IconAlertTriangle } from '@tabler/icons-react';
-import { TextInput, Container, Box, Title, Paper, Button, Anchor, Group, PasswordInput, Text } from '@mantine/core';
+import { TextInput, Container, Box, Title, Paper, Button, Anchor, Group, PasswordInput, Text, rgba } from '@mantine/core';
 import input from './FloatingLabelInput.module.css';
 import { HTMLInputTypeAttribute, useState } from 'react';
 import { designTokens } from '../GlobalTheme';
@@ -73,13 +73,14 @@ function ForgotPasswordInput() {
 export default function Login() {
   return (
     <main>
+      <div style={{  }} className='animated-grid'>
       <Container size="md" my="xl">
-        <Paper withBorder p="lg" radius="md" bg={designTokens.colors.cardBackground}>
+        <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: 'rgba(255,255,255,0.4)'}}>
           <Title order={2} mb="md" ff={designTokens.fonts.heading}>
             Login
           </Title>
           
-          <Box maw={400} mx="auto">
+          <Box maw={400} mx="auto" pl={100} pr={100}>
             <div style={{ marginBottom: '10px' }}>
               <FloatingLabelInput
                 label="Email"
@@ -97,9 +98,13 @@ export default function Login() {
                 Sign In
               </Button>
             </Box>
+            <Anchor href="/signup" pt={2} fw={500} fz="xs">
+                Don't have an account? Sign up now!
+            </Anchor>
           </Box>
         </Paper>
       </Container>
+      </div>
     </main>
   );
 }
