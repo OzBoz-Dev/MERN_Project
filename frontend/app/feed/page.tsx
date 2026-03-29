@@ -123,7 +123,7 @@ function PostComponent({postTitle, user, postTags, description, timeAgo}:
       padding: designTokens.spacing.cardPadding,
       margin: "16px 0",
       boxShadow: designTokens.colors.cardShadow,
-      background: designTokens.colors.cardBackground,
+      background: designTokens.colors.glassyBackground,
       position: 'relative'
     }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

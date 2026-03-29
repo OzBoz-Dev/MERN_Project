@@ -20,6 +20,7 @@ export const designTokens = {
     buttonTertiaryPress: "#606265",
     badgeBackground: "#f0f0ff",
     badgeText: "#4b4be6",
+    glassyBackground: 'rgba(255,255,255,0.4)'
   },
   fonts: {
     heading: "'Montserrat', 'Arial', sans-serif",

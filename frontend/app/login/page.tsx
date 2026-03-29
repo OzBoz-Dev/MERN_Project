@@ -75,7 +75,7 @@ export default function Login() {
     <main>
       <div style={{  }} className='animated-grid'>
       <Container size="md" my="xl">
-        <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: 'rgba(255,255,255,0.4)'}}>
+        <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
           <Title order={2} mb="md" ff={designTokens.fonts.heading}>
             Login
           </Title>
