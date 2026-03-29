@@ -2,7 +2,7 @@ import { createTheme, MantineThemeOverride } from "@mantine/core";
 
 export const designTokens = {
   colors: {
-    cardBackground: "#fcf8ec",
+    cardBackground: "#FFFEFB",
     cardBorder: "#ffe082", // yellow border highlight
     cardShadow: "0 2px 8px rgba(0,0,0,0.05)",
     tagBackground: "#f0f0ff", // light purple/blue for tags
