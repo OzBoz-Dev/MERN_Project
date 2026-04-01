@@ -1,31 +1,33 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const Message = require("../models/Message"); //imports model
+const mongoose = require('mongoose');
+const Message = require('../models/Message'); //imports model
+
 
 //reads all messages
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const messages = await Message.find();
-    res.status(200).json(messages);
+    res.json(messages);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 //create a message
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const message = await Message.create(req.body);
     res.status(200).json(message);
   } catch (err) {
-    resizeBy.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
 //edit a message
-router.put("/:id", async (req, res) => {
+router.put('/:_id', async (req, res) => {
   try {
-    const { id } = req.params;
+    const  id  = req.params._id;
     const message = await Message.findByIdAndUpdate(id, req.body);
 
     //ensures the updated message is displayed
@@ -38,9 +40,9 @@ router.put("/:id", async (req, res) => {
 });
 
 //delete a message
-router.delete("/:id", async (req, res) => {
+router.delete('/:_id', async (req, res) => {
   try {
-    const { id } = req.params;
+    const id  = req.params._id;
 
     const message = await Message.findByIdAndDelete(id, req.body);
 

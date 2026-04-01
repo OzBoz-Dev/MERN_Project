@@ -12,13 +12,14 @@ app.use(express.json());
 // Routers
 const commentsRouter = require("./routes/comments");
 const conversationRouter = require("./routes/conversations");
-const authRoutes = require("./routes/auth");
 const messageRouter = require("./routes/messages");
+const authRoutes = require("./routes/auth");
+
 
 app.use("/auth", authRoutes);
 app.use("/comments", commentsRouter);
 app.use("/conversations", conversationRouter);
-app.use("/messagea", messageRouter);
+app.use("/messages", messageRouter);
 
 // Test route
 app.get("/", async (req, res) => {
