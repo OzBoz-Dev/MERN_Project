@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mern_mobile_app/themes/styles.dart';
 import 'package:mern_mobile_app/pages/home/home_page.dart';
 
 void main() {
@@ -10,8 +11,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: lightTheme,
       home: HomePage()
     );
   }
