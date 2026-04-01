@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mern_mobile_app/pages/home/home_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,11 +12,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text('Mern Mobile App'),
-        ),
-      ),
+      home: HomePage()
     );
   }
 }
