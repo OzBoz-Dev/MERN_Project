@@ -37,17 +37,17 @@ class ProjectCard extends StatelessWidget {
             ),
           ),
           // Bookmark
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Symbols.bookmark),
-              ),
-            )
-          ),
+          // Positioned(
+          //   top: 0,
+          //   right: 0,
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(24),
+          //     child: IconButton(
+          //       onPressed: () {},
+          //       icon: Icon(Symbols.bookmark),
+          //     ),
+          //   )
+          // ),
           // Main content
           Padding(
             padding: const EdgeInsets.all(24),
