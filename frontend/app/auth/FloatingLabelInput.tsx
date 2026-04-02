@@ -5,11 +5,12 @@ import input from './FloatingLabelInput.module.css'
 interface FloatingLabelProps{
   label: string;
   type: HTMLInputTypeAttribute;
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function FloatingLabelInput({label, type} : FloatingLabelProps) {
+export function FloatingLabelInput({label, type, value, onChange} : FloatingLabelProps) {
   const [focused, setFocused] = useState(false);
-  const [value, setValue] = useState('');
   const floating = value.trim().length !== 0 || focused || undefined;
 
   return (
@@ -19,7 +20,7 @@ export function FloatingLabelInput({label, type} : FloatingLabelProps) {
       type={type}
       classNames={input}
       value={value}
-      onChange={(event) => setValue(event.currentTarget.value)}
+      onChange={onChange}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       mt="md"

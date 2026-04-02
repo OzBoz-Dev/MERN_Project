@@ -1,6 +1,6 @@
 'use client'
 
-import { Center, Box, Progress, Text, Group, PasswordInput } from "@mantine/core";
+import { Center, Box, Progress, Text, Group, PasswordInput, PasswordInputProps } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import input from './FloatingLabelInput.module.css'
@@ -37,13 +37,12 @@ function getStrength(password: string) {
   return Math.max(100 - (100 / (requirements.length + 1)) * multiplier, 0);
 }
 
-export function PasswordStrength() {
-  const [value, setValue] = useInputState('');
+export function PasswordStrength( { value, onChange } : PasswordInputProps ) {
   const [focused, setFocused] = useState(false);
-  const floating = value.trim().length !== 0 || focused || undefined;
-  const strength = getStrength(value);
+  const floating = (value as string).trim().length !== 0 || focused || undefined;
+  const strength = getStrength(value as string);
   const checks = requirements.map((requirement, index) => (
-    <PasswordRequirement key={index} label={requirement.label} meets={requirement.re.test(value)} />
+    <PasswordRequirement key={index} label={requirement.label} meets={requirement.re.test(value as string)} />
   ));
   const bars = Array(4)
     .fill(0)
@@ -51,7 +50,7 @@ export function PasswordStrength() {
       <Progress
         styles={{ section: { transitionDuration: '0ms' } }}
         value={
-          value.length > 0 && index === 0 ? 100 : strength >= ((index + 1) / 4) * 100 ? 100 : 0
+          (value as string).length > 0 && index === 0 ? 100 : strength >= ((index + 1) / 4) * 100 ? 100 : 0
         }
         color={strength > 80 ? 'teal' : strength > 50 ? 'yellow' : 'red'}
         key={index}
@@ -59,14 +58,18 @@ export function PasswordStrength() {
         aria-label={`Password strength segment ${index + 1}`}
       />
     ));
+  function setValue(newval: string): void {
+    value = newval;
+  }
+
    return (
     <>
       <PasswordInput
         value={value}
+        onChange={onChange}
         label="Password"
         required
         classNames={input}
-        onChange={(event) => setValue(event.currentTarget.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         mt="xl"
@@ -79,7 +82,7 @@ export function PasswordStrength() {
         {bars}
       </Group>
 
-      <PasswordRequirement label="Has at least 6 characters" meets={value.length > 5} />
+      <PasswordRequirement label="Has at least 6 characters" meets={(value as string).length > 5} />
       {checks}
     </>
   );
