@@ -1,9 +1,8 @@
 'use client'
 
-import { Container, Box, Title, Paper, Button, Alert } from '@mantine/core';
+import { Container, Box, Title, Paper, Button, Alert, Text } from '@mantine/core';
 import { useState } from 'react';
 import { designTokens } from '../GlobalTheme';
-import '../globals.css'
 import { PasswordStrength } from './PasswordStrength';
 import { ForgotPasswordInput } from './ForgotPasswordInput';
 import { FloatingLabelInput } from './FloatingLabelInput';
@@ -63,9 +62,10 @@ export default function Auth() {
         setVerificationSent(true);
       } else {
         const data = await apiLogin(email, password);
-        // Store token (adjust storage strategy to your app's needs)
+        // Store token
         localStorage.setItem('token', data.token);
         setSuccess(`Welcome back, ${data.user.username}!`);
+        location.assign('/feed');
       }
     } catch (err: any) {
       setError(err.message);
@@ -74,78 +74,106 @@ export default function Auth() {
     }
   };
 
+  const authCard = (
+    <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
+      <GradientSegmentedControl value={type} onChange={setType} data={["Log In", "Sign Up"]}/>
+      <br></br>
+      <Title order={1} mb="xl" ff={designTokens.fonts.heading} style={{textAlign: 'center'}}>
+        {type === 'Log In' ? 'Welcome Back' : 'Create Account'}
+      </Title>
+      <Box maw={400} mx="auto" pl={100} pr={100}>
+        {/* Success message */}
+          {success && (
+            <Alert color="green" mb="md" radius="md" withCloseButton onClose={() => setSuccess(null)}>
+              {success}
+            </Alert>
+          )}
+          {/* Error message */}
+          {error && (
+            <Alert color="red" mb="md" radius="md" withCloseButton onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          )}
+        {/* Email Field */}
+        <div style={{ marginBottom: '10px' }}>
+          <FloatingLabelInput
+            label="Email"
+            type="email"
+            value = {email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+            />
+        </div>
+        {/* Username Field */}
+        <div style={{ marginTop: '32px' }}>
+          {type !== 'Log In' ? (
+          <FloatingLabelInput
+            label="Username"
+            type="username"
+            value = {username}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+            />
+          ) : (<></>)}
+        </div>
+        {/* Password Field */}
+        <div style={{ marginBottom: '20px' }}>
+          {type === 'Log In' ? (
+          <ForgotPasswordInput
+            value = {password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+          />
+          ) : (
+          <PasswordStrength
+            value = {password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+          />
+          )}
+        </div>
+        
+        <Box mt="md">
+          <Button 
+            variant="filled"
+            color="orange" 
+            fullWidth 
+            loading={loading} 
+            onClick={handleSubmit}
+          >
+            {type === 'Log In' ? 'Sign In' : 'Create Account'}
+          </Button>
+        </Box>
+      </Box>
+    </Paper>
+  );
+
+  const verifyCard = (
+      <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
+      <Title order={1} mb="xl" ff={designTokens.fonts.heading} style={{textAlign: 'center'}}>
+        Check your inbox
+      </Title>
+      <Text size="sm" c="dimmed" mb="lg">
+          We sent a verification link to{' '}
+          <Text component="span" fw={600} c="orange">
+            {submittedEmail}
+          </Text>
+          . Click the link in the email to activate your account.
+      </Text>
+      <Button
+        variant="subtle"
+        color="orange"
+        fullWidth
+        onClick={() => {
+          location.reload();
+        }}
+      >
+        Back to Log In
+      </Button>
+    </Paper>
+  );
+
   return (
     <main>
       <div style={{  }} className='animated-grid'>
       <Container size="md" my="xl">
-        <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
-          <GradientSegmentedControl value={type} onChange={setType} data={["Log In", "Sign Up"]}/>
-          <br></br>
-          <Title order={1} mb="xl" ff={designTokens.fonts.heading} style={{textAlign: 'center'}}>
-            {type === 'Log In' ? 'Welcome Back' : 'Create Account'}
-          </Title>
-          <Box maw={400} mx="auto" pl={100} pr={100}>
-            {/* Success message */}
-              {success && (
-                <Alert color="green" mb="md" radius="md" withCloseButton onClose={() => setSuccess(null)}>
-                  {success}
-                </Alert>
-              )}
-
-              {/* Error message */}
-              {error && (
-                <Alert color="red" mb="md" radius="md" withCloseButton onClose={() => setError(null)}>
-                  {error}
-                </Alert>
-              )}
-            {/* Email Field */}
-            <div style={{ marginBottom: '10px' }}>
-              <FloatingLabelInput
-                label="Email"
-                type="email"
-                value = {email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                />
-            </div>
-            {/* Username Field */}
-            <div style={{ marginTop: '30px' }}>
-              {type !== 'Log In' ? (
-              <FloatingLabelInput
-                label="Username"
-                type="username"
-                value = {username}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                />
-              ) : (<></>)}
-            </div>
-            {/* Password Field */}
-            <div style={{ marginBottom: '20px' }}>
-              {type === 'Log In' ? (
-              <ForgotPasswordInput
-                value = {password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-              />
-              ) : (
-              <PasswordStrength
-                value = {password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-              />
-              )}
-            </div>
-            
-            <Box mt="md">
-              <Button 
-                variant="filled"
-                color="orange" 
-                fullWidth 
-                loading={loading} 
-                onClick={handleSubmit}
-              >
-                {type === 'Log In' ? 'Sign In' : 'Create Account'}
-              </Button>
-            </Box>
-          </Box>
-        </Paper>
+        {verificationSent ? verifyCard : authCard}
       </Container>
       </div>
     </main>

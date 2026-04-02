@@ -1,15 +1,19 @@
-'use server'
+'use client'
  
-import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
- 
-export default async function createPost(id: string) {
-//   try {
-//     // Call database
-//   } catch (error) {
-//     // Handle errors
-//   }
- 
-//   revalidatePath('/posts') // Update cached posts
-  redirect(`/auth`) // Navigate to the new post page
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function globalRedirect(){
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token){
+      router.push('/feed')
+    }
+    else{
+      router.push('/auth')
+    }
+  }, [router])
+  return null
 }
