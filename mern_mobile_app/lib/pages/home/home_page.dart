@@ -17,6 +17,7 @@ class HomePage extends StatelessWidget {
             ProjectCard(
               title: "Project Title",
               poster: "hml786",
+              numLikes: 1000,
               description: "The quick brown fox jumped over the lazy dog.",
               tags: [
                 "ML Developer",
