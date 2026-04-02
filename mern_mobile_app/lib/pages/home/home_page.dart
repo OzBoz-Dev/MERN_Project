@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mern_mobile_app/models/tag.dart';
 import 'package:mern_mobile_app/widgets/project_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,9 +21,9 @@ class HomePage extends StatelessWidget {
               numLikes: 1000,
               description: "The quick brown fox jumped over the lazy dog.",
               tags: [
-                "ML Developer",
-                "Frontend Developer",
-                "DevOps",
+                Tag(label: "ML Developer"),
+                Tag(label: "Frontend Developer"),
+                Tag(label: "DevOps"),
               ],
               dateTimePosted: DateTime.now().add(Duration(hours: -2)),
             ),

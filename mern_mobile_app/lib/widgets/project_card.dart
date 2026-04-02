@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:mern_mobile_app/models/tag.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectCard extends StatelessWidget {
@@ -7,7 +8,7 @@ class ProjectCard extends StatelessWidget {
   final String poster;
   final String description;
   final int numLikes;
-  final List<String> tags;
+  final List<Tag> tags;
   final DateTime dateTimePosted;
 
   const ProjectCard({
@@ -90,7 +91,7 @@ class ProjectCard extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.all(8),
                         child: Text(
-                          tags[index],
+                          tags[index].label,
                           style: TextStyle(
                             color: Color(0xFF4b4be6),
                             fontSize: 12,
