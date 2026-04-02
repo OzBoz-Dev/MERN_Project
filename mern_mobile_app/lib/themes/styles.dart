@@ -16,6 +16,15 @@ ThemeData lightTheme = ThemeData(
       borderRadius: BorderRadius.circular(12)
     )
   ),
+  iconButtonTheme: IconButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStatePropertyAll(Color(0xFFFFA500)),
+      foregroundColor: WidgetStatePropertyAll(Colors.white),
+      shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(6)
+      )),
+    ),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStatePropertyAll(Color(0xFFFFA500)),
