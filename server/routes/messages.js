@@ -1,11 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const mongoose = require('mongoose');
-const Message = require('../models/Message'); //imports model
-
+const mongoose = require("mongoose");
+const Message = require("../models/Message"); //imports model
 
 //reads all messages
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const messages = await Message.find();
     res.json(messages);
@@ -15,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 //create a message
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const message = await Message.create(req.body);
     res.status(200).json(message);
@@ -25,13 +24,16 @@ router.post('/', async (req, res) => {
 });
 
 //edit a message
-router.put('/:_id', async (req, res) => {
+router.put("/:_id", async (req, res) => {
   try {
-    const  id  = req.params._id;
-    const message = await Message.findByIdAndUpdate(id, req.body);
+    const id = req.params._id;
+    const message = await Message.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
 
-    //ensures the updated message is displayed
-    //const updatedMessage = await Message.findById(id);
+    if (!message) {
+      res.status(404).json({ error: "Message not found" });
+    }
 
     res.status(200).json(message);
   } catch (err) {
@@ -40,11 +42,11 @@ router.put('/:_id', async (req, res) => {
 });
 
 //delete a message
-router.delete('/:_id', async (req, res) => {
+router.delete("/:_id", async (req, res) => {
   try {
-    const id  = req.params._id;
+    const id = req.params._id;
 
-    const message = await Message.findByIdAndDelete(id, req.body);
+    const message = await Message.findByIdAndDelete(id);
 
     if (!message) {
       return res.status(404).json({ message: "Message not found" });
