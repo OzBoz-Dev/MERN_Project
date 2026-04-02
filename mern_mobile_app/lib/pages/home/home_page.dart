@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mern_mobile_app/widgets/project_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -6,20 +7,25 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "MERN Project",
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+      appBar: AppBar(
+        title: Text("Home"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        child: Column(
+          children: [
+            ProjectCard(
+              title: "Project Title",
+              poster: "hml786",
+              description: "The quick brown fox jumped over the lazy dog.",
+              tags: [
+                "ML Developer",
+                "Frontend Developer",
+                "DevOps",
               ],
+              dateTimePosted: DateTime.now().add(Duration(hours: -2)),
             ),
-          ),
+          ]
         ),
       ),
     );
