@@ -28,7 +28,7 @@ ThemeData lightTheme = ThemeData(
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStatePropertyAll(Color(0xFFB9B9B9)),
-      foregroundColor: WidgetStatePropertyAll(Color(0xFF2d3748)),
+      foregroundColor: WidgetStatePropertyAll(Colors.white),
       shape: WidgetStatePropertyAll(RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6)
       )),
