@@ -84,7 +84,7 @@ class _ProjectCardState extends State<ProjectCard> {
                 const SizedBox(height: 5,),
                 Row(
                   children: [
-                    Icon(Icons.person_outline, color: Colors.grey,),
+                    Icon(TablerIcons.user, color: Colors.grey,),
                     const SizedBox(width: 8,),
                     Text(
                       "Looking for:",
