@@ -6,6 +6,7 @@ class ProjectCard extends StatelessWidget {
   final String title;
   final String poster;
   final String description;
+  final int numLikes;
   final List<String> tags;
   final DateTime dateTimePosted;
 
@@ -14,6 +15,7 @@ class ProjectCard extends StatelessWidget {
     required this.title,
     required this.poster,
     required this.description,
+    required this.numLikes,
     required this.tags,
     required this.dateTimePosted
   });
@@ -33,6 +35,18 @@ class ProjectCard extends StatelessWidget {
             child: Container(
               color: Color(0xFFffe082),
             ),
+          ),
+          // Bookmark
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: IconButton(
+                onPressed: () {},
+                icon: Icon(Symbols.bookmark),
+              ),
+            )
           ),
           // Main content
           Padding(
@@ -94,30 +108,26 @@ class ProjectCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 15,),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    label: Text(
-                      "Express Interest",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    icon: Icon(Symbols.deployed_code),
-                  ),
-                ),
-                const SizedBox(height: 5,),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton.icon(
-                    onPressed: () {},
-                    label: Text(
-                      "Message",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: () {},
+                        label: Text(
+                          "Message",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        icon: Icon(Icons.send),
                       ),
                     ),
-                    icon: Icon(Icons.send),
-                  ),
+                    const SizedBox(width: 5,),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Symbols.favorite_rounded,),
+                    )
+                  ],
                 ),
               ],
             ),
