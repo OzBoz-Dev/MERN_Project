@@ -4,11 +4,10 @@ import input from './FloatingLabelInput.module.css'
 
 interface FloatingLabelProps{
   label: string;
-  placeholder: string;
   type: HTMLInputTypeAttribute;
 }
 
-export function FloatingLabelInput({label, placeholder, type} : FloatingLabelProps) {
+export function FloatingLabelInput({label, type} : FloatingLabelProps) {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState('');
   const floating = value.trim().length !== 0 || focused || undefined;
@@ -16,7 +15,6 @@ export function FloatingLabelInput({label, placeholder, type} : FloatingLabelPro
   return (
     <TextInput
       label={label}
-      placeholder={placeholder}
       required
       type={type}
       classNames={input}

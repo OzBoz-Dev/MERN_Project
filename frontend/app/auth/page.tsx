@@ -26,13 +26,11 @@ export default function Auth() {
               {type === 'Log In' ? (
               <FloatingLabelInput
                 label="Email"
-                placeholder="projectseeker@email.com"
                 type="email"
               />
               ) : (
               <FloatingLabelInput
                 label="Email"
-                placeholder="whatdoyouseek@email.com"
                 type="email"
               />
               )}
