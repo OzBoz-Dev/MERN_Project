@@ -3,7 +3,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:mern_mobile_app/models/tag.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
-class ProjectCard extends StatelessWidget {
+class ProjectCard extends StatefulWidget {
   final String title;
   final String poster;
   final String description;
@@ -20,6 +20,21 @@ class ProjectCard extends StatelessWidget {
     required this.tags,
     required this.dateTimePosted
   });
+
+  @override
+  State<ProjectCard> createState() => _ProjectCardState();
+}
+
+class _ProjectCardState extends State<ProjectCard> {
+
+  // Whether post has been liked
+  late bool _isLiked;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLiked = false; // default hasn't been liked
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +73,12 @@ class ProjectCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  widget.title,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5,),
                 Text(
-                  "Posted by: $poster • ${timeago.format(dateTimePosted)}",
+                  "Posted by: ${widget.poster} • ${timeago.format(widget.dateTimePosted)}",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                 ),
                 const SizedBox(height: 5,),
@@ -82,7 +97,7 @@ class ProjectCard extends StatelessWidget {
                   height: 35,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
-                    itemCount: tags.length,
+                    itemCount: widget.tags.length,
                     itemBuilder: (context, index) {
                       return Container(
                         decoration: BoxDecoration(
@@ -91,7 +106,7 @@ class ProjectCard extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.all(8),
                         child: Text(
-                          tags[index].label,
+                          widget.tags[index].label,
                           style: TextStyle(
                             color: Color(0xFF4b4be6),
                             fontSize: 12,
@@ -105,7 +120,7 @@ class ProjectCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 15,),
                 Text(
-                  description,
+                  widget.description,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 15,),
@@ -125,8 +140,30 @@ class ProjectCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 5,),
                     IconButton(
-                      onPressed: () {},
-                      icon: Icon(Symbols.favorite_rounded,),
+                      onPressed: () {
+                        setState(() {
+                          _isLiked = !_isLiked;
+                        });
+                      },
+                      icon: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 200),
+                        switchInCurve: Curves.easeOutBack,
+                        switchOutCurve: Curves.easeIn,
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: ScaleTransition(
+                              scale: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Icon(
+                          key: ValueKey(_isLiked),
+                          Symbols.favorite_rounded,
+                          fill: _isLiked ? 1 : 0,
+                        ),
+                      ),
                     )
                   ],
                 ),
