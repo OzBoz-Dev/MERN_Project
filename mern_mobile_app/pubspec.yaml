@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_tabler_icons: ^1.43.0
   google_fonts: ^6.2.1
   material_symbols_icons: ^4.2928.1
   provider: ^6.1.5+1

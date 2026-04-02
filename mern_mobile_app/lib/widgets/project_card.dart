@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/symbols.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:mern_mobile_app/models/tag.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
@@ -135,7 +135,7 @@ class _ProjectCardState extends State<ProjectCard> {
                             fontWeight: FontWeight.bold
                           ),
                         ),
-                        icon: Icon(Icons.send),
+                        icon: Icon(TablerIcons.send),
                       ),
                     ),
                     const SizedBox(width: 5,),
@@ -160,8 +160,7 @@ class _ProjectCardState extends State<ProjectCard> {
                         },
                         child: Icon(
                           key: ValueKey(_isLiked),
-                          Symbols.favorite_rounded,
-                          fill: _isLiked ? 1 : 0,
+                          _isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
                         ),
                       ),
                     )
