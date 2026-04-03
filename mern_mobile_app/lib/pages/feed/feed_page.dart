@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:mern_mobile_app/models/tag.dart';
 import 'package:mern_mobile_app/widgets/project_card.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class FeedPage extends StatelessWidget {
+  const FeedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: Text("Feed"),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mern_mobile_app/themes/styles.dart';
-import 'package:mern_mobile_app/pages/home/home_page.dart';
+import 'package:mern_mobile_app/pages/feed/feed_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -14,7 +14,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
-      home: HomePage()
+      home: FeedPage()
     );
   }
 }
