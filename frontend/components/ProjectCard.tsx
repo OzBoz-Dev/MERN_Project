@@ -5,15 +5,21 @@ import TagHolder from "./TagHolder";
 import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
 
-export default function ProjectCard({postTitle, user, postTags, description, timeAgo}: 
-  {
-    postTitle: string, 
-    user: string, 
-    postTags: string[],
-    description: string,
-    timeAgo: string
-  }
-) {
+type Props = {
+  postTitle: string;
+  user: string;
+  postTags: string[];
+  description: string;
+  timeAgo: string;
+}
+
+export default function ProjectCard({
+  postTitle,
+  user,
+  postTags,
+  description,
+  timeAgo
+}: Props) {
   return (
     <div style={{
       borderLeft: `8px solid ${designTokens.colors.cardBorder}`,
