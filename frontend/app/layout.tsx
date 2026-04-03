@@ -46,7 +46,12 @@ export default function RootLayout({
           <header>
             <NavTabs />
           </header>
-          <main>{children}</main>
+          <main style={{
+              display: "flex",
+              flexDirection:"column",
+              alignItems: "center"
+            }}>{children}
+          </main>
         </MantineProvider>
       </body>
     </html>

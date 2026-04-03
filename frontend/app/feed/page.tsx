@@ -152,31 +152,23 @@ function PostComponent({postTitle, user, postTags, description, timeAgo}:
 
 export default function Home() {
   return (
-    <main style={{
-      display: "flex",
-      flexDirection:"column",
-      alignItems: "center"
+    <div style={{
+      width: "100%",
+      maxWidth: "900px",
+      padding: "0 16px"
     }}>
-      <div style={{
-        width: "100%",
-        maxWidth: "900px",
-        padding: "0 16px"
-      }}>
-        <PostComponent 
-        postTitle='title' 
-        user='del0m_' 
-        postTags={['ML developer', 'DevOps']}
-        description='the quick brown fox jumped over the lazy dog'
-        timeAgo='2 hours ago'/>
-        <PostComponent 
-        postTitle='title' 
-        user='del0m_' 
-        postTags={['ML developer', 'DevOps']}
-        description='the quick brown fox jumped over the lazy dog'
-        timeAgo='2 hours ago'/>
-        
-      </div>
-      Hello World.
-    </main>
+      <PostComponent 
+      postTitle='title' 
+      user='del0m_' 
+      postTags={['ML developer', 'DevOps']}
+      description='the quick brown fox jumped over the lazy dog'
+      timeAgo='2 hours ago'/>
+      <PostComponent 
+      postTitle='title' 
+      user='del0m_' 
+      postTags={['ML developer', 'DevOps']}
+      description='the quick brown fox jumped over the lazy dog'
+      timeAgo='2 hours ago'/>
+    </div>
   );
 }
