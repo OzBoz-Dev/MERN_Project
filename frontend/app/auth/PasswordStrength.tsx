@@ -37,10 +37,21 @@ function getStrength(password: string) {
   return Math.max(100 - (100 / (requirements.length + 1)) * multiplier, 0);
 }
 
-export function PasswordStrength( { value, onChange } : PasswordInputProps ) {
+interface PasswordStrengthProps extends PasswordInputProps {
+  onValidChange?: (valid: boolean) => void;
+}
+
+export function PasswordStrength( { value, onChange, onValidChange } : PasswordStrengthProps ) {
   const [focused, setFocused] = useState(false);
   const floating = (value as string).trim().length !== 0 || focused || undefined;
   const strength = getStrength(value as string);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e);
+    const newStrength = getStrength(e.target.value);
+    onValidChange?.(newStrength === 100);
+  };
+
   const checks = requirements.map((requirement, index) => (
     <PasswordRequirement key={index} label={requirement.label} meets={requirement.re.test(value as string)} />
   ));
@@ -66,7 +77,7 @@ export function PasswordStrength( { value, onChange } : PasswordInputProps ) {
     <>
       <PasswordInput
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         label="Password"
         required
         classNames={input}

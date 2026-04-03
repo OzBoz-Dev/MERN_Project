@@ -7,6 +7,7 @@ import { PasswordStrength } from './PasswordStrength';
 import { ForgotPasswordInput } from './ForgotPasswordInput';
 import { FloatingLabelInput } from './FloatingLabelInput';
 import { GradientSegmentedControl } from './GradientSegmentedControl';
+import { InputValidation } from './InputValidation';
 
 const BACKEND_PT = "http://localhost:5000";
 
@@ -17,6 +18,15 @@ export default function Auth() {
   const[email, setEmail] = useState('');
   const[password, setPassword] = useState('');
   const[username, setUsername] = useState('');
+
+  // Validation states
+  const [emailValid, setEmailValid] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(false);
+
+  const canSubmit =
+  type === 'Log In'
+    ? emailValid && password.trim().length > 0
+    : emailValid && passwordValid && username.trim().length > 0;
 
   // UI States
   const [loading, setLoading] = useState(false);
@@ -76,7 +86,20 @@ export default function Auth() {
 
   const authCard = (
     <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
-      <GradientSegmentedControl value={type} onChange={setType} data={["Log In", "Sign Up"]}/>
+      <GradientSegmentedControl 
+        value={type} 
+        onChange={(val) => {
+          setType(val);
+          setEmail('');
+          setPassword('');
+          setUsername('');
+          setEmailValid(false);
+          setPasswordValid(false);
+          setError(null);
+          setSuccess(null);
+        }} 
+        data={["Log In", "Sign Up"]}  
+      />
       <br></br>
       <Title order={1} mb="xl" ff={designTokens.fonts.heading} style={{textAlign: 'center'}}>
         {type === 'Log In' ? 'Welcome Back' : 'Create Account'}
@@ -96,12 +119,23 @@ export default function Auth() {
           )}
         {/* Email Field */}
         <div style={{ marginBottom: '10px' }}>
-          <FloatingLabelInput
-            label="Email"
-            type="email"
-            value = {email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+          {type === 'Log In'? (
+            <InputValidation
+              label="Email"
+              type="email"
+              value = {email}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              onValidChange={setEmailValid}
+              />
+          ) : (
+            <InputValidation
+              value = {email}
+              label='Email'
+              type="email"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              onValidChange={setEmailValid}
             />
+          )}
         </div>
         {/* Username Field */}
         <div style={{ marginTop: '32px' }}>
@@ -125,6 +159,7 @@ export default function Auth() {
           <PasswordStrength
             value = {password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+            onValidChange={setPasswordValid}
           />
           )}
         </div>
@@ -136,6 +171,7 @@ export default function Auth() {
             fullWidth 
             loading={loading} 
             onClick={handleSubmit}
+            disabled={!canSubmit}
           >
             {type === 'Log In' ? 'Sign In' : 'Create Account'}
           </Button>
