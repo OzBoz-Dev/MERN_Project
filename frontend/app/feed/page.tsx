@@ -11,6 +11,7 @@ export default function Home() {
       }}
     >
       <ProjectCard
+        id="69b07c3d754d16127d7fc4e7"
         postTitle="title"
         user="del0m_"
         postTags={["ML developer", "DevOps"]}
@@ -18,6 +19,7 @@ export default function Home() {
         timeAgo="2 hours ago"
       />
       <ProjectCard
+        id="69b07c3d754d16127d7fc4e7"
         postTitle="title"
         user="del0m_"
         postTags={["ML developer", "DevOps"]}
