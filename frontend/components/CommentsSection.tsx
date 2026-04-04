@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button, Textarea, Stack, Group, Text } from "@mantine/core";
 import CommentCard from "./CommentCard";
+import { IconCircleXFilled, IconPencil } from "@tabler/icons-react";
 
 type Comment = {
   author: string;
@@ -53,7 +54,12 @@ export default function CommentsSection() {
         Comments
       </Text>
       {!writing ? (
-        <Button size="lg" fullWidth onClick={() => setWriting(true)}>
+        <Button
+          size="lg"
+          fullWidth
+          onClick={() => setWriting(true)}
+          leftSection={<IconPencil />}
+        >
           Post Comment
         </Button>
       ) : (
@@ -68,10 +74,12 @@ export default function CommentsSection() {
           <Group justify="flex-end">
             <Button
               variant="subtle"
+              c={"red"}
               onClick={() => {
                 setWriting(false);
                 setDraft("");
               }}
+              leftSection={<IconCircleXFilled />}
             >
               Cancel
             </Button>
