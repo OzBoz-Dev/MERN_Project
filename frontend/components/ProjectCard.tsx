@@ -6,50 +6,79 @@ import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
 
 type Props = {
+  id: string;
   postTitle: string;
   user: string;
   postTags: string[];
   description: string;
   timeAgo: string;
-}
+};
 
 export default function ProjectCard({
+  id,
   postTitle,
   user,
   postTags,
   description,
-  timeAgo
+  timeAgo,
 }: Props) {
   return (
-    <div style={{
-      borderLeft: `8px solid ${designTokens.colors.cardBorder}`,
-      borderRadius: designTokens.borderRadius.card,
-      padding: designTokens.spacing.cardPadding,
-      margin: "16px 0",
-      boxShadow: designTokens.colors.cardShadow,
-      background: designTokens.colors.glassyBackground,
-      position: 'relative'
-    }}>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div
+      style={{
+        borderLeft: `8px solid ${designTokens.colors.cardBorder}`,
+        borderRadius: designTokens.borderRadius.card,
+        padding: designTokens.spacing.cardPadding,
+        margin: "16px 0",
+        boxShadow: designTokens.colors.cardShadow,
+        background: designTokens.colors.glassyBackground,
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <h2>{postTitle}</h2>
         <BookmarkButton />
       </div>
 
-      <div style={{ fontSize: "14px", color: designTokens.colors.textMuted, marginBottom: "8px" }}>
+      <div
+        style={{
+          fontSize: "14px",
+          color: designTokens.colors.textMuted,
+          marginBottom: "8px",
+        }}
+      >
         Posted by {user} &middot; {timeAgo}
       </div>
 
-      <div style={{ fontSize: "14px", color: designTokens.colors.textMuted, display: "flex", alignItems:"center", gap: "8px"}}>
-        <IconUser size="20px"/> Looking for:
+      <div
+        style={{
+          fontSize: "14px",
+          color: designTokens.colors.textMuted,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        <IconUser size="20px" /> Looking for:
       </div>
-      <TagHolder tags={postTags}/>
-      <p style={{ margin: "0 0 12px", color: "#555" }}>
-        {description}
-      </p>
-      <div style={{ display: "flex", justifyContent:"right", alignItems: "right", gap:"16px"}}>
-        <MessageButton/>
-        <LikeButton/>
+      <TagHolder tags={postTags} />
+      <p style={{ margin: "0 0 12px", color: "#555" }}>{description}</p>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "right",
+          alignItems: "right",
+          gap: "16px",
+        }}
+      >
+        <MessageButton />
+        <LikeButton />
       </div>
     </div>
-    );
+  );
 }
