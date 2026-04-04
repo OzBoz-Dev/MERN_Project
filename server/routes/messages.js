@@ -3,11 +3,28 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const Message = require("../models/Message"); //imports model
 
+//add: likes feature
+
 //reads all messages
 router.get("/", async (req, res) => {
   try {
     const messages = await Message.find();
     res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//reads by id (route logic is essential for update and delete)
+router.get("/:_id", async (req, res) => {
+  try {
+    const messages = await Message.findById(req.params._id);
+
+    if (!messages) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    res.status(200).json(messages);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -26,27 +43,28 @@ router.post("/", async (req, res) => {
 //edit a message
 router.put("/:_id", async (req, res) => {
   try {
-    const id = req.params._id;
-    const message = await Message.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    const updatedMessage = await Message.findByIdAndUpdate(
+      req.params._id, //If :_id, it's req.params._id, otherwise is req.body._id
+      req.body,
+      {
+        new: true,
+      },
+    );
 
-    if (!message) {
+    if (!updatedMessage) {
       res.status(404).json({ error: "Message not found" });
     }
 
-    res.status(200).json(message);
+    res.status(200).json(updatedMessage);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-//delete a message
+//deletes a message
 router.delete("/:_id", async (req, res) => {
   try {
-    const id = req.params._id;
-
-    const message = await Message.findByIdAndDelete(id);
+    const message = await Message.findByIdAndDelete(req.params._id);
 
     if (!message) {
       return res.status(404).json({ message: "Message not found" });
