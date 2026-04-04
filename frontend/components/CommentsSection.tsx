@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Textarea, Stack, Group } from "@mantine/core";
+import { Button, Textarea, Stack, Group, Text } from "@mantine/core";
 import CommentCard from "./CommentCard";
 
 type Comment = {
@@ -48,7 +48,10 @@ export default function CommentsSection() {
   };
 
   return (
-    <Stack w="100%" gap="md" mt="xl">
+    <Stack w="100%" gap="md">
+      <Text size="xl" fw={700}>
+        Comments
+      </Text>
       {!writing ? (
         <Button size="lg" fullWidth onClick={() => setWriting(true)}>
           Post Comment
