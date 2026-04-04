@@ -4,6 +4,7 @@ import { IconUser } from "@tabler/icons-react";
 import TagHolder from "./TagHolder";
 import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
+import ReadFullPostButton from "./ReadFullPostButton";
 
 type Props = {
   id: string;
@@ -76,6 +77,7 @@ export default function ProjectCard({
           gap: "16px",
         }}
       >
+        <ReadFullPostButton id={id} />
         <MessageButton />
         <LikeButton />
       </div>
