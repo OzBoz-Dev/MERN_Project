@@ -14,6 +14,12 @@ type Props = {
   description: string;
   timeAgo: string;
 };
+type FeedProps = {
+  dataLength: number;
+  hasMore: boolean;
+  loader?: object;
+  endMessage?: object;
+};
 
 export default function ProjectCard({
   id,
@@ -83,4 +89,11 @@ export default function ProjectCard({
       </div>
     </div>
   );
+}
+export const defaultProps: FeedProps = {
+  dataLength: 20,
+  hasMore: true,
+  endMessage: <p style={{ textAlign: "center"}}>
+    <b>Yay! you have seen it all</b>
+  </p>
 }
