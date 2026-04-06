@@ -1,8 +1,9 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
 const User = require('../models/User')
 const auth = require('../middleware/auth')
-
+const {sendVerificationEmail} = require('../utils/mailer')
 const router = express.Router()
 
 // generate a signed jwt, set to expire in 7 days
@@ -11,6 +12,26 @@ const generateToken = (userId) => {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
     })
 }
+
+router.get('/verify/:token', async (req, res) => {
+    try {
+        const user = await User.findOne({ verificationToken: req.params.token }).select('+verificationToken')
+
+        if (!user) {
+            return res.status(404).json({ error: 'invalid token' })
+        }
+
+        user.verified = true
+        user.verificationToken = undefined 
+        await user.save()
+
+        res.status(200).json({ message: 'Email verified. log in now' })
+    } catch (err) {
+        console.error('Verification error:', err)
+        res.status(500).json({ error: 'Server error' })
+    }
+})
+
 
 // auth signup 
 router.post('/signup', async (req, res) => {
@@ -29,17 +50,24 @@ router.post('/signup', async (req, res) => {
             return res.status(409).json({ error: `${field} is already taken` })
         }
 
+        const verificationToken = crypto.randomBytes(32).toString('hex')
+
         // create user
-        const user = await User.create({ username, email, password })
-        const token = generateToken(user._id)
+        const user = await User.create({ username, email, password, verificationToken })
+        
+        // should get token after email verification
+        // const token = generateToken(user._id)
+
+        await sendVerificationEmail(email, verificationToken)
 
         res.status(201).json({
-            token,
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-            },
+            // token,
+            // user: {
+            //     id: user._id,
+            //     username: user.username,
+            //     email: user.email,
+            // },
+            message: 'signed up. check email to verify your account.',
         })
     } catch (err) {
         // err handling
@@ -65,6 +93,10 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ email }).select('+password')
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' })
+        }
+
+        if (!user.verified) {
+            return res.status(403).json({ error: 'Please verify your email before logging in' })
         }
 
         const isMatch = await user.comparePassword(password)

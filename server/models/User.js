@@ -25,6 +25,14 @@ const userSchema = new mongoose.Schema(
             minlength: [6, 'Password must be at least 6 characters'],
             select: false,
         },
+        verified: {
+            type: Boolean,
+            default: false
+        },
+        verificationToken: {
+            type: String,
+            select: false
+        },
     },
     { timestamps: true }
 )
@@ -40,5 +48,6 @@ userSchema.pre('save', async function () {
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password)
 }
+
 
 module.exports = mongoose.model('User', userSchema)

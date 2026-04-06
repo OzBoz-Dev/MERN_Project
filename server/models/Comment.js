@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const commentSchema = new mongoose.Schema({
   author_id:      { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   body:           { type: String },
-  likes:          { type: String },
+  likes:          [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   post_id_belong: { type: String }
 });
 
