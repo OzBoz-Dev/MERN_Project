@@ -8,8 +8,7 @@ import { ForgotPasswordInput } from './ForgotPasswordInput';
 import { FloatingLabelInput } from './FloatingLabelInput';
 import { GradientSegmentedControl } from './GradientSegmentedControl';
 import { InputValidation } from './InputValidation';
-
-const BACKEND_PT = "http://localhost:5000";
+import { API_ENTRYPOINT } from '../page';
 
 export default function Auth() {
   const[type, setType] = useState('Log In');
@@ -37,7 +36,7 @@ export default function Auth() {
 
   // API Helpers
   async function apiSignup(email: string, password: string, username: string) {
-    const resp = await fetch(BACKEND_PT+'/auth/signup', {
+    const resp = await fetch(API_ENTRYPOINT+'/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password }),
@@ -48,7 +47,7 @@ export default function Auth() {
   }
 
   async function apiLogin(email: string, password: string) {
-      const resp = await fetch(BACKEND_PT+'/auth/login', {
+      const resp = await fetch(API_ENTRYPOINT+'/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),

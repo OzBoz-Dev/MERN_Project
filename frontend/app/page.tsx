@@ -17,3 +17,5 @@ export default function globalRedirect(){
   }, [router])
   return null
 }
+
+export const API_ENTRYPOINT = "http://localhost:5000"

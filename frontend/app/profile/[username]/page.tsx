@@ -15,24 +15,13 @@ import {
 import ProfileInfoCard from "@/app/profile/ProfileInfoCard";
 import EditProfileModal from "@/app/profile/EditProfileModal";
 import ProfileActions from "@/app/profile/ProfileActions";
-import { designTokens } from "../GlobalTheme";
-import { Main } from "next/document";
+import { designTokens } from "../../GlobalTheme";
+import { useParams } from "next/navigation";
+import { API_ENTRYPOINT } from "@/app/page";
 
-// Mock API functions for placeholder data
-const mockFetchProfile = async () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        username: "jDoe",
-        firstName: "John",
-        lastName: "Doe",
-        bio: "Software developer passionate about building amazing applications.",
-        profilePicture: "#3b82f6",
-        tags: ["react", "javascript", "node"],
-      });
-    }, 1000);
-  });
-};
+async function getProfile(username: string){
+  const res = await fetch(API_ENTRYPOINT+'/user')
+}
 
 const mockUpdateProfile = async (data: any) => {
   return new Promise((resolve) => {
@@ -52,7 +41,7 @@ export default function ProfilePage() {
   useState(() => {
     const fetchProfile = async () => {
       try {
-        const data = await mockFetchProfile();
+        const data = await getProfile('z');
         setProfileData(data);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
