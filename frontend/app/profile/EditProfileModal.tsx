@@ -9,7 +9,6 @@ import {
   Box,
   Divider,
 } from "@mantine/core";
-import { API_ENTRYPOINT } from "../page";
 
 // Hardcoded tag list for now
 const AVAILABLE_TAGS = [
@@ -151,8 +150,10 @@ export default function EditProfileModal({
         <Textarea
           label="Bio"
           value={bio}
+          maxLength={300}
           onChange={(e) => setBio(e.target.value)}
           placeholder="Tell us about yourself..."
+          description={bio.length + "/300"}
           autosize
           minRows={3}
         />

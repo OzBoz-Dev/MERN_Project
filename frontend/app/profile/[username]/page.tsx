@@ -19,7 +19,7 @@ import EditProfileModal from "@/app/profile/EditProfileModal";
 import ProfileActions from "@/app/profile/ProfileActions";
 import { designTokens } from "../../GlobalTheme";
 import { notFound, useParams } from "next/navigation";
-import { API_ENTRYPOINT } from "@/app/page";
+import { API_ENTRYPOINT } from '@/constants/constants'
 
 async function getProfile(username: any){
   console.log(username)

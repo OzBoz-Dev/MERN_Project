@@ -1,5 +1,5 @@
 import UserAvatar from "@/components/UserAvatar";
-import { Avatar, Text, Group, Box, Divider } from "@mantine/core";
+import { Avatar, Text, Group, Box, Divider, Flex } from "@mantine/core";
 
 // Hardcoded tag list for now
 const AVAILABLE_TAGS = [
@@ -63,9 +63,21 @@ export default function ProfileInfoCard({
 
       {/* Bio */}
       {bio ? (
-        <Text ta="center" c="dimmed" mt="sm">
-          {bio}
-        </Text>
+        <Flex justify='center' w='100%'>
+          <Text
+            ta="center" 
+            c="dimmed" 
+            mt="sm" 
+            maw={350}
+            style={{ 
+              overflowWrap: 'break-word', 
+              wordBreak: 'break-word',
+              whiteSpace: 'normal' 
+            }}
+          >
+            {bio}
+          </Text>
+        </Flex>
       ) : (
         <Text ta="center" c="dimmed" mt="sm">
           No bio yet
