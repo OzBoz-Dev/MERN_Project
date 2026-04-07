@@ -9,6 +9,7 @@ import {
   Box,
   Divider,
 } from "@mantine/core";
+import { API_ENTRYPOINT } from "../page";
 
 // Hardcoded tag list for now
 const AVAILABLE_TAGS = [
@@ -54,9 +55,6 @@ export default function EditProfileModal({
   const [firstName, setFirstName] = useState(initialData?.firstName || "");
   const [lastName, setLastName] = useState(initialData?.lastName || "");
   const [bio, setBio] = useState(initialData?.bio || "");
-  const [profilePicture, setProfilePicture] = useState(
-    initialData?.profilePicture || COLOR_OPTIONS[0]
-  );
   const [selectedTags, setSelectedTags] = useState(
     initialData?.tags || []
   );
@@ -91,28 +89,32 @@ export default function EditProfileModal({
   };
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+
     if (!firstName || !lastName) {
       alert("First name and last name are required!");
       return;
     }
 
-    onSave({
+    const updatedData = {
       firstName,
       lastName,
       bio,
-      profilePicture,
-      tags: selectedTags,
-    });
+      // tags: selectedTags,
+    };
 
-    // Reset form
-    setFirstName("");
-    setLastName("");
-    setBio("");
-    setProfilePicture(COLOR_OPTIONS[0]);
-    setSelectedTags([]);
-    setTagInput("");
-    setTagSuggestions([]);
+    await onSave(updatedData);
+
+    // // Reset form
+    // setFirstName("");
+    // setLastName("");
+    // setBio("");
+    // setSelectedTags([]);
+    // setTagInput("");
+    // setTagSuggestions([]);
+
+    onClose();
   };
 
   return (
@@ -120,6 +122,9 @@ export default function EditProfileModal({
       opened={isOpen}
       onClose={onClose}
       title="Edit Profile"
+      styles={{
+        title: {fontWeight: 700}
+      }}
       size="md"
       centered
     >
@@ -151,29 +156,6 @@ export default function EditProfileModal({
           autosize
           minRows={3}
         />
-
-        {/* Profile Picture Color */}
-        <Text fw={500} mt="md" mb="xs">
-          Profile Picture Color
-        </Text>
-        <Group wrap="wrap" gap="xs" mt="xs">
-          {COLOR_OPTIONS.map((color) => (
-            <Box
-              key={color}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                background: color,
-                cursor: "pointer",
-                border: profilePicture === color ? "2px solid #000" : "2px solid transparent",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-              }}
-              onClick={() => setProfilePicture(color)}
-            >
-            </Box>
-          ))}
-        </Group>
 
         {/* Tags */}
         <Text fw={500} mt="md" mb="xs">
@@ -260,7 +242,7 @@ export default function EditProfileModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" variant="filled" color="blue">
+          <Button type="submit" variant="filled" color="orange">
             Save Changes
           </Button>
         </Group>

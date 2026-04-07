@@ -1,3 +1,4 @@
+import UserAvatar from "@/components/UserAvatar";
 import { Avatar, Text, Group, Box, Divider } from "@mantine/core";
 
 // Hardcoded tag list for now
@@ -10,18 +11,6 @@ const AVAILABLE_TAGS = [
   "mongodb",
   "css",
   "html",
-];
-
-// 8 solid colors for profile picture
-const COLOR_OPTIONS = [
-  "#3b82f6",
-  "#10b981",
-  "#ef4444",
-  "#8b5cf6",
-  "#f59e0b",
-  "#ec4899",
-  "#6b7280",
-  "#e9da3d",
 ];
 
 export default function ProfileInfoCard({
@@ -42,21 +31,13 @@ export default function ProfileInfoCard({
   return (
     <Box p="md">
       {/* User Avatar - Colored Circle */}
-      <Avatar
-        radius="lg"
-        size="xl"
-        style={{
-          background: COLOR_OPTIONS[username ? username?.length % 8 : 0],
-          width: 80,
-          height: 80,
-          margin: "0 auto",
-        }}
-        color="white"
-      >
-        {firstName && lastName
-          ? `${firstName.charAt(0)}${lastName.charAt(0)}`
-          : "UN"}
-      </Avatar>
+      <UserAvatar 
+        username={username as string} 
+        firstName={firstName as string} 
+        lastName={lastName as string} 
+        radius='lg' 
+        size='xl'
+      />
 
       {/* User Name */}
       <Text

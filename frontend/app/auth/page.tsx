@@ -75,7 +75,9 @@ export default function Auth() {
         const data = await apiLogin(email, password);
         // Store token
         localStorage.setItem('token', data.token);
-        localStorage.setItem('username', data.username);
+        localStorage.setItem('username', data.user.username);
+        localStorage.setItem('firstName', data.user.firstName);
+        localStorage.setItem('lastName', data.user.lastName);
         setSuccess(`Welcome back, ${data.user.username}!`);
         location.assign('/feed');
       }

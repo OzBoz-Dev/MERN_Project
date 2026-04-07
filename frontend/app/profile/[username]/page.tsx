@@ -35,19 +35,31 @@ async function getProfile(username: any){
   return await res.json();
 }
 
-const mockUpdateProfile = async (data: any) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true });
-    }, 1000);
+async function saveProfile(username: string, data: any){
+  console.log(username)
+  const res = await fetch(API_ENTRYPOINT+'/profile/' + username, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      token: localStorage.getItem('token'),
+      ...data
+    })
   });
-};
+
+  if (!res.ok) {
+    throw new Error('Failed to update profile!' + res.status);
+  }
+
+  return await res.json();
+}
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMe, setIsMe] = useState(true);
+  const [isMe, setIsMe] = useState(false);
   const { username } = useParams();
 
   // Fetch profile data on mount
@@ -57,12 +69,12 @@ export default function ProfilePage() {
       try {
         setIsLoading(true);
         const data = await getProfile(username);
-
         if (!data) {
           window.location.href = '/not-found';
           return;
         }
         setProfileData(data);
+        if (username == localStorage.getItem('username')) setIsMe(true);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       } finally {
@@ -75,19 +87,26 @@ export default function ProfilePage() {
   // Handle profile save
   const handleSaveProfile = async (data: any) => {
     try {
-      await mockUpdateProfile(data);
-      setProfileData(data);
-      setIsEditing(false);
-      console.log("Profile updated successfully");
+      setIsLoading(true);
+      const updatedUser = await saveProfile(username as string, data);
+      if (updatedUser) {
+        setProfileData(updatedUser);
+        setIsEditing(false);
+        localStorage.setItem('firstName', data.firstName)
+        localStorage.setItem('lastName', data.lastName)
+      }
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      alert("Could not save profile. Please try again"+error);
+    }
+    finally{
+      setIsLoading(false);
     }
   };
 
   // Handle logout
   const handleLogout = () => {
     // Client-side logout: destroy token and redirect
-    localStorage.removeItem("token");
+    localStorage.clear();
     // Redirect to auth page
     window.location.href = "/auth";
   };
