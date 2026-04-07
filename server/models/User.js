@@ -26,6 +26,28 @@ const userSchema = new mongoose.Schema(
             select: false,
         },
         tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+        verified: {
+            type: Boolean,
+            default: false
+        },
+        verificationToken: {
+            type: String,
+            select: false
+        },
+        firstName: {
+            type: String,
+            required: [true, 'First Name is required']
+        },
+        lastName: {
+            type: String,
+            required: [true, 'Last Name is required']
+        },
+        bio: {
+            type: String
+        },
+        profilePicture: {
+            type: String
+        }
     },
     { timestamps: true }
 )
@@ -41,5 +63,6 @@ userSchema.pre('save', async function () {
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password)
 }
+
 
 module.exports = mongoose.model('User', userSchema)

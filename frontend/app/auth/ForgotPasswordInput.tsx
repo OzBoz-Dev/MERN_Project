@@ -1,11 +1,10 @@
-import { Group, PasswordInput, Anchor } from "@mantine/core";
+import { Group, PasswordInput, Anchor, PasswordInputProps } from "@mantine/core";
 import { useState } from "react";
 import input from './FloatingLabelInput.module.css'
 
-export function ForgotPasswordInput() {
+export function ForgotPasswordInput( { value, onChange } : PasswordInputProps ) {
   const [focused, setFocused] = useState(false);
-  const [value, setValue] = useState('');
-  const floating = value.trim().length !== 0 || focused || undefined;
+  const floating = (value as string).trim().length !== 0 || focused || undefined;
   return (
     <>
       <PasswordInput
@@ -14,7 +13,7 @@ export function ForgotPasswordInput() {
           required
           classNames={input}
           value={value}
-          onChange={(event) => setValue(event.currentTarget.value)}
+          onChange={onChange}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           mt="xl"

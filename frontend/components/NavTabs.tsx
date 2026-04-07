@@ -1,13 +1,31 @@
 "use client";
 
 import styles from "./NavTabs.module.css";
-import { Flex, Tabs, Text } from "@mantine/core";
+import { Avatar, Box, Flex, Tabs, Text } from "@mantine/core";
 import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
+import UserAvatar from "./UserAvatar";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
   const router = useRouter();
+
+  const [user, setUser] = useState<{ username: string; firstName: string; lastName: string } | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const username = localStorage.getItem('username');
+    if (username) {
+      setUser({
+        username,
+        firstName: localStorage.getItem('firstName') || "",
+        lastName: localStorage.getItem('lastName') || "",
+      });
+    }
+  }, []);
 
   // For tab icons
   const iconSize = 18;
@@ -72,10 +90,29 @@ export function NavTabs() {
           <Tabs.List>{tabs}</Tabs.List>
         </Tabs>
       </Flex>
-      {/* Profile component will go here */}
-      <Text fw={700} size="l">
-        Profile
-      </Text>
+      <div style={{ flex: 1 }} />
+      {/* Profile component */}
+      { isMounted && user ? (
+      <Link 
+        href={`/profile/${localStorage.getItem('username')}`} 
+        style={{ textDecoration: 'none', color: 'inherit' }}
+      >
+        <Box 
+          style={{ cursor: 'pointer' }} 
+          title="View Profile"
+        >
+          <UserAvatar 
+            username={localStorage.getItem('username') as string} 
+            firstName={localStorage.getItem('firstName') as string}
+            lastName={localStorage.getItem('lastName') as string}
+            radius="xl" 
+            size="md"
+          />
+        </Box>
+      </Link>
+      ) : (
+        <></>
+      )}
     </Flex>
   );
 }

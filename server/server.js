@@ -15,6 +15,7 @@ const conversationRouter = require("./routes/conversations");
 const messageRouter = require("./routes/messages");
 const authRoutes = require("./routes/auth");
 const tagsRouter = require("./routes/tags");
+const profileRouter = require("./routes/profile");
 
 
 app.use("/auth", authRoutes);
@@ -22,6 +23,7 @@ app.use("/comments", commentsRouter);
 app.use("/conversations", conversationRouter);
 app.use("/messages", messageRouter);
 app.use("/tags", tagsRouter);
+app.use("/profile", profileRouter);
 
 // Test route
 app.get("/", async (req, res) => {
