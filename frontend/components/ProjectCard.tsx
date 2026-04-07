@@ -5,6 +5,7 @@ import TagHolder from "./TagHolder";
 import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
 import ReadFullPostButton from "./ReadFullPostButton";
+import { TextInput } from "@mantine/core";
 
 type Props = {
   id: string;
@@ -20,6 +21,7 @@ type FeedProps = {
   loader?: object;
   endMessage?: object;
 };
+
 
 export default function ProjectCard({
   id,

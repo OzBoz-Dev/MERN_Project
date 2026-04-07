@@ -2,14 +2,17 @@
 
 import CommentCard from "@/components/CommentCard";
 import ProjectCard, { defaultProps } from "@/components/ProjectCard";
+import SearchBar from "@/components/SearchBar";
 import { useCallback, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function Home() {
   const [items, setItems] = useState(Array.from({ length: defaultProps.dataLength }));
   const [hasMore, setHasMore] = useState(true);
-
   const fetchMoreData = useCallback(() => {
+    if(items.length >= 20) {
+      setHasMore(false);
+    }
     // Would need to fetch more items from api
     // Example: await fetch('api/posts?page=...')
 
@@ -26,6 +29,7 @@ export default function Home() {
         alignContent: "center"
       }}
     >
+      <SearchBar></SearchBar>
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}
