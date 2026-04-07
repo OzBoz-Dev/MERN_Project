@@ -62,7 +62,7 @@ export default function AdvancedSettings() {
                     </h2>
                     <DatePostedBox/>
                 </div>
-                
+
             </div>
 
         </div>

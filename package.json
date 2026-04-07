@@ -1,5 +1,9 @@
 {
   "dependencies": {
-    "@mantine/dates": "^9.0.1"
+    "@mantine/core": "^9.0.1",
+    "@mantine/dates": "^9.0.1",
+    "@mantine/tiptap": "^9.0.1",
+    "mongodb": "^7.1.1",
+    "react-timeago": "^8.3.0"
   }
 }
