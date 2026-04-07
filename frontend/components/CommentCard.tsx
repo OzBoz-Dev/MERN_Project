@@ -40,7 +40,7 @@ export default function CommentCard({ author, datePosted, body }: Props) {
         {formatText(body)}
       </Text>
       <Group justify="flex-end">
-        <LikeButton />
+        <LikeButton likes={45} />
       </Group>
     </Card>
   );
