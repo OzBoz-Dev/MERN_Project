@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:mern_mobile_app/providers/navigation_provider.dart';
 import 'package:mern_mobile_app/themes/styles.dart';
-import 'package:mern_mobile_app/pages/feed/feed_page.dart';
+import 'package:mern_mobile_app/widgets/nav_bar.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NavigationProvider())
+      ],
+      child: MainApp(),
+    )
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -14,7 +23,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
-      home: FeedPage()
+      home: NavBar(),
     );
   }
 }
