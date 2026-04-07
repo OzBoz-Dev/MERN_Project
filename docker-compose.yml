@@ -35,6 +35,8 @@ services:
       - MONGO_URI=mongodb://db:27017/finder_db # It's local!
       - JWT_SECRET=change_this_to_a_real_secret_in_production
       - JWT_EXPIRES_IN=7d
+      - EMAIL_USER=email@gmail.com
+      - EMAIL_PASS=email password # not your real password
     networks:
       - mern_net
   db:
