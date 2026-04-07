@@ -36,11 +36,11 @@ router.get('/verify/:token', async (req, res) => {
 // auth signup 
 router.post('/signup', async (req, res) => {
     try {
-        const { username, email, password } = req.body
+        const { username, email, password, firstName, lastName } = req.body
 
         // check for any missing fields
-        if (!username || !email || !password) {
-            return res.status(400).json({ error: 'Please provide username, email, and password' })
+        if (!username || !email || !password || !firstName || !lastName) {
+            return res.status(400).json({ error: 'Please provide username, email, first name, last name and password' })
         }
 
         // check if user exists
@@ -117,6 +117,8 @@ router.post('/login', async (req, res) => {
                 id: user._id,
                 username: user.username,
                 email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName
             },
         })
     } catch (err) {

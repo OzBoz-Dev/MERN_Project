@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
+import "@mantine/tiptap/styles.css";
 import {
   ColorSchemeScript,
   MantineProvider,
@@ -46,7 +47,8 @@ export default function RootLayout({
           <header>
             <NavTabs />
           </header>
-          <main>{children}</main>
+          <main>{children}
+          </main>
         </MantineProvider>
       </body>
     </html>

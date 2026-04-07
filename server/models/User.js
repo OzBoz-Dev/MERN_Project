@@ -33,6 +33,20 @@ const userSchema = new mongoose.Schema(
             type: String,
             select: false
         },
+        firstName: {
+            type: String,
+            required: [true, 'First Name is required']
+        },
+        lastName: {
+            type: String,
+            required: [true, 'Last Name is required']
+        },
+        bio: {
+            type: String
+        },
+        profilePicture: {
+            type: String
+        }
     },
     { timestamps: true }
 )
