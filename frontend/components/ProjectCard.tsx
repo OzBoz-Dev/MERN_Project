@@ -5,29 +5,26 @@ import TagHolder from "./TagHolder";
 import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
 import ReadFullPostButton from "./ReadFullPostButton";
+import TimeAgoClient from "./TimeAgoClient";
 
 type Props = {
   id: string;
-  postTitle: string;
-  user: string;
-  postTags: string[];
-  description: string;
-  timeAgo: string;
-};
-type FeedProps = {
-  dataLength: number;
-  hasMore: boolean;
-  loader?: object;
-  endMessage?: object;
+  title: string;
+  body: string;
+  author: string;
+  likes: number;
+  tags: string[];
+  datePosted: Date;
 };
 
 export default function ProjectCard({
   id,
-  postTitle,
-  user,
-  postTags,
-  description,
-  timeAgo,
+  title,
+  body,
+  author,
+  likes,
+  tags,
+  datePosted,
 }: Props) {
   return (
     <div
@@ -48,7 +45,7 @@ export default function ProjectCard({
           alignItems: "center",
         }}
       >
-        <h2>{postTitle}</h2>
+        <h2>{title}</h2>
         <BookmarkButton />
       </div>
 
@@ -59,7 +56,7 @@ export default function ProjectCard({
           marginBottom: "8px",
         }}
       >
-        Posted by {user} &middot; {timeAgo}
+        Posted by {author} &middot; {<TimeAgoClient date={datePosted} />}
       </div>
 
       <div
@@ -73,8 +70,8 @@ export default function ProjectCard({
       >
         <IconUser size="20px" /> Looking for:
       </div>
-      <TagHolder tags={postTags} />
-      <p style={{ margin: "0 0 12px", color: "#555" }}>{description}</p>
+      <TagHolder tags={tags} />
+      <p style={{ margin: "0 0 12px", color: "#555" }}>{body}</p>
       <div
         style={{
           display: "flex",
@@ -89,11 +86,4 @@ export default function ProjectCard({
       </div>
     </div>
   );
-}
-export const defaultProps: FeedProps = {
-  dataLength: 20,
-  hasMore: true,
-  endMessage: <p style={{ textAlign: "center"}}>
-    <b>Yay! you have seen it all</b>
-  </p>
 }
