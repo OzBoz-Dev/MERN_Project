@@ -26,10 +26,12 @@ const userSchema = new mongoose.Schema(
             select: false,
         },
         firstName: {
-            type: String
+            type: String,
+            required: [true, 'First Name is required']
         },
         lastName: {
-            type: String
+            type: String,
+            required: [true, 'Last Name is required']
         },
         bio: {
             type: String

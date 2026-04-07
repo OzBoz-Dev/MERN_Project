@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Box, Title, Paper, Button, Alert, Text } from '@mantine/core';
+import { Container, Box, Title, Paper, Button, Alert, Text, Group } from '@mantine/core';
 import { useState } from 'react';
 import { designTokens } from '../GlobalTheme';
 import { PasswordStrength } from './PasswordStrength';
@@ -17,6 +17,8 @@ export default function Auth() {
   const[email, setEmail] = useState('');
   const[password, setPassword] = useState('');
   const[username, setUsername] = useState('');
+  const[firstName, setFirstName] = useState('');
+  const[lastName, setLastName] = useState('');
 
   // Validation states
   const [emailValid, setEmailValid] = useState(false);
@@ -25,7 +27,7 @@ export default function Auth() {
   const canSubmit =
   type === 'Log In'
     ? emailValid && password.trim().length > 0
-    : emailValid && passwordValid && username.trim().length > 0;
+    : emailValid && passwordValid && username.trim().length > 0 && lastName.trim().length > 0 && firstName.trim().length > 0;
 
   // UI States
   const [loading, setLoading] = useState(false);
@@ -35,11 +37,11 @@ export default function Auth() {
   const [submittedEmail, setSubmittedEmail] = useState('');
 
   // API Helpers
-  async function apiSignup(email: string, password: string, username: string) {
+  async function apiSignup(email: string, password: string, username: string, firstName: string, lastName: string) {
     const resp = await fetch(API_ENTRYPOINT+'/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
+      body: JSON.stringify({ username, email, password, firstName, lastName }),
   });
   const data = await resp.json();
   if (!resp.ok) throw new Error(data.error);
@@ -65,7 +67,7 @@ export default function Auth() {
 
     try {
       if (type === 'Sign Up') {
-        await apiSignup(email, password, username);
+        await apiSignup(email, password, username, firstName, lastName);
         setSuccess('Signup Submitted!');
         setSubmittedEmail(email);
         setVerificationSent(true);
@@ -73,6 +75,7 @@ export default function Auth() {
         const data = await apiLogin(email, password);
         // Store token
         localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
         setSuccess(`Welcome back, ${data.user.username}!`);
         location.assign('/feed');
       }
@@ -145,6 +148,25 @@ export default function Auth() {
             value = {username}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
             />
+          ) : (<></>)}
+        </div>
+        { /* First and Last Name Field */ }
+        <div style={{ marginTop: '15px' }}>
+          {type !== 'Log In' ? (
+          <Group justify='flex-end'>
+            <FloatingLabelInput
+              label="First Name"
+              type="firstName"
+              value = {firstName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
+              />
+            <FloatingLabelInput
+              label="Last Name"
+              type="lastName"
+              value = {lastName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
+              />
+          </Group>
           ) : (<></>)}
         </div>
         {/* Password Field */}
