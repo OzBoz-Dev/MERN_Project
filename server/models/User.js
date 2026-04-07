@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
             lowercase: true,
-            match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
+            match: [/^\S+@\S+\.\S+$/, 'Ensure provided email is valid'],
         },
         password: {
             type: String,
@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema(
             minlength: [6, 'Password must be at least 6 characters'],
             select: false,
         },
+        tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
     },
     { timestamps: true }
 )
