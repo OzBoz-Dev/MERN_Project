@@ -26,6 +26,18 @@ router.post('/', async (req, res) => {
   }
 });
 
+// get number of likes for a comment
+router.get('/likes/:_id', async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params._id);
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+    res.json({ likesCount: comment.likes.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // view a comment by id
 router.get('/:_id', async (req, res) => {
   try {
@@ -88,7 +100,7 @@ router.delete('/:_id', auth, async (req, res) => {
 });
 
 // like a comment by id
-router.post('/like/:_id', auth, async (req, res) => {
+router.post('/likes/:_id', auth, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params._id);
     if (!comment) return res.status(404).json({ error: 'Comment not found' });

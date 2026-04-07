@@ -51,19 +51,24 @@ router.post('/signup', async (req, res) => {
         }
 
         const verificationToken = crypto.randomBytes(32).toString('hex')
-
+        
         // create user
         const user = await User.create({ username, email, password, verificationToken })
-        
+
         // should get token after email verification
         // const token = generateToken(user._id)
 
-        await sendVerificationEmail(email, verificationToken)
+        try {
+            await sendVerificationEmail(email, verificationToken)
+        } catch (emailErr) {
+            await User.findByIdAndDelete(user._id)
+            return res.status(500).json({ error: 'failed to send verification email. try again.' })
+        }
 
         res.status(201).json({
             // token,
             // user: {
-            //     id: user._id,
+            //     id: user._id,    
             //     username: user.username,
             //     email: user.email,
             // },
