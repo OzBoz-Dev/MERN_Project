@@ -49,17 +49,21 @@ class _NavBarState extends State<NavBar> {
         destinations: [
           NavigationDestination(
             icon: Icon(TablerIcons.home),
+            selectedIcon: Icon(TablerIcons.home, color: Colors.white,),
             label: "Feed"
           ),
           NavigationDestination(
             icon: Icon(TablerIcons.code),
+            selectedIcon: Icon(TablerIcons.code, color: Colors.white,),
             label: "My Projects"
           ),
           NavigationDestination(
             icon: Icon(TablerIcons.message),
+            selectedIcon: Icon(TablerIcons.message, color: Colors.white,),
             label: "Messages"
           ),
         ],
+        
       ),
       body: PageView(
         controller: navProvider.controller,

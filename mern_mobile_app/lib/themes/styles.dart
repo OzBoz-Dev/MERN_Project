@@ -51,6 +51,16 @@ ThemeData lightTheme = ThemeData(
         borderRadius: BorderRadius.circular(6)
       )),
     ),
+  ),
+  navigationBarTheme: NavigationBarThemeData(
+    indicatorColor: Color(0xFFFFA500),
+    indicatorShape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(6)
+    ),
+    surfaceTintColor: Colors.transparent,
+    overlayColor: WidgetStatePropertyAll(
+      Color(0xFFFFA500).withAlpha(50)
+    )
   )
 );
 
