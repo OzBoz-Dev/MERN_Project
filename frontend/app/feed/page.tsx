@@ -1,5 +1,7 @@
+import CreateProjectButton from "@/components/CreateProjectButton";
 import FeedClient from "@/components/FeedClient";
 import { Post } from "@/types/Post";
+import { Flex } from "@mantine/core";
 import { ObjectId } from "mongodb";
 
 export default async function Feed() {
@@ -23,7 +25,8 @@ export default async function Feed() {
   }));
 
   return (
-    <div
+    <Flex
+      direction={"column"}
       style={{
         width: "100%",
         maxWidth: "1000px",
@@ -34,6 +37,9 @@ export default async function Feed() {
     >
       {/* Use FeedClient, giving it the fetched initial posts */}
       <FeedClient initialPosts={initialPosts} />
-    </div>
+      <Flex justify={"flex-end"}>
+        <CreateProjectButton />
+      </Flex>
+    </Flex>
   );
 }
