@@ -52,7 +52,11 @@ export default function ProfileInfoCard({
           margin: "0 auto",
         }}
         color="white"
-      >JD</Avatar>
+      >
+        {firstName && lastName
+          ? `${firstName.charAt(0)}${lastName.charAt(0)}`
+          : "UN"}
+      </Avatar>
 
       {/* User Name */}
       <Text

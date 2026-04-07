@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -11,16 +11,28 @@ import {
   Button,
   Paper,
   Flex,
+  LoadingOverlay,
+  Loader,
 } from "@mantine/core";
 import ProfileInfoCard from "@/app/profile/ProfileInfoCard";
 import EditProfileModal from "@/app/profile/EditProfileModal";
 import ProfileActions from "@/app/profile/ProfileActions";
 import { designTokens } from "../../GlobalTheme";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { API_ENTRYPOINT } from "@/app/page";
 
-async function getProfile(username: string){
-  const res = await fetch(API_ENTRYPOINT+'/user')
+async function getProfile(username: any){
+  console.log(username)
+  const res = await fetch(API_ENTRYPOINT+'/profile/' + username, {
+    cache: 'no-store'
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    throw new Error('Failed to fetch user');
+  }
+
+  return await res.json();
 }
 
 const mockUpdateProfile = async (data: any) => {
@@ -36,12 +48,20 @@ export default function ProfilePage() {
   const [profileData, setProfileData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMe, setIsMe] = useState(true);
+  const { username } = useParams();
 
   // Fetch profile data on mount
-  useState(() => {
+  useEffect(() => {
     const fetchProfile = async () => {
+      if (!username) return;
       try {
-        const data = await getProfile('z');
+        setIsLoading(true);
+        const data = await getProfile(username);
+
+        if (!data) {
+          window.location.href = '/not-found';
+          return;
+        }
         setProfileData(data);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -49,9 +69,8 @@ export default function ProfilePage() {
         setIsLoading(false);
       }
     };
-
     fetchProfile();
-  });
+  }, [username]);
 
   // Handle profile save
   const handleSaveProfile = async (data: any) => {
@@ -93,18 +112,20 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <Container size="sm" py="xl">
+      <div className="animated-grid">
+      <Container size="lg" py="xl">
         <Center>
-          <Text>Loading profile...</Text>
+          <Loader></Loader>
         </Center>
       </Container>
+      </div>
     );
   }
 
   return (
     <div className="animated-grid">
-    <Container size="sm" py="xl">
-      <Paper withBorder p="lg" radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
+    <Container size='xl' py="xl">
+      <Paper withBorder p="lg" miw={500} radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
         <Flex direction="column" justify="flex-end" p="sm">
           {isMe? (
           <ProfileActions
