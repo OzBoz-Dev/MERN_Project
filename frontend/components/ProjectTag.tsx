@@ -1,11 +1,18 @@
 import { designTokens } from "@/app/GlobalTheme";
-import { Button } from "@mantine/core";
+import { ActionIcon, Badge, Button, Chip } from "@mantine/core";
+import { IconX } from "@tabler/icons-react";
 
-export default function ProjectTag({tag}: {tag: string}) {
+
+type ProjectTagProp = {
+  tag: string,
+  isRemovable?: boolean
+  onRemove?: () => void
+}
+export default function ProjectTag({tag, isRemovable, onRemove}: ProjectTagProp) {
   return (
     <Button 
     variant="light"
-    size='xs'
+    size='s'
       style={{
         background: designTokens.colors.tagBackground,
         color: designTokens.colors.tagText,
@@ -13,9 +20,16 @@ export default function ProjectTag({tag}: {tag: string}) {
         borderRadius: designTokens.borderRadius.tag,
         fontSize: designTokens.fonts.fontSizeTag,
         marginRight: designTokens.spacing.tagMarginRight,
-        cursor:"pointer"
+        cursor:"pointer",
+        display:"inline-flex",
+        alignItems: "center",
       }}
-      onClick={() => console.log(`tag pressed ${tag}`)}
+      onClick={isRemovable ? (e => {
+          e.stopPropagation(); // prevents parent on click
+          onRemove && onRemove();
+        }
+      ) : undefined}
+      
     >
       {tag}
     </Button>

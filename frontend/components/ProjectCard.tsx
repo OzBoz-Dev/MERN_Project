@@ -17,6 +17,7 @@ type Props = {
   datePosted: Date;
 };
 
+
 export default function ProjectCard({
   id,
   title,
