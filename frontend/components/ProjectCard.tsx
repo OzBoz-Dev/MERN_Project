@@ -82,7 +82,7 @@ export default function ProjectCard({
       >
         <ReadFullPostButton id={id} />
         <MessageButton />
-        <LikeButton />
+        <LikeButton likes={likes} />
       </div>
     </div>
   );
