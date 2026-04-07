@@ -14,12 +14,14 @@ const commentsRouter = require("./routes/comments");
 const conversationRouter = require("./routes/conversations");
 const messageRouter = require("./routes/messages");
 const authRoutes = require("./routes/auth");
+const profileRouter = require("./routes/profile");
 
 
 app.use("/auth", authRoutes);
 app.use("/comments", commentsRouter);
 app.use("/conversations", conversationRouter);
 app.use("/messages", messageRouter);
+app.use("/profile", profileRouter);
 
 // Test route
 app.get("/", async (req, res) => {

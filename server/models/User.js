@@ -25,6 +25,20 @@ const userSchema = new mongoose.Schema(
             minlength: [6, 'Password must be at least 6 characters'],
             select: false,
         },
+        firstName: {
+            type: String,
+            required: [true, 'First Name is required']
+        },
+        lastName: {
+            type: String,
+            required: [true, 'Last Name is required']
+        },
+        bio: {
+            type: String
+        },
+        profilePicture: {
+            type: String
+        }
     },
     { timestamps: true }
 )
