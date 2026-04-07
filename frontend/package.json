@@ -10,8 +10,9 @@
   },
   "dependencies": {
     "@mantine/core": "^8.3.18",
+    "@mantine/dates": "^8.3.18",
     "@mantine/hooks": "^8.3.18",
-    "@mantine/tiptap": "^9.0.1",
+    "@mantine/tiptap": "^8.3.18",
     "@mantinex/mantine-logo": "^2.0.0",
     "@tabler/icons-react": "^3.40.0",
     "@tiptap/extension-link": "^3.22.2",
