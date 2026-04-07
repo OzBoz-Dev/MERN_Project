@@ -2,6 +2,7 @@ import { designTokens } from "@/app/GlobalTheme"
 import { useState } from "react";
 import TagBox from "./TagBox";
 import ProjectTag from "./ProjectTag";
+import DatePostedBox from "./DatePostedBox";
 
 export default function AdvancedSettings() {
     const [tags, setTags] = useState<string[]>([]);
@@ -55,10 +56,13 @@ export default function AdvancedSettings() {
                     </div>
                 </div>
 
-
-                <h2>
-                    Date Posted
-                </h2>
+                <div>
+                    <h2>
+                        Date Posted
+                    </h2>
+                    <DatePostedBox/>
+                </div>
+                
             </div>
 
         </div>
