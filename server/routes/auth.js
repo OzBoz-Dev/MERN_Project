@@ -53,7 +53,7 @@ router.post('/signup', async (req, res) => {
         const verificationToken = crypto.randomBytes(32).toString('hex')
         
         // create user
-        const user = await User.create({ username, email, password, verificationToken })
+        const user = await User.create({ username, email, password, firstName, lastName, verificationToken })
 
         // should get token after email verification
         // const token = generateToken(user._id)
@@ -84,6 +84,41 @@ router.post('/signup', async (req, res) => {
         res.status(500).json({ error: 'Server error' })
     }
 })
+
+router.post('/resend-verification', async (req, res) => {
+    try {
+        const { email } = req.body
+
+        if (!email) {
+            return res.status(400).json({ error: 'Please provide an email' })
+        }
+
+        const user = await User.findOne({ email })
+
+        if (!user) {
+            return res.status(404).json({ error: 'No account found with that email' })
+        }
+
+        if (user.verified) {
+            return res.status(400).json({ error: 'This account is already verified' })
+        }
+
+        user.verificationToken = crypto.randomBytes(32).toString('hex')
+        await user.save()
+
+        try {
+            await sendVerificationEmail(email, user.verificationToken)
+        } catch (emailErr) {
+            return res.status(500).json({ error: 'Failed to send verification email. Try again.' })
+        }
+
+        res.status(200).json({ message: 'Verification email resent. Check your inbox.' })
+    } catch (err) {
+        console.error('Resend verification error:', err)
+        res.status(500).json({ error: 'Server error' })
+    }
+})
+
 
 // auth login
 router.post('/login', async (req, res) => {
@@ -139,6 +174,8 @@ router.get('/me', auth, async (req, res) => {
                 id: user._id,
                 username: user.username,
                 email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName
             },
         })
     } catch (err) {
