@@ -1,3 +1,4 @@
+"use client";
 import { ActionIcon, Button, TextInput } from "@mantine/core";
 import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState } from "react";

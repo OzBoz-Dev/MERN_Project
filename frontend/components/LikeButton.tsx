@@ -46,7 +46,11 @@ export default function LikeButton({ postId, commentId, likes }: Props) {
         )}
       </Button>
       <Text size="xs" c={designTokens.colors.textMuted}>
-        {likeCount}
+        {/* Format 1000 to 1k, 10000 to 1M, etc */}
+        {new Intl.NumberFormat('en', {
+          notation: 'compact',
+          compactDisplay: 'short'
+        }).format(likeCount)}
       </Text>
     </Flex>
   );

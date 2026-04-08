@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import UserAvatar from "./UserAvatar";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { designTokens, theme } from "@/app/GlobalTheme";
 
 export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
@@ -73,7 +74,7 @@ export function NavTabs() {
 
   return (
     // Space between to separate tabs and profile
-    <Flex justify={"space-between"} px={10} py={10}>
+    <Flex justify={"space-between"} px={10} py={10} w="100%" style={{ position: "fixed", zIndex: 1500, backgroundColor: theme.white}}>
       {/* Main navigation tabs */}
       <Flex gap="lg">
         {/* Logo */}

@@ -1,5 +1,6 @@
 import CreateProjectButton from "@/components/CreateProjectButton";
 import FeedClient from "@/components/FeedClient";
+import SearchBar from "@/components/SearchBar";
 import { Post } from "@/types/Post";
 import { Flex } from "@mantine/core";
 import { ObjectId } from "mongodb";
@@ -7,7 +8,6 @@ import { ObjectId } from "mongodb";
 export default async function Feed() {
   // Fetch posts here via endpoint
   // Todo: Fetch initial posts
-
   // Mock data for now (just one initial post)
   const mockPost: Post = {
     id: "69b07c3d754d16127d7fc4e7",
@@ -18,7 +18,7 @@ export default async function Feed() {
     likes: 14,
     datePosted: new ObjectId("69b07c3d754d16127d7fc4e7").getTimestamp(), // Extract timestamp
   };
-
+  const searchBar = <SearchBar/>
   // 20 of mockPost
   const initialPosts: Post[] = Array.from({ length: 20 }, () => ({
     ...mockPost,
@@ -35,6 +35,7 @@ export default async function Feed() {
         alignContent: "center",
       }}
     >
+      {searchBar}
       {/* Use FeedClient, giving it the fetched initial posts */}
       <FeedClient initialPosts={initialPosts} />
       <Flex justify={"flex-end"}>

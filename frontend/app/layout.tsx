@@ -47,7 +47,8 @@ export default function RootLayout({
           <header>
             <NavTabs />
           </header>
-          <main>{children}
+          <main style={{ paddingTop: 60 }}>
+            {children}
           </main>
         </MantineProvider>
       </body>

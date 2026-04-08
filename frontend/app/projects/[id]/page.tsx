@@ -55,7 +55,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
         <Group justify="flex-end" gap="16px">
           <MessageButton />
-          <LikeButton />
+          <LikeButton likes={0} />
         </Group>
       </Stack>
       <Divider my="xl" w={"100%"} />
