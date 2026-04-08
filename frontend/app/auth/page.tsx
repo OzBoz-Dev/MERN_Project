@@ -112,7 +112,7 @@ export default function Auth() {
     <Paper
       withBorder
       p="xl"
-      w='40vw'
+      w="40vw"
       radius="md"
       className="glass-card"
       shadow="md"
@@ -203,7 +203,7 @@ export default function Auth() {
         )}
         {/* First and Last Name Field */}
         {type !== "Log In" ? (
-          <Group justify="space-between">
+          <Group grow>
             <FloatingLabelInput
               label="First Name"
               type="firstName"
