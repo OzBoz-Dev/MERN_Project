@@ -16,7 +16,7 @@ export function ForgotPasswordInput( { value, onChange } : PasswordInputProps ) 
           onChange={onChange}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          mt="xl"
+          mt="md"
           autoComplete="nope"
           data-floating={floating}
           labelProps={{ 'data-floating': floating }}

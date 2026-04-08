@@ -9,6 +9,7 @@ import {
   Alert,
   Text,
   Group,
+  Stack,
 } from "@mantine/core";
 import { useState } from "react";
 import { designTokens } from "../GlobalTheme";
@@ -110,7 +111,8 @@ export default function Auth() {
   const authCard = (
     <Paper
       withBorder
-      p="lg"
+      p="xl"
+      w='40vw'
       radius="md"
       className="glass-card"
       shadow="md"
@@ -139,7 +141,7 @@ export default function Auth() {
       >
         {type === "Log In" ? "Welcome Back" : "Create Account"}
       </Title>
-      <Box maw={400} mx="auto" pl={100} pr={100}>
+      <Stack justify="flex-start">
         {/* Success message */}
         {success && (
           <Alert
@@ -165,89 +167,80 @@ export default function Auth() {
           </Alert>
         )}
         {/* Email Field */}
-        <div style={{ marginBottom: "10px" }}>
-          {type === "Log In" ? (
-            <InputValidation
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setEmail(e.target.value)
-              }
-              onValidChange={setEmailValid}
-            />
-          ) : (
-            <InputValidation
-              value={email}
-              label="Email"
-              type="email"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setEmail(e.target.value)
-              }
-              onValidChange={setEmailValid}
-            />
-          )}
-        </div>
+        {type === "Log In" ? (
+          <InputValidation
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
+            onValidChange={setEmailValid}
+          />
+        ) : (
+          <InputValidation
+            value={email}
+            label="Email"
+            type="email"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
+            onValidChange={setEmailValid}
+          />
+        )}
         {/* Username Field */}
-        <div style={{ marginTop: "32px" }}>
-          {type !== "Log In" ? (
-            <FloatingLabelInput
-              label="Username"
-              type="username"
-              value={username}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setUsername(e.target.value)
-              }
-            />
-          ) : (
-            <></>
-          )}
-        </div>
+        {type !== "Log In" ? (
+          <FloatingLabelInput
+            label="Username"
+            type="username"
+            value={username}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setUsername(e.target.value)
+            }
+          />
+        ) : (
+          <></>
+        )}
         {/* First and Last Name Field */}
-        <div style={{ marginTop: "15px" }}>
-          {type !== "Log In" ? (
-            <Group justify="flex-end">
-              <FloatingLabelInput
-                label="First Name"
-                type="firstName"
-                value={firstName}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setFirstName(e.target.value)
-                }
-              />
-              <FloatingLabelInput
-                label="Last Name"
-                type="lastName"
-                value={lastName}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setLastName(e.target.value)
-                }
-              />
-            </Group>
-          ) : (
-            <></>
-          )}
-        </div>
+        {type !== "Log In" ? (
+          <Group justify="space-between">
+            <FloatingLabelInput
+              label="First Name"
+              type="firstName"
+              value={firstName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setFirstName(e.target.value)
+              }
+            />
+            <FloatingLabelInput
+              label="Last Name"
+              type="lastName"
+              value={lastName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setLastName(e.target.value)
+              }
+            />
+          </Group>
+        ) : (
+          <></>
+        )}
         {/* Password Field */}
-        <div style={{ marginBottom: "20px" }}>
-          {type === "Log In" ? (
-            <ForgotPasswordInput
-              value={password}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPassword(e.target.value)
-              }
-            />
-          ) : (
-            <PasswordStrength
-              value={password}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPassword(e.target.value)
-              }
-              onValidChange={setPasswordValid}
-            />
-          )}
-        </div>
-
+        {type === "Log In" ? (
+          <ForgotPasswordInput
+            value={password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPassword(e.target.value)
+            }
+          />
+        ) : (
+          <PasswordStrength
+            value={password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPassword(e.target.value)
+            }
+            onValidChange={setPasswordValid}
+          />
+        )}
         <Box mt="md">
           <Button
             variant="filled"
@@ -260,7 +253,7 @@ export default function Auth() {
             {type === "Log In" ? "Sign In" : "Create Account"}
           </Button>
         </Box>
-      </Box>
+      </Stack>
     </Paper>
   );
 
@@ -304,7 +297,7 @@ export default function Auth() {
   return (
     <main>
       <div style={{}} className="animated-grid">
-        <Container size="md" my="xl">
+        <Container size="md" my="xl" p="xl">
           {verificationSent ? verifyCard : authCard}
         </Container>
       </div>

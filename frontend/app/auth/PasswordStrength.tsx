@@ -83,7 +83,7 @@ export function PasswordStrength( { value, onChange, onValidChange } : PasswordS
         classNames={input}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        mt="xl"
+        mt="md"
         autoComplete="nope"
         data-floating={floating}
         labelProps={{ 'data-floating': floating }}
