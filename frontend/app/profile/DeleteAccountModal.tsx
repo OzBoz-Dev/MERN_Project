@@ -9,6 +9,8 @@ interface DeleteAccountModalProps {
   onPasswordChange: (val: string) => void;
   error: string | null;
   onErrorClose: () => void;
+  success: string | null;
+  onSuccessClose: () => void;
 }
 
 export default function DeleteAccountModal({
@@ -20,6 +22,8 @@ export default function DeleteAccountModal({
   onPasswordChange,
   error,
   onErrorClose,
+  success,
+  onSuccessClose,
 }: DeleteAccountModalProps) {
   return (
     <Modal 
@@ -35,6 +39,12 @@ export default function DeleteAccountModal({
           onConfirm();
         }}
       >
+        {success && (
+          <Alert color="green" mb="md" radius="md" withCloseButton onClose={onSuccessClose}>
+            {success}
+          </Alert>
+        )}
+
         {error && (
           <Alert
             color="red"

@@ -60,14 +60,15 @@ async function saveProfile(username: string, data: any){
 }
 
 async function deleteAccount(username: string, password: string){
+  const token = localStorage.getItem('token');
   const res = await fetch(API_ENTRYPOINT+'/profile/'+username, {
     method: 'DELETE',
     headers: {
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      token: localStorage.getItem('token'),
-      password
+      password: password
     })
   });
 
@@ -103,7 +104,7 @@ export default function ProfilePage() {
           return;
         }
         setProfileData(data);
-        if (username == localStorage.getItem('username')) setIsMe(true);
+        if (data.username == localStorage.getItem('username')) setIsMe(true);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       } finally {
@@ -173,12 +174,8 @@ export default function ProfilePage() {
     } catch (error: any) {
       setDeleteError(error.message || "Failed to delete account");
     } finally {
-      setIsDeleting(false);
       setDeletePassword("");
-      // Keep modal open to show success/error message
-      if (deleteSuccess || deleteError) {
-        setDeleteModalOpen(false);
-      }
+      setIsDeleting(false);
     }
   };
 
@@ -244,6 +241,8 @@ export default function ProfilePage() {
           onPasswordChange={setDeletePassword}
           error={deleteError}
           onErrorClose={() => setDeleteError(null)}
+          success={deleteSuccess}
+          onSuccessClose={() => setDeleteSuccess(null)}
         />
       </Paper>
     </Container>
