@@ -53,7 +53,7 @@ router.post('/signup', async (req, res) => {
         const verificationToken = crypto.randomBytes(32).toString('hex')
         
         // create user
-        const user = await User.create({ username, email, password, verificationToken })
+        const user = await User.create({ username, email, password, verificationToken, firstName, lastName })
 
         // should get token after email verification
         // const token = generateToken(user._id)

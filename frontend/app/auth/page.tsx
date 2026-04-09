@@ -96,8 +96,8 @@ export default function Auth() {
         // Store token
         localStorage.setItem("token", data.token);
         localStorage.setItem("username", data.user.username);
-        localStorage.setItem("firstName", firstName);
-        localStorage.setItem("lastName", lastName);
+        localStorage.setItem("firstName", data.user.firstName);
+        localStorage.setItem("lastName", data.user.lastName);
         setSuccess(`Welcome back, ${data.user.username}!`);
         location.assign("/feed");
       }
