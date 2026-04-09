@@ -96,8 +96,8 @@ export default function Auth() {
         // Store token
         localStorage.setItem("token", data.token);
         localStorage.setItem("username", data.user.username);
-        localStorage.setItem("firstName", firstName);
-        localStorage.setItem("lastName", lastName);
+        localStorage.setItem("firstName", data.user.firstName);
+        localStorage.setItem("lastName", data.user.lastName);
         setSuccess(`Welcome back, ${data.user.username}!`);
         location.assign("/feed");
       }
@@ -112,7 +112,7 @@ export default function Auth() {
     <Paper
       withBorder
       p="xl"
-      w='40vw'
+      w="40vw"
       radius="md"
       className="glass-card"
       shadow="md"
@@ -203,7 +203,7 @@ export default function Auth() {
         )}
         {/* First and Last Name Field */}
         {type !== "Log In" ? (
-          <Group justify="space-between">
+          <Group grow>
             <FloatingLabelInput
               label="First Name"
               type="firstName"

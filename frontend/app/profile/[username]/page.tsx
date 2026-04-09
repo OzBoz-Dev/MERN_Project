@@ -13,10 +13,14 @@ import {
   Flex,
   LoadingOverlay,
   Loader,
+  Modal,
+  TextInput,
+  Alert,
 } from "@mantine/core";
 import ProfileInfoCard from "@/app/profile/ProfileInfoCard";
 import EditProfileModal from "@/app/profile/EditProfileModal";
 import ProfileActions from "@/app/profile/ProfileActions";
+import DeleteAccountModal from "../DeleteAccountModal";
 import { designTokens } from "../../GlobalTheme";
 import { notFound, useParams } from "next/navigation";
 import { API_ENTRYPOINT } from '@/constants/constants'
@@ -55,11 +59,37 @@ async function saveProfile(username: string, data: any){
   return await res.json();
 }
 
+async function deleteAccount(username: string, password: string){
+  const token = localStorage.getItem('token');
+  const res = await fetch(API_ENTRYPOINT+'/profile/'+username, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      password: password
+    })
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || 'Failed to delete account!' + res.status);
+  }
+
+  return await res.json();
+}
+
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMe, setIsMe] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const { username } = useParams();
 
   // Fetch profile data on mount
@@ -74,7 +104,7 @@ export default function ProfilePage() {
           return;
         }
         setProfileData(data);
-        if (username == localStorage.getItem('username')) setIsMe(true);
+        if (data.username == localStorage.getItem('username')) setIsMe(true);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       } finally {
@@ -112,21 +142,49 @@ export default function ProfilePage() {
   };
 
   // Handle delete account
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      // TODO: Implement soft delete API call
-      console.log("Account deletion requested");
-      // For now, just show success message
-      alert("Account deletion request sent. Check console for details.");
+      setDeleteModalOpen(true);
     }
   };
 
-  // Auto-open edit modal if firstName/lastName missing
-  const handleAutoEdit = () => {
-    if (profileData?.firstName && profileData?.lastName) {
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    if (!deletePassword) {
+      setDeleteError("Please enter your password");
       return;
     }
-    setIsEditing(true);
+
+    try {
+      setDeleteError(null);
+      setDeleteSuccess(null);
+      setIsDeleting(true);
+      
+      const updatedUser = await deleteAccount(username as string, deletePassword);
+      
+      if (updatedUser) {
+        setDeleteSuccess("Account deleted successfully!");
+        localStorage.clear();
+        
+        // Wait briefly to show success message before redirecting
+        setTimeout(() => {
+          window.location.href = "/auth";
+        }, 2000);
+      }
+    } catch (error: any) {
+      setDeleteError(error.message || "Failed to delete account");
+    } finally {
+      setDeletePassword("");
+      setIsDeleting(false);
+    }
+  };
+
+  // Handle delete modal close
+  const handleDeleteClose = () => {
+    setDeletePassword("");
+    setDeleteError(null);
+    setDeleteSuccess(null);
+    setDeleteModalOpen(false);
   };
 
   if (isLoading) {
@@ -169,7 +227,23 @@ export default function ProfilePage() {
         onClose={() => setIsEditing(false)}
         onSave={handleSaveProfile}
         initialData={profileData}
+        onOpenDelete={() => {
+          setIsEditing(false);
+          setDeleteModalOpen(true);
+        }}
       />
+      <DeleteAccountModal
+          opened={deleteModalOpen}
+          onClose={handleDeleteClose}
+          onConfirm={handleDeleteConfirm}
+          loading={isDeleting}
+          passwordValue={deletePassword}
+          onPasswordChange={setDeletePassword}
+          error={deleteError}
+          onErrorClose={() => setDeleteError(null)}
+          success={deleteSuccess}
+          onSuccessClose={() => setDeleteSuccess(null)}
+        />
       </Paper>
     </Container>
     </div>

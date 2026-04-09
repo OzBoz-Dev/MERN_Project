@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const User = require('../models/User')
+const User = require('../models/User');
+const auth = require('../middleware/auth');
+const bcrypt = require('bcryptjs')
 
 router.get("/:username", async(req, res) => {
   try {
@@ -12,8 +14,10 @@ router.get("/:username", async(req, res) => {
         }
 
         // find user and select password field
-        const user = await User.findOne({ username }).select('-password -email -token')
-        if (!user) {
+        const user = await User.findOne({ username })
+            .collation({ locale: 'en', strength: 2 })
+            .select('-password -email -token')
+        if (!user || user.username.startsWith('DELETED_USER_')) {
             return res.status(404).json({ error: 'User not found' })
         }
 
@@ -47,12 +51,14 @@ router.put("/:username", async(req, res) => {
             {
                 $set: {
                     firstName, 
-                    lastName, 
+                    lastName,
                     bio
                 }
             },
             { new: true, runValidators: true }
-        ).select('-password -token -email')
+        )
+        .collation({ locale: 'en', strength: 2 })
+        .select('-password -token -email')
         if (!user) {
             return res.status(404).json({ error: 'User not found' })
         }
@@ -65,6 +71,52 @@ router.put("/:username", async(req, res) => {
             profilePicture: user.profilePicture,
             createdAt: user._id.getTimestamp()
         })
+
+    } catch (err) {
+        console.error('Fetch profile error:', err)
+        res.status(500).json({ error: 'Server error' })
+    }
+});
+
+router.delete("/:username", auth, async(req, res) => {
+  try {
+        const { username } = req.params;
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ error: 'Password is required to delete account' })
+        }
+
+        const user = await User.findOne({ username })
+            .collation({ locale: 'en', strength: 2 })
+            .select('+password');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' })
+        }
+
+        if (user._id.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Unauthorized to delete this account' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Invalid password' });
+        }
+        
+        await User.findByIdAndUpdate(user._id, {
+            $set: {
+                username: `DELETED_USER_${user._id}`,
+                email: `DELETED_EMAIL_${user._id}`,
+                firstName: 'DELETED',
+                lastName: 'USER',
+                bio: '',
+                profilePicture: '',
+                tags: [],
+                verified: false
+            }
+        });
+
+        res.json({ message: 'Account deactivated successfully' });
 
     } catch (err) {
         console.error('Fetch profile error:', err)

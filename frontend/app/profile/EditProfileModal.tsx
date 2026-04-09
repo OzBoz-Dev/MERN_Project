@@ -39,10 +39,12 @@ export default function EditProfileModal({
   onClose,
   onSave,
   initialData,
+  onOpenDelete,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
+  onOpenDelete: () => void;
   initialData?: {
     firstName?: string;
     lastName?: string;
@@ -239,7 +241,12 @@ export default function EditProfileModal({
         <Divider my="md" />
 
         {/* Action Buttons */}
-        <Group justify="flex-end" gap="md">
+        <Group justify="space-between" gap="md">
+          <Button 
+            variant="filled" color="red" onClick={onOpenDelete}
+          >
+            Delete Account
+          </Button>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
