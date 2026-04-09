@@ -16,7 +16,7 @@ const messageRouter = require("./routes/messages");
 const authRoutes = require("./routes/auth");
 const tagsRouter = require("./routes/tags");
 const profileRouter = require("./routes/profile");
-
+const postRouter = require("./routes/posts")
 
 app.use("/auth", authRoutes);
 app.use("/comments", commentsRouter);
@@ -24,6 +24,7 @@ app.use("/conversations", conversationRouter);
 app.use("/messages", messageRouter);
 app.use("/tags", tagsRouter);
 app.use("/profile", profileRouter);
+app.use("posts", postRouter);
 
 // Test route
 app.get("/", async (req, res) => {
@@ -42,7 +43,7 @@ app.get("/", async (req, res) => {
 });
 
 // MongoDB connection
-const PORT = 5000;
+const PORT = 5001;
 console.log(process.env.MONGO_URI);
 mongoose
   .connect(process.env.MONGO_URI)
