@@ -1,4 +1,10 @@
 import ConversationCard from "@/components/ConversationCard";
+import { Metadata } from "next";
+
+// Metadata
+export const metadata: Metadata = {
+  title: 'Messages',
+};
 
 export default function MessagesPage() {
   // Mock data for now
