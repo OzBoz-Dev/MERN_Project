@@ -26,7 +26,12 @@ router.get("/post_id", async (req, res) => {
 //reads by title of the post
 router.get("/title", async (req, res) => {
   try {
-    const posts = await Post.find();
+    const query = (req.query.q || "").trim();
+    if(!q) return res.json([]);
+
+    const posts = await Post.find({
+      title: { $regex: query, $options: "i" }
+    });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -36,8 +41,12 @@ router.get("/title", async (req, res) => {
 //reads by body of the post
 router.get("/body", async (req, res) => {
   try {
-    const posts = await Post.find();
-    res.json(posts);
+    const query = (req.query.q || "").trim();
+    if(!q) return res.json([]);
+    
+    const posts = await Post.find({
+      body: { $regex: query, $options: "i" }
+    });    res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
