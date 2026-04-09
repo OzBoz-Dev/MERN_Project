@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./NavTabs.module.css";
-import { Avatar, Box, Flex, Tabs, Text } from "@mantine/core";
+import { Avatar, Box, Flex, Tabs, Text, Tooltip } from "@mantine/core";
 import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import UserAvatar from "./UserAvatar";
@@ -74,7 +74,18 @@ export function NavTabs() {
 
   return (
     // Space between to separate tabs and profile
-    <Flex justify={"space-between"} px={10} py={10} w="100%" style={{ position: "fixed", zIndex: 1500, backgroundColor: theme.white}}>
+    <Flex 
+      justify={"space-between"} 
+      px={10} 
+      // py={10} 
+      pt={10}
+      w="100%" 
+      style={{ 
+        position: "fixed", 
+        zIndex: 1500, 
+        backgroundColor: theme.white, 
+        boxShadow: '0px 1px 5px rgba(0,0,0,0.07)'
+      }}>
       {/* Main navigation tabs */}
       <Flex gap="lg">
         {/* Logo */}
@@ -88,20 +99,20 @@ export function NavTabs() {
           value={activeTab} // use active tab for the current tab value
           variant="unstyled"
         >
-          <Tabs.List>{tabs}</Tabs.List>
+          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'flex-end'}}>{tabs}</Tabs.List>
         </Tabs>
       </Flex>
       <div style={{ flex: 1 }} />
       {/* Profile component */}
       { isMounted && user ? (
+      <Tooltip
+            label="View Profile"
+            zIndex={2000}
+      >
       <Link 
         href={`/profile/${localStorage.getItem('username')}`} 
         style={{ textDecoration: 'none', color: 'inherit' }}
       >
-        <Box 
-          style={{ cursor: 'pointer' }} 
-          title="View Profile"
-        >
           <UserAvatar 
             username={localStorage.getItem('username') as string} 
             firstName={localStorage.getItem('firstName') as string}
@@ -109,8 +120,8 @@ export function NavTabs() {
             radius="xl" 
             size="md"
           />
-        </Box>
       </Link>
+      </Tooltip>
       ) : (
         <></>
       )}
