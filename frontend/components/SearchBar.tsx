@@ -24,6 +24,9 @@ export default function SearchBar() {
             }).then(([titleData, bodyData]) => {
                 setByTitle(titleData);
                 setByBody(bodyData);
+
+                console.log(byTitle);
+                console.log(byBody);
             });
         }
     }, [searchText]);
@@ -38,7 +41,7 @@ export default function SearchBar() {
             placeholder="ML, DevOps"
             leftSection={searchIcon}
             value={searchText}
-            onChange={(e) => setSearchText(e.currentTarget.value)}
+            onBlur={(e) => setSearchText(e.currentTarget.value)}
             />
             <ActionIcon
                 variant="light"

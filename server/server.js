@@ -24,7 +24,7 @@ app.use("/conversations", conversationRouter);
 app.use("/messages", messageRouter);
 app.use("/tags", tagsRouter);
 app.use("/profile", profileRouter);
-app.use("posts", postRouter);
+app.use("/posts", postRouter);
 
 // Test route
 app.get("/", async (req, res) => {
@@ -43,7 +43,7 @@ app.get("/", async (req, res) => {
 });
 
 // MongoDB connection
-const PORT = 5001;
+const PORT = 5000;
 console.log(process.env.MONGO_URI);
 mongoose
   .connect(process.env.MONGO_URI)
