@@ -49,6 +49,8 @@ export default function Auth() {
   const [success, setSuccess] = useState<string | null>(null);
   const [verificationSent, setVerificationSent] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   // API Helpers
   async function apiSignup(
@@ -73,6 +75,17 @@ export default function Auth() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error);
+    return data;
+  }
+
+  async function apiResendVerification(email: string) {
+    const resp = await fetch(API_ENTRYPOINT + "/auth/resend-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error);
@@ -105,6 +118,34 @@ export default function Auth() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Resend Verification Email Handler
+  const handleResendEmail = async () => {
+    setError(null);
+    setSuccess(null);
+    setResendLoading(true);
+
+    try {
+      await apiResendVerification(submittedEmail);
+      setSuccess("Verification email sent!");
+      setResendCooldown(30);
+
+      // Start cooldown countdown
+      const interval = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -281,16 +322,28 @@ export default function Auth() {
         </Text>
         . Click the link in the email to activate your account.
       </Text>
-      <Button
-        variant="subtle"
-        color="orange"
-        fullWidth
-        onClick={() => {
-          location.reload();
-        }}
-      >
-        Back to Log In
-      </Button>
+      <Group justify="space-between">
+        <Button
+          variant="subtle"
+          color="orange"
+          fullWidth
+          loading={resendLoading}
+          disabled={resendCooldown > 0}
+          onClick={handleResendEmail}
+        >
+          {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Email"}
+        </Button>
+        <Button
+          variant="subtle"
+          color="orange"
+          fullWidth
+          onClick={() => {
+            location.reload();
+          }}
+        >
+          Back to Log In
+        </Button>
+      </Group>
     </Paper>
   );
 
