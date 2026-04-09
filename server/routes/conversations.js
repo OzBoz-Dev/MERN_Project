@@ -3,11 +3,12 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
+const auth = require('../middleware/auth')
 
 // to get all conversations
 router.get('/', async (req, res) => {
     try {
-        const conversations = await Conversation.find().populate('member_users').populate('messages');
+        const conversations = await Conversation.find().populate('messages');
         res.json(conversations);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -17,7 +18,7 @@ router.get('/', async (req, res) => {
 // get conversations by id
 router.get('/:_id', async (req, res) => {
     try {
-        const conversation = await Conversation.findById(req.params._id).populate('member_users').populate('messages');
+        const conversation = await Conversation.findById(req.params._id).populate('messages');
 
         if (!conversation) return res.status(404).json({ error: 'Not found' });
 
@@ -27,11 +28,16 @@ router.get('/:_id', async (req, res) => {
     }
 });
 
-
 // create conversation with empty message - you can add messages later with the /:_id/messages route
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
-        const conversation = await Conversation.create(req.body);
+        const { member_usernames } = req.body
+
+        if (!member_usernames || !member_usernames.includes(req.user.username)) {
+            return res.status(400).json({ error: 'member_usernames must include the creating user' })
+        }
+
+        const conversation = await Conversation.create({ member_usernames });
         res.status(201).json(conversation);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -39,56 +45,68 @@ router.post('/', async (req, res) => {
 });
 
 // create messages in a conversation
-router.post('/:_id/messages', async (req, res) => {
+router.post('/:_id/messages', auth, async (req, res) => {
     try {
-        const message = await Message.create(req.body);
-
-        const conversation = await Conversation.findByIdAndUpdate(
-            req.params._id,
-            { $push: { messages: message._id } },
-            { new: true }
-        ).populate('member_users').populate('messages');
-
+        const conversation = await Conversation.findById(req.params._id);
         if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
-      res.status(200).json(message);
+        if (!conversation.member_usernames.includes(req.user.username)) {
+            return res.status(403).json({ error: 'Not a member of this conversation' });
+        }
+
+        const message = await Message.create({
+            ...req.body,
+            author_username: req.user.username,
+        });
+
+        conversation.messages.push(message._id);
+        await conversation.save();
+
+        res.status(201).json(message);
     } catch (err) {
-    res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
 
 // edit a conversation (you can add and remove member_users)
-router.put("/:_id", async (req, res) => {
-  try {
-    const updatedConversation = await Conversation.findByIdAndUpdate(
-      req.params._id,
-      req.body,
-      { new: true }
-    );
+router.put('/:_id', auth, async (req, res) => {
+    try {
+        const conversation = await Conversation.findById(req.params._id);
+        if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
-    if (!updatedConversation) {
-      return res.status(404).json({ error: "Conversation not found" });
+        if (!conversation.member_usernames.includes(req.user.username)) {
+            return res.status(403).json({ error: 'Not a member of this conversation' });
+        }
+
+        const allowedUpdates = ['member_usernames'];
+        allowedUpdates.forEach(field => {
+            if (req.body[field] !== undefined) {
+                conversation[field] = req.body[field];
+            }
+        });
+
+        await conversation.save();
+        res.status(200).json(conversation);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    res.status(200).json(updatedConversation);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
 });
 
 // delete a conversation
-router.delete("/:_id", async (req, res) => {
-  try {
-    const conversation = await Conversation.findByIdAndDelete(req.params._id);
+router.delete('/:_id', auth, async (req, res) => {
+    try {
+        const conversation = await Conversation.findById(req.params._id);
+        if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
-    if (!conversation) {
-      return res.status(404).json({ message: "Conversation not found" });
+        if (!conversation.member_usernames.includes(req.user.username)) {
+            return res.status(403).json({ error: 'Not a member of this conversation' });
+        }
+
+        await conversation.deleteOne();
+        res.status(200).json({ message: 'Conversation deleted successfully.' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    res.status(200).json({ message: "Conversation deleted successfully." });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
 });
 
 module.exports = router;
