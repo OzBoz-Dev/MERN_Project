@@ -7,8 +7,8 @@ const {sendVerificationEmail} = require('../utils/mailer')
 const router = express.Router()
 
 // generate a signed jwt, set to expire in 7 days
-const generateToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+const generateToken = (userId, username) => {
+    return jwt.sign({ id: userId, username }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
     })
 }
@@ -146,7 +146,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' })
         }
 
-        const token = generateToken(user._id)
+        const token = generateToken(user._id, user.username)
 
         res.json({
             token,

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Post = require("../models/Post");
+const auth = require('../middleware/auth')
 
 //reads all the posts
 router.get("/", async (req, res) => {
@@ -12,6 +13,39 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// like a post by id
+router.post('/likes/:_id', auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params._id);
+        if (!post) return res.status(404).json({ error: 'Post not found' });
+
+        const username = req.user.username;
+
+        if (post.likes.includes(username)) {
+            post.likes = post.likes.filter(u => u !== username);
+        } else {
+            post.likes.push(username);
+        }
+
+        await post.save();
+        res.json(post);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// get likes count for a post
+router.get('/likes/:_id', async (req, res) => {
+    try {
+        const post = await Post.findById(req.params._id);
+        if (!post) return res.status(404).json({ error: 'Post not found' });
+        res.json({ likesCount: post.likes.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 //reads by post id
 router.get("/post_id", async (req, res) => {
