@@ -6,6 +6,7 @@ import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import UserAvatar from "./UserAvatar";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { designTokens, theme } from "@/app/GlobalTheme";
 import { getCookie } from "cookies-next/client";
@@ -98,9 +99,14 @@ export function NavTabs() {
       {/* Main navigation tabs */}
       <Flex gap="lg">
         {/* Logo */}
-        <Text fw={700} size="l">
-          Logo
-        </Text>
+        <Link href='/'>
+          <Image
+            src="/ChipIn-darker.png"
+            alt="ChipIn logo"
+            width={100}
+            height={50}
+          />
+        </Link>
         {/* Default value is the first tab always */}
         <Tabs
           classNames={{ tab: styles.tab }}
@@ -108,7 +114,7 @@ export function NavTabs() {
           value={activeTab} // use active tab for the current tab value
           variant="unstyled"
         >
-          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'flex-end'}}>{tabs}</Tabs.List>
+          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'stretch', height:'100%'}}>{tabs}</Tabs.List>
         </Tabs>
       </Flex>
       <div style={{ flex: 1 }} />
