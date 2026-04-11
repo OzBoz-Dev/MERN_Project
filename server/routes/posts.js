@@ -5,6 +5,8 @@ const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const Tag = require("../models/Tag");
 
+//add a get by tag value
+
 //reads all the posts
 router.get("/", async (req, res) => {
   try {
@@ -21,7 +23,7 @@ router.get("/", async (req, res) => {
 });
 
 //reads by username
-router.get("/username", async (req, res) => {
+router.get("/author_username", async (req, res) => {
   try {
     const posts = await Post.find({ post_id });
     res.json(posts);
@@ -65,17 +67,22 @@ router.get("/likes/:_id", async (req, res) => {
 //reads by title of the post
 router.get("/title", async (req, res) => {
   try {
-    const posts = await Post.find();
+    const query = (req.query.q || "").trim();
+    if (!query) return res.json([]);
+
+    const posts = await Post.find({
+      title: { $regex: query, $options: "i" },
+    });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-//reads by title and body of the post
-router.get("/title/body", async (req, res) => {
+//reads by post id
+router.get("/post_id", async (req, res) => {
   try {
-    const posts = await Post.find();
+    const posts = await Post.find({ post_id });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -85,7 +92,27 @@ router.get("/title/body", async (req, res) => {
 //reads by body of the post
 router.get("/body", async (req, res) => {
   try {
-    const posts = await Post.find();
+    const query = (req.query.q || "").trim();
+    if (!query) return res.json([]);
+
+    const posts = await Post.find({
+      body: { $regex: query, $options: "i" },
+    });
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//get by tag value
+router.get("/tag/:value", async (req, res) => {
+  try {
+    const posts = await Post.find({ array_tags: req.params.value });
+
+    if (!posts || posts.length == 0) {
+      return res.status(404).json({ message: "No posts found under this tag" });
+    }
+
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -95,19 +122,18 @@ router.get("/body", async (req, res) => {
 //create a post
 router.post("/", auth, async (req, res) => {
   try {
-    //const post = await Post.create(req.body);
-    const { array_tags_id, ...rest } = req.body;
+    const { array_tags, ...rest } = req.body;
 
     let tags = [];
 
     //checks if user added tags and finds them by name in the database
-    if (array_tags_id && array_tags_id.length > 0) {
+    if (array_tags && array_tags.length > 0) {
       //finds tags that already exist
-      const existingTags = await Tag.find({ value: { $in: array_tags_id } });
+      const existingTags = await Tag.find({ value: { $in: array_tags } });
       const existingValues = existingTags.map((tag) => tag.value);
 
       //checks if what the user typed does not exist
-      const newTagValues = array_tags_id.filter(
+      const newTagValues = array_tags.filter(
         (value) => !existingValues.includes(value),
       );
 
@@ -118,15 +144,15 @@ router.post("/", auth, async (req, res) => {
         newTags.push(tag);
       }
 
-      //Returns the objectId
-      tags = [...existingTags, ...newTags].map((tag) => tag._id); //adds the object id
-      //tags = [...existingTags, ...newTags].map((tag) => tag.value);
+      //Returns the value
+      tags = [...existingTags, ...newTags].map((tag) => tag.value); //adds the object id
     }
 
     const post = await Post.create({
       ...rest,
-      username: req.user.username,
-      array_tags_id: tags,
+      author_username: req.user.username,
+      post_id: req.user._id,
+      array_tags: tags,
     });
 
     res.status(201).json(post);
@@ -135,11 +161,23 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-router.put("/:id", auth, async (req, res) => {
+//updates a post
+router.put("/:_id", auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params._id);
 
-    const allowedUpdates = ["title", "content", "likes"];
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    /* will fix later
+    if (!post.post_id || post.post_id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "User not authorized to update post",
+      });
+    }*/
+
+    const allowedUpdates = ["title", "body", "likes", "array_tags"];
 
     allowedUpdates.forEach((field) => {
       if (req.body[field] != undefined) {
@@ -147,16 +185,49 @@ router.put("/:id", auth, async (req, res) => {
       }
     });
 
-    if (req.body.array_tags_id) {
-      const tags = await Tag.find({ name: { $in: req.body.array_tags_id } });
-      post.array_tags_id = tags.map((tag) => tag.value);
-    }
-
     await post.save();
 
     res.status(200).json(post);
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//delete post by id
+router.delete("/:_id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params._id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.author_username !== req.user.username) {
+      return res.status(403).json({
+        message: "User not authorized to delete post",
+      });
+    }
+
+    await Post.findByIdAndDelete(req.params._id);
+
+    res.status(200).json({ message: "Post was successfully deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//reads post by id
+router.get("/:_id", async (req, res) => {
+  try {
+    const posts = await Post.findById(req.params._id);
+
+    if (!posts) {
+      res.status(404).json({ message: "No posts available" });
+    } else {
+      res.json(posts);
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
