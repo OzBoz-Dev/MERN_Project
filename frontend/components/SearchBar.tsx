@@ -4,9 +4,15 @@ import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
 import { API_ENTRYPOINT } from "@/constants/constants";
+import { Post } from "@/types/Post";
+import { title } from "process";
 
 
-export default function SearchBar() {
+type SearchBarProp = {
+    onResults: (posts: Post[]) => void
+}
+
+export default function SearchBar({ onResults }: SearchBarProp) {
 
     const [inputText, setInputText] = useState("");
     const [searchText, setSearchText] = useState("");
@@ -15,24 +21,45 @@ export default function SearchBar() {
     const searchIcon = <IconSearch size={16} />;
     const [showAdvanced, setShowAdvanced] = useState(false);
 
-    useEffect(() => {
-        if (searchText.trim()) {
-            Promise.all([
-                fetch(API_ENTRYPOINT + '/posts/title?q=' + encodeURIComponent(searchText)),
-                fetch(API_ENTRYPOINT + '/posts/body?q=' + encodeURIComponent(searchText)),
-            ]).then(([titleRes, bodyRes]) => {
-                return Promise.all([titleRes.json(), bodyRes.json()]);
-            }).then(([titleData, bodyData]) => {
-                setByTitle(titleData);
-                setByBody(bodyData);
+useEffect(() => {
+    if (searchText.trim()) {
+        // api request
+        Promise.all([
+            fetch(API_ENTRYPOINT + '/posts/title?q=' + encodeURIComponent(searchText)),
+            fetch(API_ENTRYPOINT + '/posts/body?q=' + encodeURIComponent(searchText)),
+        ]).then(([titleRes, bodyRes]) => {
+            return Promise.all([titleRes.json(), bodyRes.json()]);
+        }).then(([titleData, bodyData]) => {
+            const titlePosts = (Array.isArray(titleData) ? titleData : []).map(post => ({
+                id: post._id,
+                title: post.title,
+                body: post.body,
+                author: post.author || 'Unknown',
+                likes: post.likes || 0,
+                tags: Array.isArray(post.tags) ? post.tags : [],
+                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
+            }));
 
-                console.log(byTitle);
-                console.log(byBody);
-            });
-        }
-    }, [searchText]);
+            const bodyPosts = (Array.isArray(bodyData) ? bodyData : []).map(post => ({
+                id: post._id,
+                title: post.title,
+                body: post.body,
+                author: post.author || 'Unknown',
+                likes: post.likes || 0,
+                tags: Array.isArray(post.tags) ? post.tags : [],
+                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
+            }));
 
-  return (
+            const mergedPosts = [...titlePosts, ...bodyPosts];
+            onResults(mergedPosts);
+    }).catch((error) => {
+        console.error("search error", error);
+        onResults([]);
+    });
+    }
+}, [searchText, onResults]);
+
+return (
     <div style={{width: "100%"}}>
         <div style={{display: "flex", gap: "12px", alignItems:"flex-end"}}>
             <TextInput

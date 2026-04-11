@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ProjectCard from "./ProjectCard";
 import { Post } from "@/types/Post";
+import SearchBar from "./SearchBar";
 
 type FeedProps = {
   dataLength: number;
@@ -27,11 +28,16 @@ type Props = {
 };
 
 export default function FeedClient({ initialPosts }: Props) {
-  const [items, setItems] = useState<Post[]>(initialPosts);
+  const [items, setItems] = useState<Post[]>(initialPosts || []);
   const [hasMore, setHasMore] = useState(true);
 
+  // Make handleResults stable
+  const handleResults = useCallback((posts: Post[]) => {
+    setItems(posts);
+  }, [])
   // Builds off of initialPosts
   const fetchMoreData = useCallback(() => {
+    if(!initialPosts || initialPosts.length === 0) return
     // Would need to fetch more items from api
     // Example: await fetch('api/posts?page=...')
 
@@ -40,27 +46,31 @@ export default function FeedClient({ initialPosts }: Props) {
       ...prev,
       ...Array.from({ length: defaultProps.dataLength }, () => initialPosts[0]),
     ]);
-  }, []);
+  }, [initialPosts]);
   return (
-    <InfiniteScroll
-      dataLength={items.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={<h4>Loading!</h4>}
-      endMessage={<h4>Ended</h4>}
-    >
-      {items.map((item, index) => (
-        <ProjectCard
-          key={index}
-          id={item.id}
-          title={item.title}
-          body={item.body}
-          author={item.author}
-          tags={item.tags}
-          likes={item.likes}
-          datePosted={item.datePosted}
-        />
-      ))}
-    </InfiniteScroll>
-  );
+    <>
+      <SearchBar onResults={handleResults}/>
+      <InfiniteScroll
+        dataLength={items.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={<h4>Loading!</h4>}
+        endMessage={<h4>Ended</h4>}
+      >
+        {items.map((item, index) => (
+          <ProjectCard
+            key={index}
+            id={item.id}
+            title={item.title}
+            body={item.body}
+            author={item.author}
+            tags={item.tags}
+            likes={item.likes}
+            datePosted={item.datePosted}
+          />
+        ))}
+      </InfiniteScroll>
+    </>
+    );
+
 }
