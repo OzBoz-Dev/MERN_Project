@@ -1,11 +1,54 @@
+"use client";
+
 import { designTokens } from "@/app/GlobalTheme";
-import { Paper, Title, Stack, Alert, Button, Text, PasswordInput } from "@mantine/core";
+import { Paper, Title, Stack, Alert, Button, Text, PasswordInput, Container } from "@mantine/core";
 import { error } from "console";
 import { PasswordStrength } from "../../PasswordStrength";
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { API_ENTRYPOINT } from "@/constants/constants";
+import { getCookie } from "cookies-next/client";
+
+
 
 export default function resetPassword(){
-  
+const [ password, setPassword ] = useState("");
+const [ passwordValid, setPasswordValid ] = useState(false);
+const [ loading, setLoading ] = useState(false);
+const [error, setError] = useState<string | null>(null);
+const [success, setSuccess] = useState<string | null>(null);
+
+const handleResetPassword = async () => {
+  setError(null);
+  setSuccess(null);
+  setLoading(true);
+
+  try {
+    await apiResetPassword(password);
+    setSuccess("Password reset successfully!");
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function apiResetPassword(password: string) {
+  const { resetToken } = useParams();
+  const resp = await fetch(API_ENTRYPOINT + `/auth/reset-password/${resetToken}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json" 
+    },
+    body: JSON.stringify({ password }),
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error);
+  return data;
+}
+
 return (
+  <Container size="md" my="xl" p="xl">
     <Paper
       withBorder
       p="xl"
@@ -63,7 +106,7 @@ return (
           fullWidth
           loading={loading}
           onClick={handleResetPassword}
-          disabled={!canSubmit}
+          disabled={!passwordValid}
         >
           Reset Password
         </Button>
@@ -79,5 +122,6 @@ return (
         </Button>
       </Stack>
     </Paper>
+  </Container>
 );
 }

@@ -14,6 +14,14 @@ export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
   const router = useRouter();
 
+  // Define routes where NavTabs should be hidden
+  const hiddenRoutes = ['/auth'];
+  
+  // Check if current route should hide NavTabs
+  if (hiddenRoutes.some(route => pathname.startsWith(route))) {
+    return null;
+  }
+
   const [user, setUser] = useState<{ username: string; firstName: string; lastName: string } | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
