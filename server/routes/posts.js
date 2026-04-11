@@ -15,12 +15,12 @@ router.get("/", async (req, res) => {
 });
 
 // like a post by id
-router.post('/likes/:_id', auth, async (req, res) => {
+router.post('/likes/:_id', async (req, res) => {
     try {
         const post = await Post.findById(req.params._id);
         if (!post) return res.status(404).json({ error: 'Post not found' });
 
-        const username = req.user.username;
+        const { username } = req.body;
 
         if (post.likes.includes(username)) {
             post.likes = post.likes.filter(u => u !== username);
