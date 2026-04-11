@@ -44,7 +44,9 @@ router.post('/signup', async (req, res) => {
         }
 
         // check if user exists
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] })
+        const existingUser = await User
+            .findOne({ $or: [{ email }, { username }] })
+            .collation({ locale: 'en', strength: 2 })
         if (existingUser) {
             const field = existingUser.email === email ? 'Email' : 'Username'
             return res.status(409).json({ error: `${field} is already taken` })

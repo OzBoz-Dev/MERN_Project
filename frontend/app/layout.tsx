@@ -13,8 +13,15 @@ import { NavTabs } from "@/components/NavTabs";
 import { theme } from './GlobalTheme';
 
 export const metadata: Metadata = {
-  title: "My Mantine App",
-  description: "Hope I did it right lol",
+  icons: {
+    icon: '/chip.svg',
+    apple: '/chip.png'
+  },
+  title: {
+    template: "%s | ChipIn",
+    default: "ChipIn"
+  },
+  description: "Find and \"Chip In\" on projects!",
 };
 
 const geistSans = Geist({

@@ -6,6 +6,7 @@ import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
 import ReadFullPostButton from "./ReadFullPostButton";
 import TimeAgoClient from "./TimeAgoClient";
+import { Flex } from "@mantine/core";
 
 type Props = {
   id: string;
@@ -73,18 +74,11 @@ export default function ProjectCard({
       </div>
       <TagHolder tags={tags} />
       <p style={{ margin: "0 0 12px", color: "#555" }}>{body}</p>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "right",
-          alignItems: "right",
-          gap: "16px",
-        }}
-      >
+      <Flex justify={"flex-end"} align={"flex-start"} gap={"16px"}>
         <ReadFullPostButton id={id} />
         <MessageButton />
         <LikeButton likes={likes} />
-      </div>
+      </Flex>
     </div>
   );
 }
