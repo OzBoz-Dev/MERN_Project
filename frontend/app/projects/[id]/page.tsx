@@ -53,12 +53,12 @@ export default async function ProjectPage({ params }: PageProps) {
 
         <Text c="#555">{post.description}</Text>
 
-        <Group justify="flex-end" gap="16px">
+        <Group justify="flex-end" align="flex-start" gap="16px">
           <MessageButton />
           <LikeButton likes={0} />
         </Group>
       </Stack>
-      <Divider my="xl" w={"100%"} />
+      <Divider mt="lg" mb="xl" w={"100%"} />
       <CommentsSection />
     </Container>
   );
