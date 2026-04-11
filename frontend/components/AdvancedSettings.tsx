@@ -21,14 +21,15 @@ export default function AdvancedSettings() {
             <h1>Advanced Settings</h1>
             <div style={{
                 display:"flex",
-                justifyContent: "space-between",
-                width:"50%",    
+                width:"100%",    
+                gap:"24px",
                 alignItems:"flex-start"
             }}>
                 <div style = {{
                     flexDirection:"column",
                     alignItems:"left",
                     display:"flex",
+                    flex: 1
                     }}>
                     <h2>
                         Tags
@@ -56,7 +57,7 @@ export default function AdvancedSettings() {
                     </div>
                 </div>
 
-                <div>
+                <div style={{flex: 1, minWidth: 0}}>
                     <h2>
                         Date Posted
                     </h2>

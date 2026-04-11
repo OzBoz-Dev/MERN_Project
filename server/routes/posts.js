@@ -20,8 +20,46 @@ router.get("/", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 //reads by username
 router.get("/username", async (req, res) => {
+=======
+// like a post by id
+router.post('/likes/:_id', async (req, res) => {
+    try {
+        const post = await Post.findById(req.params._id);
+        if (!post) return res.status(404).json({ error: 'Post not found' });
+
+        const { username } = req.body;
+
+        if (post.likes.includes(username)) {
+            post.likes = post.likes.filter(u => u !== username);
+        } else {
+            post.likes.push(username);
+        }
+
+        await post.save();
+        res.json(post);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// get likes count for a post
+router.get('/likes/:_id', async (req, res) => {
+    try {
+        const post = await Post.findById(req.params._id);
+        if (!post) return res.status(404).json({ error: 'Post not found' });
+        res.json({ likesCount: post.likes.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+//reads by post id
+router.get("/post_id", async (req, res) => {
+>>>>>>> 65732df6eca1ec15f47d9c3d09372e61f2cc7627
   try {
     const posts = await Post.find({ post_id });
     res.json(posts);
@@ -65,7 +103,12 @@ router.get("/likes/:_id", async (req, res) => {
 //reads by title of the post
 router.get("/title", async (req, res) => {
   try {
-    const posts = await Post.find();
+    const query = (req.query.q || "").trim();
+    if(!query) return res.json([]);
+
+    const posts = await Post.find({
+      title: { $regex: query, $options: "i" }
+    });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -85,8 +128,12 @@ router.get("/title/body", async (req, res) => {
 //reads by body of the post
 router.get("/body", async (req, res) => {
   try {
-    const posts = await Post.find();
-    res.json(posts);
+    const query = (req.query.q || "").trim();
+    if(!query) return res.json([]);
+    
+    const posts = await Post.find({
+      body: { $regex: query, $options: "i" }
+    });    res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -135,10 +182,13 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 router.put("/:id", auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
   } catch (err) {}
 });
 
+=======
+>>>>>>> 65732df6eca1ec15f47d9c3d09372e61f2cc7627
 module.exports = router;

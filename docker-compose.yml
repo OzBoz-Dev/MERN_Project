@@ -18,6 +18,10 @@ services:
       dockerfile: Dockerfile.frontend
     ports:
       - "3000:3000"
+    environment:
+      - API_ENTRYPOINT=${API_ENTRYPOINT}
+      - API_SERVER_ENTRYPOINT=${API_SERVER_ENTRYPOINT}
+      - FRONTEND_URL=${FRONTEND_URL}
     depends_on:
       - nodebackend
     networks:

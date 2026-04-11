@@ -25,6 +25,7 @@ app.use("/messages", messageRouter);
 app.use("/tags", tagsRouter);
 app.use("/profile", profileRouter);
 app.use("/posts", postRouter);
+app.use("/posts", postRouter);
 
 // Test route
 app.get("/", async (req, res) => {
