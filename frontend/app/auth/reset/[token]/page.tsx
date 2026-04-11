@@ -1,7 +1,7 @@
 import { designTokens } from "@/app/GlobalTheme";
 import { Paper, Title, Stack, Alert, Button, Text, PasswordInput } from "@mantine/core";
 import { error } from "console";
-import { useFormState } from "react-dom";
+import { PasswordStrength } from "../../PasswordStrength";
 
 export default function resetPassword(){
   
@@ -50,13 +50,12 @@ return (
           </Alert>
         )}
         { /* Password Input */ }
-        <PasswordInput
-            required
-            label="New Password"
-        />
-        <PasswordInput
-            required
-            label="Confirm New Password"
+        <PasswordStrength
+          value={password}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setPassword(e.target.value)
+          }
+          onValidChange={setPasswordValid}
         />
         <Button
           variant="filled"

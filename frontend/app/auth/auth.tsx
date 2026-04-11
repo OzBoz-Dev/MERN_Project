@@ -13,16 +13,7 @@ import {
 } from "@mantine/core";
 
 import {
-  getCookie,
-  getCookies,
   setCookie,
-  deleteCookie,
-  hasCookie,
-  useGetCookies,
-  useSetCookie,
-  useHasCookie,
-  useDeleteCookie,
-  useGetCookie,
 } from 'cookies-next/client';
 
 import { useState } from "react";
@@ -33,7 +24,6 @@ import { FloatingLabelInput } from "./FloatingLabelInput";
 import { GradientSegmentedControl } from "./GradientSegmentedControl";
 import { InputValidation } from "./InputValidation";
 import { API_ENTRYPOINT } from "@/constants/constants";
-import { Metadata } from "next";
 
 export default function Auth() {
   const [type, setType] = useState("Log In"); 

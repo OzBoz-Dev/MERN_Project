@@ -1,7 +1,7 @@
 'use client'
 
 import { Center, Box, Progress, Text, Group, PasswordInput, PasswordInputProps } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
+import { useForm } from "@mantine/form";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import input from './FloatingLabelInput.module.css'
 import { useState } from "react";
@@ -43,13 +43,22 @@ interface PasswordStrengthProps extends PasswordInputProps {
 
 export function PasswordStrength( { value, onChange, onValidChange } : PasswordStrengthProps ) {
   const [focused, setFocused] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const floating = (value as string).trim().length !== 0 || focused || undefined;
   const strength = getStrength(value as string);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e);
     const newStrength = getStrength(e.target.value);
-    onValidChange?.(newStrength === 100);
+    const passwordsMatch = e.target.value === confirmPassword;
+    onValidChange?.(newStrength === 100 && passwordsMatch);
+  };
+
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value);
+    const newStrength = getStrength(value as string);
+    const passwordsMatch = (value as string) === e.target.value;
+    onValidChange?.(newStrength === 100 && passwordsMatch);
   };
 
   const checks = requirements.map((requirement, index) => (
@@ -73,12 +82,21 @@ export function PasswordStrength( { value, onChange, onValidChange } : PasswordS
     value = newval;
   }
 
+  const form = useForm({
+    mode: 'uncontrolled',
+    validate: {
+      confirmPassword: (value, values) =>
+        value !== values.password ? 'Passwords did not match' : null,
+    },
+  })
+
    return (
     <>
       <PasswordInput
         value={value}
         onChange={handleChange}
         label="Password"
+        key={form.key('password')}
         required
         classNames={input}
         onFocus={() => setFocused(true)}
@@ -90,9 +108,11 @@ export function PasswordStrength( { value, onChange, onValidChange } : PasswordS
       />
 
       <PasswordInput
-        value={value}
-        onChange={handleChange}
         label="Confirm Password"
+        value={confirmPassword}
+        onChange={handleConfirmPasswordChange}
+        error={confirmPassword && (value as string) !== confirmPassword ? 'Passwords do not match' : false}
+        key={form.key('confirmPassword')}
         required
         classNames={input}
         onFocus={() => setFocused(true)}

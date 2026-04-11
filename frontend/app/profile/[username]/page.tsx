@@ -1,8 +1,7 @@
 import ProfilePage from "./profile";
 import { Metadata } from "next";
-import { API_ENTRYPOINT, API_SERVER_ENTRYPOINT } from "@/constants/constants";
-import { redirect } from 'next/navigation';
-import { cache } from "react";
+import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
+import { cookies } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +11,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
+  const cookieStore = await cookies();
+  const currentUsername = cookieStore.get('username')?.value;
   
   try {
         const res = await fetch(`${API_SERVER_ENTRYPOINT}/profile/${username}`, {
@@ -23,8 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         }
 
         const user = await res.json();
+        const displayName = user.username == currentUsername ? "My" : user.username+"'s";
+
         return {
-          title: `${user.username}'s Profile`,
+          title: `${displayName} Profile`,
         };
     }
     catch (err) {
