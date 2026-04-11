@@ -27,7 +27,7 @@ router.get("/post_id", async (req, res) => {
 router.get("/title", async (req, res) => {
   try {
     const query = (req.query.q || "").trim();
-    if(!q) return res.json([]);
+    if(!query) return res.json([]);
 
     const posts = await Post.find({
       title: { $regex: query, $options: "i" }
@@ -42,7 +42,7 @@ router.get("/title", async (req, res) => {
 router.get("/body", async (req, res) => {
   try {
     const query = (req.query.q || "").trim();
-    if(!q) return res.json([]);
+    if(!query) return res.json([]);
     
     const posts = await Post.find({
       body: { $regex: query, $options: "i" }

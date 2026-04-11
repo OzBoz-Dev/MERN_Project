@@ -8,6 +8,7 @@ import { API_ENTRYPOINT } from "@/constants/constants";
 
 export default function SearchBar() {
 
+    const [inputText, setInputText] = useState("");
     const [searchText, setSearchText] = useState("");
     const [byTitle, setByTitle] = useState<any>(null);
     const [byBody, setByBody] = useState<any>(null);
@@ -40,8 +41,9 @@ export default function SearchBar() {
             description="What posts are you looking for?"
             placeholder="ML, DevOps"
             leftSection={searchIcon}
-            value={searchText}
-            onBlur={(e) => setSearchText(e.currentTarget.value)}
+            value={inputText}
+            onChange={(e) => setInputText(e.currentTarget.value)}
+            onBlur={(e) => setSearchText(e.currentTarget.value.trim())}
             />
             <ActionIcon
                 variant="light"
