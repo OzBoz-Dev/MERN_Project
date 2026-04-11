@@ -24,6 +24,7 @@ import DeleteAccountModal from "../DeleteAccountModal";
 import { designTokens } from "../../GlobalTheme";
 import { notFound, useParams } from "next/navigation";
 import { API_ENTRYPOINT } from '@/constants/constants'
+import { deleteCookie, getCookie, setCookie } from "cookies-next/client";
 
 async function getProfile(username: any){
   console.log(username)
@@ -44,11 +45,11 @@ async function saveProfile(username: string, data: any){
   const res = await fetch(API_ENTRYPOINT+'/profile/' + username, {
     method: 'PUT',
     headers: {
+      'Authorization': `Bearer ${getCookie('token')}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      token: localStorage.getItem('token'),
-      ...data
+      data
     })
   });
 
@@ -60,11 +61,10 @@ async function saveProfile(username: string, data: any){
 }
 
 async function deleteAccount(username: string, password: string){
-  const token = localStorage.getItem('token');
   const res = await fetch(API_ENTRYPOINT+'/profile/'+username, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${getCookie('token')}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -104,7 +104,7 @@ export default function ProfilePage() {
           return;
         }
         setProfileData(data);
-        if (data.username == localStorage.getItem('username')) setIsMe(true);
+        if (data.username == getCookie('username')) setIsMe(true);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       } finally {
@@ -122,8 +122,8 @@ export default function ProfilePage() {
       if (updatedUser) {
         setProfileData(updatedUser);
         setIsEditing(false);
-        localStorage.setItem('firstName', data.firstName)
-        localStorage.setItem('lastName', data.lastName)
+        setCookie('firstName', data.firstName)
+        setCookie('lastName', data.lastName)
       }
     } catch (error) {
       alert("Could not save profile. Please try again"+error);
@@ -136,7 +136,10 @@ export default function ProfilePage() {
   // Handle logout
   const handleLogout = () => {
     // Client-side logout: destroy token and redirect
-    localStorage.clear();
+    deleteCookie('token');
+    deleteCookie('firstName');
+    deleteCookie('lastName');
+    deleteCookie('username');
     // Redirect to auth page
     window.location.href = "/auth";
   };
@@ -164,7 +167,10 @@ export default function ProfilePage() {
       
       if (updatedUser) {
         setDeleteSuccess("Account deleted successfully!");
-        localStorage.clear();
+        deleteCookie('token');
+        deleteCookie('firstName');
+        deleteCookie('lastName');
+        deleteCookie('username');
         
         // Wait briefly to show success message before redirecting
         setTimeout(() => {

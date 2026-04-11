@@ -8,6 +8,7 @@ import UserAvatar from "./UserAvatar";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { designTokens, theme } from "@/app/GlobalTheme";
+import { getCookie } from "cookies-next/client";
 
 export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
@@ -18,12 +19,12 @@ export function NavTabs() {
 
   useEffect(() => {
     setIsMounted(true);
-    const username = localStorage.getItem('username');
+    const username = getCookie('username');
     if (username) {
       setUser({
         username,
-        firstName: localStorage.getItem('firstName') || "",
-        lastName: localStorage.getItem('lastName') || "",
+        firstName: getCookie('firstName') || "",
+        lastName: getCookie('lastName') || "",
       });
     }
   }, []);
@@ -110,13 +111,13 @@ export function NavTabs() {
             zIndex={2000}
       >
       <Link 
-        href={`/profile/${localStorage.getItem('username')}`} 
+        href={`/profile/${getCookie('username')}`} 
         style={{ textDecoration: 'none', color: 'inherit' }}
       >
           <UserAvatar 
-            username={localStorage.getItem('username') as string} 
-            firstName={localStorage.getItem('firstName') as string}
-            lastName={localStorage.getItem('lastName') as string}
+            username={getCookie('username') as string} 
+            firstName={getCookie('firstName') as string}
+            lastName={getCookie('lastName') as string}
             radius="xl" 
             size="md"
           />

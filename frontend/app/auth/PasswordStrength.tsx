@@ -89,6 +89,20 @@ export function PasswordStrength( { value, onChange, onValidChange } : PasswordS
         labelProps={{ 'data-floating': floating }}
       />
 
+      <PasswordInput
+        value={value}
+        onChange={handleChange}
+        label="Confirm Password"
+        required
+        classNames={input}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        mt="md"
+        autoComplete="nope"
+        data-floating={floating}
+        labelProps={{ 'data-floating': floating }}
+      />
+
       <Group gap={5} grow mt="xs" mb="md">
         {bars}
       </Group>

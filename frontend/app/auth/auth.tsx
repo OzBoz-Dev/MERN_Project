@@ -11,6 +11,20 @@ import {
   Group,
   Stack,
 } from "@mantine/core";
+
+import {
+  getCookie,
+  getCookies,
+  setCookie,
+  deleteCookie,
+  hasCookie,
+  useGetCookies,
+  useSetCookie,
+  useHasCookie,
+  useDeleteCookie,
+  useGetCookie,
+} from 'cookies-next/client';
+
 import { useState } from "react";
 import { designTokens } from "../GlobalTheme";
 import { PasswordStrength } from "./PasswordStrength";
@@ -22,7 +36,7 @@ import { API_ENTRYPOINT } from "@/constants/constants";
 import { Metadata } from "next";
 
 export default function Auth() {
-  const [type, setType] = useState("Log In");
+  const [type, setType] = useState("Log In"); 
 
   // Forms
   const [email, setEmail] = useState("");
@@ -120,10 +134,10 @@ export default function Auth() {
       } else {
         const data = await apiLogin(email, password);
         // Store token
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("username", data.user.username);
-        localStorage.setItem("firstName", data.user.firstName);
-        localStorage.setItem("lastName", data.user.lastName);
+        setCookie("token", data.token);
+        setCookie("username", data.user.username);
+        setCookie("firstName", data.user.firstName);
+        setCookie("lastName", data.user.lastName);
         setSuccess(`Welcome back, ${data.user.username}!`);
         location.assign("/feed");
       }

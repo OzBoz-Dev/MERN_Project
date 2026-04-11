@@ -22,6 +22,7 @@ import { useState } from "react";
 import { IconRocket } from "@tabler/icons-react";
 import { API_ENTRYPOINT } from "@/constants/constants";
 import { useRouter } from "next/navigation";
+import { getCookie } from "cookies-next/client";
 
 const content = "";
 const TITLE_LIMIT = 50;
@@ -284,7 +285,7 @@ export default function PostEditor() {
             onClick={async () => {
               const body = editor?.getHTML() || "";
               const author_username =
-                localStorage.getItem("username") ?? "Anonymous";
+                getCookie('username') ?? "Anonymous";
 
               setLoading(true);
               setSuccess(true); // Show loading modal
