@@ -1,8 +1,7 @@
 // __tests__/ResetPassword.test.tsx
 
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ResetPassword from "../[token]/page";
+import ResetPassword from "@/app/auth/reset/[token]/page";
 import "@testing-library/jest-dom";
 
 // --- Mocks ---
@@ -13,12 +12,12 @@ jest.mock("next/navigation", () => ({
 }));
 
 // Mock constants
-jest.mock("@/constants/constants", () => ({
+jest.mock("../constants/constants.ts", () => ({
   API_ENTRYPOINT: "https://api.example.com",
 }));
 
 // Mock PasswordStrength component
-jest.mock("../../PasswordStrength", () => {
+jest.mock("../app/auth/PasswordStrength", () => {
     return {
       PasswordStrength: (props: any) => (
     <div>
@@ -55,7 +54,7 @@ jest.mock("@mantine/core", () => ({
 }));
 
 // Mock GlobalTheme
-jest.mock("@/app/GlobalTheme", () => ({
+jest.mock("../app/GlobalTheme", () => ({
   designTokens: {
     colors: { glassyBackground: "#000" },
     fonts: { heading: "sans-serif" },
