@@ -1,22 +1,19 @@
 "use client";
 
 import { designTokens } from "@/app/GlobalTheme";
-import { Paper, Title, Stack, Alert, Button, Text, PasswordInput, Container } from "@mantine/core";
-import { error } from "console";
+import { Paper, Title, Stack, Alert, Button, Text, Container } from "@mantine/core";
 import { PasswordStrength } from "../../PasswordStrength";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { API_ENTRYPOINT } from "@/constants/constants";
-import { getCookie } from "cookies-next/client";
 
-
-
-export default function resetPassword(){
+export default function ResetPassword(){
 const [ password, setPassword ] = useState("");
 const [ passwordValid, setPasswordValid ] = useState(false);
 const [ loading, setLoading ] = useState(false);
 const [error, setError] = useState<string | null>(null);
 const [success, setSuccess] = useState<string | null>(null);
+const { resetToken } = useParams();
 
 const handleResetPassword = async () => {
   setError(null);
@@ -34,7 +31,6 @@ const handleResetPassword = async () => {
 }
 
 async function apiResetPassword(password: string) {
-  const { resetToken } = useParams();
   const resp = await fetch(API_ENTRYPOINT + `/auth/reset-password/${resetToken}`, {
     method: "POST",
     headers: {
