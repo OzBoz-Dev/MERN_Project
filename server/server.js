@@ -16,6 +16,7 @@ const messageRouter = require("./routes/messages");
 const authRoutes = require("./routes/auth");
 const tagsRouter = require("./routes/tags");
 const profileRouter = require("./routes/profile");
+const recoveryRouter = require('./routes/recovery')
 const postRouter = require("./routes/posts");
 
 app.use("/auth", authRoutes);
@@ -24,6 +25,7 @@ app.use("/conversations", conversationRouter);
 app.use("/messages", messageRouter);
 app.use("/tags", tagsRouter);
 app.use("/profile", profileRouter);
+app.use('/auth/recovery', recoveryRouter)
 app.use("/posts", postRouter);
 app.use("/posts", postRouter);
 

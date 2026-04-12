@@ -23,4 +23,19 @@ const sendVerificationEmail = async (toEmail, token) => {
   });
 };
 
-module.exports = { sendVerificationEmail };
+// sends password reset email
+const sendResetEmail = async (toEmail, token) => {
+    const link = `${process.env.FRONTEND_URL}/auth/reset/${token}`
+ 
+    await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: toEmail,
+        subject: 'Reset your password',
+        html: `
+            <p><a href="${link}">Click here to reset your password</a></p>
+            <p>This link expires in 1 hour</p>
+        `,
+    })
+}
+
+module.exports = { sendVerificationEmail , sendResetEmail } 
