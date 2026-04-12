@@ -101,9 +101,9 @@ export function NavTabs() {
         {/* Logo */}
         <Link href='/'>
           <Image
-            src="/ChipIn-darker.png"
+            src="/ChipIn-nobg.png"
             alt="ChipIn logo"
-            width={100}
+            width={150}
             height={50}
           />
         </Link>
