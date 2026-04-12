@@ -39,6 +39,7 @@ async function postProject(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${getCookie("token")}`,
     },
     body: JSON.stringify({
       title,
@@ -284,8 +285,7 @@ export default function PostEditor() {
             }
             onClick={async () => {
               const body = editor?.getHTML() || "";
-              const author_username =
-                getCookie('username') ?? "Anonymous";
+              const author_username = getCookie("username") ?? "Anonymous";
 
               setLoading(true);
               setSuccess(true); // Show loading modal
