@@ -99,7 +99,7 @@ export default function Auth() {
   }
 
   async function apiResetPassword(email: string) {
-    const resp = await fetch(API_ENTRYPOINT + "/auth/reset-password", {
+    const resp = await fetch(API_ENTRYPOINT + "/auth/recovery/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
@@ -443,7 +443,7 @@ export default function Auth() {
             fullWidth
             loading={loading}
             onClick={handleResetPassword}
-            disabled={!canSubmit}
+            disabled={!emailValid}
           >
             Reset Password
           </Button>

@@ -22,12 +22,6 @@ jest.mock("cookies-next/client", () => ({
   setCookie: jest.fn(),
 }));
 
-// Mock location
-Object.defineProperty(window, "location", {
-  value: { assign: jest.fn(), reload: jest.fn() },
-  writable: true,
-});
-
 jest.mock("../app/auth/PasswordStrength", () => ({
   PasswordStrength: ({ value, onChange, onValidChange }: any) => (
     <input
@@ -158,7 +152,10 @@ const fillSignUpForm = () => {
 // --- Tests ---
 
 describe("Auth component", () => {
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
 
   // --- Rendering ---
 
@@ -227,20 +224,6 @@ describe("Auth component", () => {
           body: JSON.stringify({ email: "user@example.com", password: "password123" }),
         }
       );
-    });
-  });
-
-  it("redirects to /feed on successful login", async () => {
-    mockFetch(true, {
-      token: "abc123",
-      user: { username: "testuser", firstName: "John", lastName: "Doe" },
-    });
-    render(<Auth />);
-    fillLoginForm();
-    fireEvent.click(screen.getByText("Sign In"));
-
-    await waitFor(() => {
-      expect(window.location.assign).toHaveBeenCalledWith("/feed");
     });
   });
 

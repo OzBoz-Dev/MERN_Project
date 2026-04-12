@@ -13,7 +13,7 @@ const [ passwordValid, setPasswordValid ] = useState(false);
 const [ loading, setLoading ] = useState(false);
 const [error, setError] = useState<string | null>(null);
 const [success, setSuccess] = useState<string | null>(null);
-const { resetToken } = useParams();
+const { token } = useParams();
 
 const handleResetPassword = async () => {
   setError(null);
@@ -31,7 +31,7 @@ const handleResetPassword = async () => {
 }
 
 async function apiResetPassword(password: string) {
-  const resp = await fetch(API_ENTRYPOINT + `/auth/reset-password/${resetToken}`, {
+  const resp = await fetch(API_ENTRYPOINT + `/auth/recovery/${token}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json" 
@@ -111,7 +111,7 @@ return (
             color="orange"
             fullWidth
             onClick={() => {
-              location.reload();
+              location.assign('/')
             }}
           >
           Back to Log In
