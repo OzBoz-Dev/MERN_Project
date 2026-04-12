@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
+require("dotenv").config({ path: "/.env" });
 
 const app = express();
 
@@ -17,6 +17,7 @@ const authRoutes = require("./routes/auth");
 const tagsRouter = require("./routes/tags");
 const profileRouter = require("./routes/profile");
 const recoveryRouter = require('./routes/recovery')
+const postRouter = require("./routes/posts");
 
 app.use("/auth", authRoutes);
 app.use("/comments", commentsRouter);
@@ -25,6 +26,8 @@ app.use("/messages", messageRouter);
 app.use("/tags", tagsRouter);
 app.use("/profile", profileRouter);
 app.use('/auth/recovery', recoveryRouter)
+app.use("/posts", postRouter);
+app.use("/posts", postRouter);
 
 // Test route
 app.get("/", async (req, res) => {

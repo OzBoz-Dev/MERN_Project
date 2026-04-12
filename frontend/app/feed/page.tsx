@@ -4,6 +4,12 @@ import SearchBar from "@/components/SearchBar";
 import { Post } from "@/types/Post";
 import { Flex } from "@mantine/core";
 import { ObjectId } from "mongodb";
+import { Metadata } from "next";
+
+// Metadata
+export const metadata: Metadata = {
+  title: 'Home',
+};
 
 export default async function Feed() {
   // Fetch posts here via endpoint
