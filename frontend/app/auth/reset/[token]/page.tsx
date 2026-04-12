@@ -27,6 +27,7 @@ const handleResetPassword = async () => {
     setError(err.message);
   } finally {
     setLoading(false);
+    location.assign('/')
   }
 }
 

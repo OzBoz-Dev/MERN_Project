@@ -309,7 +309,7 @@ describe("Auth component", () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        "https://api.example.com/auth/reset-password",
+        "https://api.example.com/auth/recovery/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

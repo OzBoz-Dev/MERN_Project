@@ -8,7 +8,7 @@ import "@testing-library/jest-dom";
 
 // Mock next/navigation
 jest.mock("next/navigation", () => ({
-  useParams: () => ({ resetToken: "test-reset-token-123" }),
+  useParams: () => ({ token: "test-reset-token-123" }),
 }));
 
 // Mock constants
@@ -105,7 +105,7 @@ describe("ResetPassword page", () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        "https://api.example.com/auth/reset-password/test-reset-token-123",
+        "https://api.example.com/auth/recovery/test-reset-token-123",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
