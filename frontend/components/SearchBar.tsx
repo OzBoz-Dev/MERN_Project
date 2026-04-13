@@ -20,6 +20,7 @@ export default function SearchBar({ onResults }: SearchBarProp) {
     const [byBody, setByBody] = useState<any>(null);
     const searchIcon = <IconSearch size={16} />;
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const [tags, setTags] = useState<string[]>([]);
 
 useEffect(() => {
     if (searchText.trim()) {
@@ -50,14 +51,25 @@ useEffect(() => {
                 datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
             }));
 
+            // include tags that are also in the search
             const mergedPosts = [...titlePosts, ...bodyPosts];
-            onResults(mergedPosts);
+
+            const filteredPosts = tags.length === 0
+            ? mergedPosts :
+            mergedPosts.filter(post =>
+                Array.isArray(post.tags) && 
+                tags.every(tag => post.tags.includes(tag))
+            )
+
+            onResults(filteredPosts);
+
+
     }).catch((error) => {
         console.error("search error", error);
         onResults([]);
     });
     }
-}, [searchText, onResults]);
+}, [searchText, tags, onResults]);
 
 return (
     <div style={{width: "100%"}}>
@@ -70,7 +82,11 @@ return (
             leftSection={searchIcon}
             value={inputText}
             onChange={(e) => setInputText(e.currentTarget.value)}
-            onBlur={(e) => setSearchText(e.currentTarget.value.trim())}
+            onKeyDown={(e) => {
+                if(e.key === "Enter") {
+                    setSearchText(e.currentTarget.value.trim());
+                }
+            }}
             />
             <ActionIcon
                 variant="light"
@@ -83,7 +99,7 @@ return (
 
         {showAdvanced && (
         <div style={{ marginTop: "12px" }}>
-            <AdvancedSettings />
+            <AdvancedSettings tags={tags} setTags={setTags}/>
         </div>
         )}
     </div>
