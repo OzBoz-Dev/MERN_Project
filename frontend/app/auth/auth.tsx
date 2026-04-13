@@ -9,7 +9,7 @@ import {
   Alert,
   Text,
   Group,
-  Stack,
+  Stack
 } from "@mantine/core";
 
 import {
@@ -24,6 +24,7 @@ import { FloatingLabelInput } from "./FloatingLabelInput";
 import { GradientSegmentedControl } from "./GradientSegmentedControl";
 import { InputValidation } from "./InputValidation";
 import { API_ENTRYPOINT } from "@/constants/constants";
+import Image from "next/image";
 
 export default function Auth() {
   const [type, setType] = useState("Log In"); 
@@ -464,10 +465,21 @@ export default function Auth() {
   return (
     <main>
       <div style={{}} className="animated-grid">
-        <Container size="md" my="xl" p="xl">
+        <Container size="md" p="xl">
+          <Stack align='center'>
+          { !resettingPassword && !verificationSent  ? 
+          <Image
+            src="/ChipIn.png"
+            alt="ChipIn logo"
+            width={396}
+            height={125}
+          />
+          : <></>
+          }
           { resettingPassword ? resetCard :
           (verificationSent ? verifyCard : authCard)
           }
+          </Stack>
         </Container>
       </div>
     </main>
