@@ -14,6 +14,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+// to get all comments belonging to a certain post
+router.get('/post/:post_id', async (req, res) => {
+  try {
+    const comments = await Comment.find({ post_id: req.params.post_id });
+    res.json(comments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  } 
+});
+
 // create a comment 
 router.post('/', auth, async (req, res) => {
   try {
