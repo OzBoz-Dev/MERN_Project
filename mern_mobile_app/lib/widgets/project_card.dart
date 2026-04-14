@@ -139,12 +139,14 @@ class _ProjectCardState extends State<ProjectCard> {
                       ),
                     ),
                     const SizedBox(width: 5,),
+                    // Like button
                     IconButton(
                       onPressed: () {
                         setState(() {
                           _isLiked = !_isLiked;
                         });
                       },
+                      color: Colors.white,
                       icon: AnimatedSwitcher(
                         duration: Duration(milliseconds: 200),
                         switchInCurve: Curves.easeOutBack,
