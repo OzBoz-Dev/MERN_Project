@@ -42,8 +42,9 @@ services:
       - MONGO_URI=mongodb://db:27017/finder_db # It's local!
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=7d
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - API_ENTRYPOINT=${API_ENTRYPOINT}
+      - FRONTEND_URL=${FRONTEND_URL}
     networks:
       - mern_net
   db:
