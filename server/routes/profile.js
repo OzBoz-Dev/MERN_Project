@@ -39,7 +39,7 @@ router.get("/:username", async(req, res) => {
 router.put("/:username", async(req, res) => {
   try {
         const { username } = req.params;
-        const { firstName, lastName, bio } = req.body;
+        const { firstName, lastName, bio, tags } = req.body;
 
         if (!username) {
             return res.status(400).json({ error: 'Please provide a username' })
@@ -52,7 +52,8 @@ router.put("/:username", async(req, res) => {
                 $set: {
                     firstName, 
                     lastName,
-                    bio
+                    bio,
+                    tags
                 }
             },
             { new: true, runValidators: true }

@@ -6,8 +6,10 @@ import ProjectTag from "./ProjectTag";
 type TagBoxProps = {
     tags: string[];
     setTags: (tags: string[]) => void
+    label: string;
+    description: string;
 }
-export default function TagBox({ tags, setTags }: TagBoxProps) {
+export default function TagBox({ tags, setTags, label, description }: TagBoxProps) {
     const searchIcon = <IconSearch size={16} />;
     const [input, setInput] = useState("");
     
@@ -21,14 +23,17 @@ export default function TagBox({ tags, setTags }: TagBoxProps) {
     return (
         <div>
             <TextInput
-            label="Search"
-            description="What posts are you looking for?"
+            label={label}
+            description={description}
             placeholder="ML, DevOps"
             leftSection={searchIcon}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
                 if (e.key === "Enter") handleAddTag();
+            }}
+            onBlur={() => {
+                handleAddTag();
             }}
             />
         </div>

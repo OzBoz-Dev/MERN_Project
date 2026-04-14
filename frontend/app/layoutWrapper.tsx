@@ -10,7 +10,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const shouldHideNav = hiddenRoutes.some(route => pathname.startsWith(route));
 
   return (
-    <main style={{ paddingTop: shouldHideNav ? 0 : 60 }}>
+    <main style={{ paddingTop: shouldHideNav ? 0 : 70 }}>
       {children}
     </main>
   );
