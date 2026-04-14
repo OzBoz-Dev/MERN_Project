@@ -5,6 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ProjectCard from "./ProjectCard";
 import { Post } from "@/types/Post";
 import SearchBar from "./SearchBar";
+import { API_ENTRYPOINT } from "@/constants/constants";
 
 type FeedProps = {
   dataLength: number;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export default function FeedClient({ initialPosts }: Props) {
+
   const [items, setItems] = useState<Post[]>(initialPosts || []);
   const [hasMore, setHasMore] = useState(true);
 
@@ -40,11 +42,10 @@ export default function FeedClient({ initialPosts }: Props) {
     if(!initialPosts || initialPosts.length === 0) return
     // Would need to fetch more items from api
     // Example: await fetch('api/posts?page=...')
-
     // put the new items in the existing list
     setItems((prev) => [
       ...prev,
-      ...Array.from({ length: defaultProps.dataLength }, () => initialPosts[0]),
+      ...initialPosts.slice(items.length, items.length + defaultProps.dataLength),
     ]);
   }, [initialPosts]);
   return (
@@ -54,7 +55,7 @@ export default function FeedClient({ initialPosts }: Props) {
         dataLength={items.length}
         next={fetchMoreData}
         hasMore={hasMore}
-        loader={<h4>Loading!</h4>}
+        loader={<h4>None left to load</h4>}
         endMessage={<h4>Ended</h4>}
       >
         {items.map((item, index) => (

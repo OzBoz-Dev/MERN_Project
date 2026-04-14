@@ -1,6 +1,7 @@
 import CreateProjectButton from "@/components/CreateProjectButton";
 import FeedClient from "@/components/FeedClient";
 import SearchBar from "@/components/SearchBar";
+import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
 import { Post } from "@/types/Post";
 import { Flex } from "@mantine/core";
 import { ObjectId } from "bson";
@@ -11,24 +12,13 @@ export const metadata: Metadata = {
   title: "Home",
 };
 
+
+
 export default async function Feed() {
   // Fetch posts here via endpoint
-  // Todo: Fetch initial posts
-  // Mock data for now (just one initial post)
-  const mockPost: Post = {
-    id: "69b07c3d754d16127d7fc4e7",
-    title: "title",
-    body: "the quick brown fox jumped over the lazy dog",
-    attachments: "",
-    likes: ["del0m_"],
-    author_username: "del0m_",
-    array_tags_id: ["ML dev", "devops"],
-    datePosted: new ObjectId("69b07c3d754d16127d7fc4e7").getTimestamp(), // Extract timestamp
-  };
-  // 20 of mockPost
-  const initialPosts: Post[] = Array.from({ length: 20 }, () => ({
-    ...mockPost,
-  }));
+  const result = await fetch(API_SERVER_ENTRYPOINT + '/posts/', {cache: "no-store"});
+  const initialPosts = await result.json();
+
   return (
     <Flex
       direction={"column"}
