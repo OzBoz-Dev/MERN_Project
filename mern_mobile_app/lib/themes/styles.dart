@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData lightTheme = ThemeData(
   primarySwatch: Colors.orange, // mantine primaryColor
+  primaryColor: Color(0xFFFFA500),
   scaffoldBackgroundColor: Color(0xFFFDF8EA),
   textTheme: GoogleFonts.montserratTextTheme().apply(
     displayColor: Colors.black, // larger text sizes
@@ -64,6 +65,11 @@ ThemeData lightTheme = ThemeData(
     fillColor: Color(0xFFFDF8EA),
     floatingLabelStyle: TextStyle(
       color: Color(0xFFFFA500)
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.grey[300]!
+      )
     ),
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(
