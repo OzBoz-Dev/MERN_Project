@@ -25,7 +25,6 @@ export default async function Feed() {
     array_tags_id: ["ML dev", "devops"],
     datePosted: new ObjectId("69b07c3d754d16127d7fc4e7").getTimestamp(), // Extract timestamp
   };
-  const searchBar = <SearchBar onResults={() => void}/>;
   // 20 of mockPost
   const initialPosts: Post[] = Array.from({ length: 20 }, () => ({
     ...mockPost,
