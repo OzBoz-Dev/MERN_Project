@@ -18,8 +18,8 @@ ThemeData lightTheme = ThemeData(
   ),
   iconButtonTheme: IconButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll(Color(0xFFFFA500)),
-      foregroundColor: WidgetStatePropertyAll(Colors.white),
+      backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+      foregroundColor: WidgetStatePropertyAll(Color(0xFFFFA500)),
       shape: WidgetStatePropertyAll(RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6)
       )),
