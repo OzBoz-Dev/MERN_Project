@@ -20,9 +20,6 @@ ThemeData lightTheme = ThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStatePropertyAll(Colors.transparent),
       foregroundColor: WidgetStatePropertyAll(Color(0xFFFFA500)),
-      shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6)
-      )),
     ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
@@ -61,7 +58,7 @@ ThemeData lightTheme = ThemeData(
     overlayColor: WidgetStatePropertyAll(
       Color(0xFFFFA500).withAlpha(50)
     )
-  )
+  ),
 );
 
 ThemeData darkTheme = ThemeData(

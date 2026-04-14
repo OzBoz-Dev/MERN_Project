@@ -141,12 +141,18 @@ class _ProjectCardState extends State<ProjectCard> {
                     const SizedBox(width: 5,),
                     // Like button
                     IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: Color(0xFFFFA500),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)
+                        )
+                      ),
                       onPressed: () {
                         setState(() {
                           _isLiked = !_isLiked;
                         });
                       },
-                      color: Colors.white,
                       icon: AnimatedSwitcher(
                         duration: Duration(milliseconds: 200),
                         switchInCurve: Curves.easeOutBack,
