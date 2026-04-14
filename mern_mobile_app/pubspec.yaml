@@ -12,7 +12,9 @@ dependencies:
   flutter_tabler_icons: ^1.43.0
   google_fonts: ^6.2.1
   material_symbols_icons: ^4.2928.1
+  objectid: ^4.0.3
   provider: ^6.1.5+1
+  shared_preferences: ^2.5.5
   timeago_flutter: ^3.7.0
 
 dev_dependencies:
