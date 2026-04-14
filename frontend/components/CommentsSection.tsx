@@ -1,52 +1,103 @@
 "use client";
 
-import { useState } from "react";
-import { Button, Textarea, Stack, Group, Text } from "@mantine/core";
+import {
+  Stack,
+  Button,
+  Textarea,
+  Group,
+  Text,
+  Center,
+  Space,
+} from "@mantine/core";
+import { IconPencil, IconCircleXFilled } from "@tabler/icons-react";
 import CommentCard from "./CommentCard";
-import { IconCircleXFilled, IconPencil } from "@tabler/icons-react";
+import { useState } from "react";
+import { getCookie } from "cookies-next/client";
+import { ObjectId } from "bson";
+import { API_ENTRYPOINT } from "@/constants/constants";
+import { designTokens } from "@/app/GlobalTheme";
 
-type Comment = {
-  author: string;
-  datePosted: Date;
-  body: string;
+type Props = {
+  postId: string;
+  initialComments: PostComment[];
 };
 
-// Fake, hardcoded data for now
-// TODO: Use fetch() later to fetch actual comments
-const initialComments: Comment[] = [
-  {
-    author: "user_1",
-    datePosted: new Date(),
-    body: "Comment body",
-  },
-  {
-    author: "user_2",
-    datePosted: new Date(),
-    body: "Comment body **bold**",
-  },
-  {
-    author: "user_3",
-    datePosted: new Date(),
-    body: "Comment body *italics*",
-  },
-];
+// Creates a new comment
+async function createComment(
+  author_username: string,
+  body: string,
+  post_id_belong: string,
+) {
+  const response = await fetch(API_ENTRYPOINT + `/comments/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getCookie("token")}`,
+    },
+    body: JSON.stringify({
+      author_username,
+      body,
+      likes: [],
+      post_id_belong,
+    }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    const error: string = data.error;
+    throw new Error(`Error occurred when creating a comment: ${error}`);
+  }
+  return data; // return the comment
+}
 
-export default function CommentsSection() {
-  const [comments, setComments] = useState<Comment[]>(initialComments);
+export default function CommentsSection({ postId, initialComments }: Props) {
+  const [comments, setComments] = useState<PostComment[]>(initialComments);
   const [writing, setWriting] = useState(false);
   const [draft, setDraft] = useState("");
 
-  const handlePost = () => {
-    if (!draft.trim()) return;
-    const newComment: Comment = {
-      author: "you", // placeholder until auth is wired up
-      datePosted: new Date(),
-      body: draft.trim(),
-    };
-    setComments((prev) => [newComment, ...prev]); // newest on top
-    setDraft("");
-    setWriting(false);
-  };
+  const mockComments: PostComment[] = [
+    {
+      id: "124",
+      author_username: "anon",
+      body: "asdf",
+      likes: [],
+      post_id_belong: "123",
+    },
+    {
+      id: "124",
+      author_username: "anon",
+      body: "asdf",
+      likes: [],
+      post_id_belong: "123",
+    },
+    {
+      id: "124",
+      author_username: "anon",
+      body: "asdf",
+      likes: [],
+      post_id_belong: "123",
+    },
+    {
+      id: "124",
+      author_username: "anon",
+      body: "asdf",
+      likes: [],
+      post_id_belong: "123",
+    },
+    {
+      id: "124",
+      author_username: "anon",
+      body: "asdf",
+      likes: [],
+      post_id_belong: "123",
+    },
+    {
+      id: "124",
+      author_username: "anon",
+      body: "asdf",
+      likes: [],
+      post_id_belong: "123",
+    },
+  ];
 
   return (
     <Stack w="100%" gap="md">
@@ -83,19 +134,48 @@ export default function CommentsSection() {
             >
               Cancel
             </Button>
-            <Button onClick={handlePost}>Post Comment</Button>
+            <Button
+              onClick={async () => {
+                if (!draft.trim()) return;
+                let createdComment: PostComment;
+                try {
+                  createdComment = await createComment(
+                    getCookie("username") ?? "Anonymous",
+                    draft.trim(),
+                    postId,
+                  );
+                } catch (e) {
+                  console.error(e);
+                  return;
+                }
+
+                setComments((prev) => [createdComment, ...prev]); // newest on top
+                setDraft("");
+                setWriting(false);
+              }}
+            >
+              Post Comment
+            </Button>
           </Group>
         </Stack>
       )}
-
-      {comments.map((c, i) => (
-        <CommentCard
-          key={`${c.author}-${c.datePosted.getTime()}-${i}`}
-          author={c.author}
-          datePosted={c.datePosted}
-          body={c.body}
-        />
-      ))}
+      {comments.length > 0 ? (
+        comments.map((comment) => (
+          <CommentCard
+            key={`${comment.id}`}
+            author={comment.author_username}
+            datePosted={new ObjectId(comment.id).getTimestamp()}
+            body={comment.body}
+          />
+        ))
+      ) : (
+        <Center pt={50}>
+          <Text c={designTokens.colors.textMuted}>
+            No comments yet. Start the conversation!
+          </Text>
+        </Center>
+      )}
+      <Space h={"md"} />
     </Stack>
   );
 }
