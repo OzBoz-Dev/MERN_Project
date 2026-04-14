@@ -4,6 +4,7 @@ import { Card, Text, Group } from "@mantine/core";
 import { designTokens } from "@/app/GlobalTheme";
 import { formatText } from "@/lib/formatText";
 import LikeButton from "./LikeButton";
+import { getCookie } from "cookies-next/client";
 
 type Props = {
   author: string;
@@ -42,7 +43,7 @@ export default function CommentCard({ author, datePosted, body, commentId, likes
         {formatText(body)}
       </Text>
       <Group justify="flex-end">
-        <LikeButton commentId={commentId} likes={likes.length} />
+        <LikeButton commentId={commentId} likes={likes.length} initiallyLiked={likes.includes(getCookie("username")!)} />
       </Group>
     </Card>
   );
