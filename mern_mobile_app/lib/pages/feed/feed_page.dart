@@ -12,9 +12,9 @@ class FeedPage extends StatelessWidget {
     numLikes: 1000,
     description: "The quick brown fox jumped over the lazy dog.",
     tags: [
-      Tag(label: "ML Developer"),
-      Tag(label: "Frontend Developer"),
-      Tag(label: "DevOps"),
+      Tag(id: "asdf", label: "ML Developer"),
+      Tag(id: "asdf", label: "Frontend Developer"),
+      Tag(id: "asdf", label: "DevOps"),
     ],
     dateTimePosted: DateTime.now().add(Duration(hours: -2)),
   ));
