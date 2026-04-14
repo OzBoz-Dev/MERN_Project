@@ -4,14 +4,23 @@ import { Card, Text, Group } from "@mantine/core";
 import { designTokens } from "@/app/GlobalTheme";
 import { formatText } from "@/lib/formatText";
 import LikeButton from "./LikeButton";
+import { getCookie } from "cookies-next/client";
 
 type Props = {
   author: string;
   datePosted: Date;
   body: string;
+  commentId: string;
+  likes: string[];
 };
 
-export default function CommentCard({ author, datePosted, body }: Props) {
+export default function CommentCard({
+  author,
+  datePosted,
+  body,
+  commentId,
+  likes,
+}: Props) {
   const formattedDate = datePosted.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
@@ -40,7 +49,15 @@ export default function CommentCard({ author, datePosted, body }: Props) {
         {formatText(body)}
       </Text>
       <Group justify="flex-end">
-        <LikeButton likes={45} />
+        <LikeButton
+          commentId={commentId}
+          likes={likes.length}
+          initiallyLiked={
+            getCookie("username") != undefined
+              ? likes.includes(getCookie("username")!)
+              : false
+          }
+        />
       </Group>
     </Card>
   );

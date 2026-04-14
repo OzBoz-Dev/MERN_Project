@@ -20,6 +20,6 @@ jobs:
                     git checkout -B $GITHUB_REF_NAME origin/$GITHUB_REF_NAME
                     git pull origin $GITHUB_REF_NAME
                     docker compose down
-                    docker compose up -d --build
+                    docker compose --profile prod up -d --build
 
 

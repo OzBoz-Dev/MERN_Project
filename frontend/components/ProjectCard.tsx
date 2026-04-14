@@ -7,17 +7,17 @@ import LikeButton from "./LikeButton";
 import ReadFullPostButton from "./ReadFullPostButton";
 import TimeAgoClient from "./TimeAgoClient";
 import { Flex } from "@mantine/core";
+import { getCookie } from "cookies-next/client";
 
 type Props = {
   id: string;
   title: string;
   body: string;
   author: string;
-  likes: number;
+  likes: string[];
   tags: string[];
   datePosted: Date;
 };
-
 
 export default function ProjectCard({
   id,
@@ -77,7 +77,15 @@ export default function ProjectCard({
       <Flex justify={"flex-end"} align={"flex-start"} gap={"16px"}>
         <ReadFullPostButton id={id} />
         <MessageButton />
-        <LikeButton likes={likes} />
+        <LikeButton
+          likes={likes.length}
+          postId={id}
+          initiallyLiked={
+            getCookie("username") != undefined
+              ? likes.includes(getCookie("username")!)
+              : false
+          }
+        />
       </Flex>
     </div>
   );
