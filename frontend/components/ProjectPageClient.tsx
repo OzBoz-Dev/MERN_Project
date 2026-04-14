@@ -11,6 +11,7 @@ import MessageButton from "./MessageButton";
 import TagHolder from "./TagHolder";
 import { Post } from "@/types/Post";
 import { notFound } from "next/navigation";
+import { getCookie } from "cookies-next/client";
 
 type Props = {
   post: Post | null;
@@ -54,7 +55,11 @@ export default function ProjectPageClient({ post, comments }: Props) {
 
         <Group justify="flex-end" align="flex-start" gap="16px">
           <MessageButton />
-          <LikeButton likes={post.likes.length} />
+          <LikeButton
+            likes={post.likes.length}
+            postId={post.id}
+            initiallyLiked={post.likes.includes(getCookie("username")!)}
+          />
         </Group>
       </Stack>
       <Divider mt="lg" mb="xl" w={"100%"} />

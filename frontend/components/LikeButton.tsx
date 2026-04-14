@@ -24,8 +24,8 @@ async function likePostById(id: string) {
       Authorization: `Bearer ${getCookie("token")}`,
     },
     body: JSON.stringify({
-      username: getCookie("username")
-    })
+      username: getCookie("username"),
+    }),
   });
   const data = await response.json();
   if (!response.ok) {
@@ -44,8 +44,8 @@ async function likeCommentById(id: string) {
       Authorization: `Bearer ${getCookie("token")}`,
     },
     body: JSON.stringify({
-      username: getCookie("username")
-    })
+      username: getCookie("username"),
+    }),
   });
   const data = await response.json();
   if (!response.ok) {
@@ -55,11 +55,12 @@ async function likeCommentById(id: string) {
   return data; // return the comment
 }
 
-
-// Checks whether this specific post/comment was already liked for the user
-
-
-export default function LikeButton({ postId, commentId, likes, initiallyLiked }: Props) {
+export default function LikeButton({
+  postId,
+  commentId,
+  likes,
+  initiallyLiked,
+}: Props) {
   const [likeCount, setLikeCount] = useState(likes);
   const [clicked, toggle] = useToggle([false, true]);
 
@@ -77,26 +78,24 @@ export default function LikeButton({ postId, commentId, likes, initiallyLiked }:
         onClick={async () => {
           toggle();
           // Immediate feedback client side
-          clicked == false ? setLikeCount(likeCount + 1) : setLikeCount(likeCount - 1);
-          if(postId) {
+          clicked == false
+            ? setLikeCount(likeCount + 1)
+            : setLikeCount(likeCount - 1);
+          if (postId) {
             try {
               await likePostById(postId);
-            }
-            catch(e) {
+            } catch (e) {
               console.error(e);
               return;
             }
-          }
-          else if(commentId) {
+          } else if (commentId) {
             try {
               await likeCommentById(commentId);
-            }
-            catch(e) {
+            } catch (e) {
               console.error(e);
               return;
             }
-          }
-          else {
+          } else {
             return;
           }
           // Todo: Add functoin here to update like count on post/comment
@@ -116,9 +115,9 @@ export default function LikeButton({ postId, commentId, likes, initiallyLiked }:
       </Button>
       <Text size="xs" c={designTokens.colors.textMuted}>
         {/* Format 1000 to 1k, 10000 to 1M, etc */}
-        {new Intl.NumberFormat('en', {
-          notation: 'compact',
-          compactDisplay: 'short'
+        {new Intl.NumberFormat("en", {
+          notation: "compact",
+          compactDisplay: "short",
         }).format(likeCount)}
       </Text>
     </Flex>

@@ -18,7 +18,6 @@ type Props = {
   datePosted: Date;
 };
 
-
 export default function ProjectCard({
   id,
   title,
@@ -77,7 +76,7 @@ export default function ProjectCard({
       <Flex justify={"flex-end"} align={"flex-start"} gap={"16px"}>
         <ReadFullPostButton id={id} />
         <MessageButton />
-        <LikeButton likes={likes} />
+        <LikeButton likes={likes} postId={id} initiallyLiked={false} />
       </Flex>
     </div>
   );
