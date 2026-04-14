@@ -19,7 +19,7 @@ services:
     ports:
       - "3000:3000"   
     environment:
-      - API_ENTRYPOINT=${API_ENTRYPOINT}
+      - NEXT_PUBLIC_API_ENTRYPOINT=${API_ENTRYPOINT}
       - API_SERVER_ENTRYPOINT=${API_SERVER_ENTRYPOINT}
       - FRONTEND_URL=${FRONTEND_URL}
     depends_on:
