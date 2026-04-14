@@ -16,6 +16,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
+      args:
+        - NEXT_PUBLIC_API_ENTRYPOINT=${API_ENTRYPOINT}
+        - API_SERVER_ENTRYPOINT=${API_SERVER_ENTRYPOINT}
     ports:
       - "3000:3000"   
     environment:
