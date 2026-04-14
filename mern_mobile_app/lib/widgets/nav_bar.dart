@@ -42,7 +42,18 @@ class _NavBarState extends State<NavBar> {
     
     return Scaffold(
       extendBody: false,
-      appBar: AppBar(title: Text(_appBarTitles[navProvider.selectedIndex],), centerTitle: true,),
+      appBar: AppBar(
+        title: Text(_appBarTitles[navProvider.selectedIndex],),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile');
+            },
+            icon: Icon(TablerIcons.user_circle)
+          )
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: navProvider.onNavItemTapped,
         selectedIndex: navProvider.selectedIndex,
