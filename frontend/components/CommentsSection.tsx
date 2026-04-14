@@ -166,7 +166,7 @@ export default function CommentsSection({ postId, initialComments }: Props) {
             author={comment.author_username}
             datePosted={new ObjectId(comment.id).getTimestamp()}
             body={comment.body}
-            post_id={postId}
+            commentId={comment.id}
             likes={comment.likes}
           />
         ))

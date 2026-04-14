@@ -9,11 +9,11 @@ type Props = {
   author: string;
   datePosted: Date;
   body: string;
-  post_id: string;
+  commentId: string;
   likes: string[];
 };
 
-export default function CommentCard({ author, datePosted, body, post_id, likes }: Props) {
+export default function CommentCard({ author, datePosted, body, commentId, likes }: Props) {
   const formattedDate = datePosted.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
@@ -42,7 +42,7 @@ export default function CommentCard({ author, datePosted, body, post_id, likes }
         {formatText(body)}
       </Text>
       <Group justify="flex-end">
-        <LikeButton likes={likes.length} />
+        <LikeButton commentId={commentId} likes={likes.length} />
       </Group>
     </Card>
   );
