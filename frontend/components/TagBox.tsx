@@ -9,6 +9,7 @@ type TagBoxProps = {
     label: string;
     description: string;
 }
+
 export default function TagBox({ tags, setTags, label, description }: TagBoxProps) {
     const searchIcon = <IconSearch size={16} />;
     const [input, setInput] = useState("");
@@ -38,4 +39,8 @@ export default function TagBox({ tags, setTags, label, description }: TagBoxProp
             />
         </div>
     )
+}
+
+async function onChange(){
+    
 }
