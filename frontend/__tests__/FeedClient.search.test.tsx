@@ -1,14 +1,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
-import FeedClient from '../FeedClient';
+import FeedClient from '../components/FeedClient';
 import { Post } from '@/types/Post';
 
 // Mock fetch globally
 global.fetch = jest.fn();
 
 // Mock the child components
-jest.mock('../ProjectCard', () => {
+jest.mock('../components/ProjectCard', () => {
   return function MockProjectCard({ title, author }: { title: string; author: string }) {
     return <div data-testid={`post-card-${title}`}>{title} by {author}</div>;
   };
@@ -20,25 +21,26 @@ jest.mock('react-infinite-scroll-component', () => {
   };
 });
 
-jest.mock('../../constants/constants', () => ({
+jest.mock('../constants/constants', () => ({
   API_ENTRYPOINT: 'http://localhost:5001',
 }));
 
-jest.mock('../AdvancedSettings', () => {
+jest.mock('../components/AdvancedSettings', () => {
   return function MockAdvancedSettings() {
     return <div>Advanced Settings</div>;
   };
 });
 
 describe('FeedClient - Search Functionality', () => {
-  const mockPost: Post = {
-    id: '1',
+  const mockApiPost = {
+    _id: '1',
     title: 'lol this is funny',
     body: 'This post contains lol in the body',
     author: 'Jane Smith',
-    likes: 15,
+    likes: ['user1', 'user2'],
     tags: ['humor', 'funny'],
-    datePosted: new Date('2026-04-11'),
+    attachments: '',
+    datePosted: new Date('2026-04-11').toISOString(),
   };
 
   const initialPosts: Post[] = [
@@ -46,9 +48,10 @@ describe('FeedClient - Search Functionality', () => {
       id: '0',
       title: 'Initial Post',
       body: 'Some initial content',
-      author: 'John Doe',
-      likes: 5,
-      tags: ['general'],
+      attachments: '',
+      likes: ['user3'],
+      array_tags_id: ['general'],
+      author_username: 'John Doe',
       datePosted: new Date('2026-04-10'),
     },
   ];
@@ -64,7 +67,7 @@ describe('FeedClient - Search Functionality', () => {
     (global.fetch as jest.Mock).mockImplementation((url) => {
       if (url.includes('/posts/title?q=lol')) {
         return Promise.resolve({
-          json: () => Promise.resolve([mockPost]),
+          json: () => Promise.resolve([mockApiPost]),
         });
       }
       if (url.includes('/posts/body?q=lol')) {
@@ -87,8 +90,8 @@ describe('FeedClient - Search Functionality', () => {
     // Type "lol" into the search input
     await user.type(searchInput, 'lol');
 
-    // Blur the input to trigger the search
-    fireEvent.blur(searchInput);
+    // Press Enter to trigger the search
+    fireEvent.keyDown(searchInput, { key: 'Enter', code: 'Enter' });
 
     // Wait for the post to appear
     await waitFor(() => {

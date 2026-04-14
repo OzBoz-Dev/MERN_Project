@@ -41,7 +41,7 @@ jest.mock("@mantine/core", () => ({
   Group: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Center: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  Paper: ({ children, withBorder, ...props }: any) => <div {...props}>{children}</div>,
   Flex: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   LoadingOverlay: ({ visible, ...props }: any) => visible ? <div {...props}>Loading...</div> : null,
   Loader: (props: any) => <div {...props}>Loading</div>,
@@ -216,9 +216,6 @@ describe("ProfilePage Component", () => {
       return null;
     });
 
-    // Mock window.location
-    delete (window as any).location;
-    window.location = { href: "" } as any;
   });
 
   afterEach(() => {

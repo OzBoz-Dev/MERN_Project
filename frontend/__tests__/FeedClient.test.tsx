@@ -1,15 +1,16 @@
 import { render, screen } from '@testing-library/react';
-import FeedClient from '../FeedClient';
+import '@testing-library/jest-dom';
+import FeedClient from '../components/FeedClient';
 import { Post } from '@/types/Post';
 
 // Mock the child components
-jest.mock('../ProjectCard', () => {
+jest.mock('../components/ProjectCard', () => {
   return function MockProjectCard({ title, author }: { title: string; author: string }) {
     return <div data-testid={`post-card-${title}`}>{title} by {author}</div>;
   };
 });
 
-jest.mock('../SearchBar', () => {
+jest.mock('../components/SearchBar', () => {
   return function MockSearchBar() {
     return <div>Search Bar</div>;
   };
@@ -26,9 +27,10 @@ describe('FeedClient', () => {
     id: '1',
     title: 'Example Post',
     body: 'This is an example post body',
-    author: 'John Doe',
-    likes: 42,
-    tags: ['react', 'testing'],
+    attachments: '',
+    likes: ['user1', 'user2'],
+    array_tags_id: ['react', 'testing'],
+    author_username: 'John Doe',
     datePosted: new Date('2026-04-11'),
   };
 
