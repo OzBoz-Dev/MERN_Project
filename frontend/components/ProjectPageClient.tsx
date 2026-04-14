@@ -10,14 +10,16 @@ import LikeButton from "./LikeButton";
 import MessageButton from "./MessageButton";
 import TagHolder from "./TagHolder";
 import { Post } from "@/types/Post";
+import { notFound } from "next/navigation";
 
 type Props = {
   post: Post | null;
+  comments: PostComment[];
 };
 
-export default function ProjectPageClient({ post }: Props) {
+export default function ProjectPageClient({ post, comments }: Props) {
   return post == null ? (
-    <div>Loading post</div>
+    notFound()
   ) : (
     <Container
       size="md"
@@ -56,7 +58,7 @@ export default function ProjectPageClient({ post }: Props) {
         </Group>
       </Stack>
       <Divider mt="lg" mb="xl" w={"100%"} />
-      <CommentsSection />
+      <CommentsSection postId={post.id} initialComments={comments} />
     </Container>
   );
 }

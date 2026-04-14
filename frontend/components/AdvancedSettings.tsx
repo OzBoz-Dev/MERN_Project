@@ -39,7 +39,7 @@ export default function AdvancedSettings({tags, setTags}: AdvancedSettingsProp) 
                     <h2>
                         Tags
                     </h2>
-                    <TagBox tags={tags} setTags={setTags}></TagBox>
+                    <TagBox tags={tags} setTags={setTags} label="Search" description="What posts are you looking for?"></TagBox>
                     
                     <div style={{
                         display:"flex", 
