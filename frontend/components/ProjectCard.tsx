@@ -19,7 +19,7 @@ type Props = {
   datePosted: Date;
 };
 
-export default async function ProjectCard({
+export default function ProjectCard({
   id,
   title,
   body,

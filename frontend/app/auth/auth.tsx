@@ -130,7 +130,7 @@ export default function Auth() {
         setCookie("firstName", data.user.firstName);
         setCookie("lastName", data.user.lastName);
         setSuccess(`Welcome back, ${data.user.username}!`);
-        location.assign("/feed");
+        location.assign("/");
       }
     } catch (err: any) {
       setError(err.message);
