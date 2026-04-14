@@ -41,7 +41,7 @@ export default async function Feed() {
       }}
     >
       {/* Use FeedClient, giving it the fetched initial posts */}
-      {/* <FeedClient initialPosts={initialPosts} /> */}
+      <FeedClient initialPosts={initialPosts} />
       <Flex justify={"flex-end"}>
         <CreateProjectButton />
       </Flex>
