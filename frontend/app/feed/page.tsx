@@ -3,12 +3,12 @@ import FeedClient from "@/components/FeedClient";
 import SearchBar from "@/components/SearchBar";
 import { Post } from "@/types/Post";
 import { Flex } from "@mantine/core";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { Metadata } from "next";
 
 // Metadata
 export const metadata: Metadata = {
-  title: 'Home',
+  title: "Home",
 };
 
 export default async function Feed() {
@@ -19,11 +19,13 @@ export default async function Feed() {
     id: "69b07c3d754d16127d7fc4e7",
     title: "title",
     body: "the quick brown fox jumped over the lazy dog",
-    author: "del0m_",
-    tags: ["ML developer", "DevOps"],
-    likes: 14,
+    attachments: "",
+    likes: ["del0m_"],
+    author_username: "del0m_",
+    array_tags_id: ["ML dev", "devops"],
     datePosted: new ObjectId("69b07c3d754d16127d7fc4e7").getTimestamp(), // Extract timestamp
   };
+  const searchBar = <SearchBar onResults={() => void}/>;
   // 20 of mockPost
   const initialPosts: Post[] = Array.from({ length: 20 }, () => ({
     ...mockPost,

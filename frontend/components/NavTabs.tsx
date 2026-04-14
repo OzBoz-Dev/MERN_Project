@@ -6,24 +6,34 @@ import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import UserAvatar from "./UserAvatar";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { designTokens, theme } from "@/app/GlobalTheme";
+import { getCookie } from "cookies-next/client";
 
 export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
   const router = useRouter();
+
+  // Define routes where NavTabs should be hidden
+  const hiddenRoutes = ['/auth'];
+  
+  // Check if current route should hide NavTabs
+  if (hiddenRoutes.some(route => pathname.startsWith(route))) {
+    return null;
+  }
 
   const [user, setUser] = useState<{ username: string; firstName: string; lastName: string } | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    const username = localStorage.getItem('username');
+    const username = getCookie('username');
     if (username) {
       setUser({
         username,
-        firstName: localStorage.getItem('firstName') || "",
-        lastName: localStorage.getItem('lastName') || "",
+        firstName: getCookie('firstName') || "",
+        lastName: getCookie('lastName') || "",
       });
     }
   }, []);
@@ -89,9 +99,14 @@ export function NavTabs() {
       {/* Main navigation tabs */}
       <Flex gap="lg">
         {/* Logo */}
-        <Text fw={700} size="l">
-          Logo
-        </Text>
+        <Link href='/'>
+          <Image
+            src="/ChipIn-nobg.png"
+            alt="ChipIn logo"
+            width={150}
+            height={50}
+          />
+        </Link>
         {/* Default value is the first tab always */}
         <Tabs
           classNames={{ tab: styles.tab }}
@@ -99,7 +114,7 @@ export function NavTabs() {
           value={activeTab} // use active tab for the current tab value
           variant="unstyled"
         >
-          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'flex-end'}}>{tabs}</Tabs.List>
+          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'stretch', height:'100%'}}>{tabs}</Tabs.List>
         </Tabs>
       </Flex>
       <div style={{ flex: 1 }} />
@@ -110,13 +125,13 @@ export function NavTabs() {
             zIndex={2000}
       >
       <Link 
-        href={`/profile/${localStorage.getItem('username')}`} 
+        href={`/profile/${getCookie('username')}`} 
         style={{ textDecoration: 'none', color: 'inherit' }}
       >
           <UserAvatar 
-            username={localStorage.getItem('username') as string} 
-            firstName={localStorage.getItem('firstName') as string}
-            lastName={localStorage.getItem('lastName') as string}
+            username={getCookie('username') as string} 
+            firstName={getCookie('firstName') as string}
+            lastName={getCookie('lastName') as string}
             radius="xl" 
             size="md"
           />

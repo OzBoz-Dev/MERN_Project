@@ -33,7 +33,7 @@ router.get("/:_id", async (req, res) => {
 //create a message
 router.post("/", async (req, res) => {
   try {
-    const message = await Message.create(req.body);
+    const message = await Message.create({ ...req.body, author_username: req.user.username });
     res.status(200).json(message);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -77,3 +77,4 @@ router.delete("/:_id", async (req, res) => {
 });
 
 module.exports = router;
+ 

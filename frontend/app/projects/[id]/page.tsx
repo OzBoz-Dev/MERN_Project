@@ -1,65 +1,51 @@
-import { designTokens } from "@/app/GlobalTheme";
-import BookmarkButton from "@/components/BookmarkButton";
-import TagHolder from "@/components/TagHolder";
-import MessageButton from "@/components/MessageButton";
-import LikeButton from "@/components/LikeButton";
-import { IconUser } from "@tabler/icons-react";
-import { Container, Stack, Group, Title, Text, Divider } from "@mantine/core";
-import CommentsSection from "@/components/CommentsSection";
+import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
+import { ObjectId } from "bson";
+import { Post } from "@/types/Post";
+import ProjectPageClient from "@/components/ProjectPageClient";
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
+// Fetch post by id
+async function fetchPostById(id: string) {
+  console.log(`ID to fetch: ${id}`);
+  const response = await fetch(API_SERVER_ENTRYPOINT + `/posts/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    const error: string = data.error;
+    throw new Error(`Error occurred when fetching a post: ${error}`);
+  }
+  return data; // return the post
+}
+
 export default async function ProjectPage({ params }: PageProps) {
-  const { id } = params;
+  // Get the post id from props
+  const { id } = await params;
+  let postJson;
+  let post: Post | null = null;
 
-  const post = {
-    postTitle: "title",
-    user: "del0m_",
-    postTags: ["ML developer", "DevOps"],
-    description: "the quick brown fox jumped over the lazy dog",
-    timeAgo: "2 hours ago",
-  };
+  // Fetch and format the post by id
+  try {
+    postJson = await fetchPostById(id);
+    post = {
+      id: postJson._id,
+      title: postJson.title,
+      body: postJson.body,
+      attachments: postJson.attachments,
+      likes: postJson.likes,
+      author_username: postJson.author_username,
+      array_tags_id: postJson.array_tags_id,
+      datePosted: new ObjectId(postJson._id).getTimestamp(),
+    };
+  } catch (e) {
+    console.error(e);
+  }
 
-  return (
-    <Container
-      size="md"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        paddingTop: "32px",
-      }}
-    >
-      <Stack w="100%" gap="md">
-        <Group justify="space-between" align="center">
-          <Title order={1}>{post.postTitle}</Title>
-          <BookmarkButton />
-        </Group>
-
-        <Text size="sm" c={designTokens.colors.textMuted}>
-          Posted by {post.user} &middot; {post.timeAgo}
-        </Text>
-
-        <Group gap="8px" align="center">
-          <IconUser size="20px" />
-          <Text size="sm" c={designTokens.colors.textMuted}>
-            Looking for:
-          </Text>
-        </Group>
-        <TagHolder tags={post.postTags} />
-
-        <Text c="#555">{post.description}</Text>
-
-        <Group justify="flex-end" align="flex-start" gap="16px">
-          <MessageButton />
-          <LikeButton likes={0} />
-        </Group>
-      </Stack>
-      <Divider mt="lg" mb="xl" w={"100%"} />
-      <CommentsSection />
-    </Container>
-  );
+  return <ProjectPageClient post={post} />;
 }

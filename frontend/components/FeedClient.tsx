@@ -63,9 +63,9 @@ export default function FeedClient({ initialPosts }: Props) {
             id={item.id}
             title={item.title}
             body={item.body}
-            author={item.author}
-            tags={item.tags}
-            likes={item.likes}
+            author={item.author_username}
+            tags={item.array_tags_id}
+            likes={item.likes.length}
             datePosted={item.datePosted}
           />
         ))}
@@ -73,4 +73,25 @@ export default function FeedClient({ initialPosts }: Props) {
     </>
     );
 
+    <InfiniteScroll
+      dataLength={items.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={<h4>Loading!</h4>}
+      endMessage={<h4>Ended</h4>}
+    >
+      {items.map((item, index) => (
+        <ProjectCard
+          key={index}
+          id={item.id}
+          title={item.title}
+          body={item.body}
+          author={item.author_username}
+          tags={item.array_tags_id}
+          likes={item.likes.length}
+          datePosted={item.datePosted}
+        />
+      ))}
+    </InfiniteScroll>
+  );
 }

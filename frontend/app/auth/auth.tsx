@@ -11,6 +11,11 @@ import {
   Group,
   Stack,
 } from "@mantine/core";
+
+import {
+  setCookie,
+} from 'cookies-next/client';
+
 import { useState } from "react";
 import { designTokens } from "../GlobalTheme";
 import { PasswordStrength } from "./PasswordStrength";
@@ -19,10 +24,9 @@ import { FloatingLabelInput } from "./FloatingLabelInput";
 import { GradientSegmentedControl } from "./GradientSegmentedControl";
 import { InputValidation } from "./InputValidation";
 import { API_ENTRYPOINT } from "@/constants/constants";
-import { Metadata } from "next";
 
 export default function Auth() {
-  const [type, setType] = useState("Log In");
+  const [type, setType] = useState("Log In"); 
 
   // Forms
   const [email, setEmail] = useState("");
@@ -50,6 +54,7 @@ export default function Auth() {
   const [success, setSuccess] = useState<string | null>(null);
   const [verificationSent, setVerificationSent] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
@@ -93,6 +98,17 @@ export default function Auth() {
     return data;
   }
 
+  async function apiResetPassword(email: string) {
+    const resp = await fetch(API_ENTRYPOINT + "/auth/recovery/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error);
+    return data;
+  }
+
   // Submit Function
   const handleSubmit = async () => {
     setError(null);
@@ -108,13 +124,31 @@ export default function Auth() {
       } else {
         const data = await apiLogin(email, password);
         // Store token
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("username", data.user.username);
-        localStorage.setItem("firstName", data.user.firstName);
-        localStorage.setItem("lastName", data.user.lastName);
+        setCookie("token", data.token);
+        setCookie("username", data.user.username);
+        setCookie("firstName", data.user.firstName);
+        setCookie("lastName", data.user.lastName);
         setSuccess(`Welcome back, ${data.user.username}!`);
         location.assign("/feed");
       }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Submit Function
+  const handleResetPassword = async () => {
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+
+    try {
+      await apiResetPassword(email);
+      setSuccess("Check your inbox");
+      setSubmittedEmail(email);
+      setVerificationSent(true);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -273,6 +307,7 @@ export default function Auth() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setPassword(e.target.value)
             }
+            onClick={() => setResettingPassword(true)}
           />
         ) : (
           <PasswordStrength
@@ -348,11 +383,91 @@ export default function Auth() {
     </Paper>
   );
 
+  const resetCard = (
+    <Paper
+      withBorder
+      p="xl"
+      radius="md"
+      className="glass-card"
+      shadow="md"
+      style={{ backgroundColor: designTokens.colors.glassyBackground }}
+    >
+      <Title
+        order={1}
+        mb="xl"
+        ff={designTokens.fonts.heading}
+        style={{ textAlign: "center" }}
+      >
+        Reset your password
+      </Title>
+      <Text size="sm" mb="lg">
+        Type your recovery email below to send a reset request
+      </Text>
+      <Stack justify="flex-start">
+        {success && (
+          <Alert
+            color="green"
+            mb="md"
+            radius="md"
+            withCloseButton
+            onClose={() => setSuccess(null)}
+          >
+            {success}
+          </Alert>
+        )}
+        {/* Error message */}
+        {error && (
+          <Alert
+            color="red"
+            mb="md"
+            radius="md"
+            withCloseButton
+            onClose={() => setError(null)}
+          >
+            {error}
+          </Alert>
+        )}
+        { /* Email input */ }
+        <InputValidation
+            value={email}
+            label="Recovery Email"
+            type="email"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
+            onValidChange={setEmailValid}
+        />
+          <Button
+            variant="filled"
+            color="orange"
+            fullWidth
+            loading={loading}
+            onClick={handleResetPassword}
+            disabled={!emailValid}
+          >
+            Reset Password
+          </Button>
+          <Button
+            variant="subtle"
+            color="orange"
+            fullWidth
+            onClick={() => {
+              location.reload();
+            }}
+          >
+          Back to Log In
+        </Button>
+      </Stack>
+    </Paper>
+  );
+
   return (
     <main>
       <div style={{}} className="animated-grid">
         <Container size="md" my="xl" p="xl">
-          {verificationSent ? verifyCard : authCard}
+          { resettingPassword ? resetCard :
+          (verificationSent ? verifyCard : authCard)
+          }
         </Container>
       </div>
     </main>

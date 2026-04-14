@@ -3,7 +3,6 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Comment = require('../models/Comment');
 const auth = require('../middleware/auth')
-const jwt = require('jsonwebtoken')
 
 // view all comments
 router.get('/', async (req, res) => {
@@ -16,9 +15,12 @@ router.get('/', async (req, res) => {
 });
 
 // create a comment 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
-    const comment = new Comment(req.body);
+    const comment = new Comment({
+            ...req.body,
+            author_username: req.user.username
+          });
     await comment.save();
     res.status(201).json(comment);
   } catch (err) {
@@ -38,22 +40,22 @@ router.get('/likes/:_id', async (req, res) => {
   }
 });
 
+// view comments by author username
+router.get('/author/:username', async (req, res) => {
+    try {
+        const comments = await Comment.find({ author_username: req.params.username });
+        res.json(comments);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // view a comment by id
 router.get('/:_id', async (req, res) => {
   try {
     const comment = await Comment.findById(req.params._id);
     if (!comment) return res.status(404).json({ error: 'Comment not found' });
     res.json(comment);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// view comments by author id
-router.get('/:author_id', async (req, res) => {
-  try {
-    const comments = await Comment.find({ author_id: req.params.author_id });
-    res.json(comments);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -68,7 +70,7 @@ router.put('/:_id', auth, async (req, res) => {
       return res.status(404).json({ error: 'Comment not found' });
     }
 
-    if (comment.author_id.toString() !== req.user.id) {
+    if (comment.author_username !== req.user.username) {
       return res.status(403).json({ error: 'Not authorized' });
     }
 
@@ -90,36 +92,40 @@ router.put('/:_id', auth, async (req, res) => {
 
 // delete a comment by id
 router.delete('/:_id', auth, async (req, res) => {
-  try {
-    const comment = await Comment.findByIdAndDelete(req.params._id);
-    if (!comment) return res.status(404).json({ error: 'Comment not found' });
-    res.json({ message: 'Comment deleted' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const comment = await Comment.findById(req.params._id);
+        if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+        if (comment.author_username !== req.user.username) {
+            return res.status(403).json({ error: 'Not authorized' });
+        }
+
+        await comment.deleteOne();
+        res.json({ message: 'Comment deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // like a comment by id
 router.post('/likes/:_id', auth, async (req, res) => {
-  try {
-    const comment = await Comment.findById(req.params._id);
-    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+    try {
+        const comment = await Comment.findById(req.params._id);
+        if (!comment) return res.status(404).json({ error: 'Comment not found' });
 
-    const userId = req.user.id;
-    
-    if (comment.likes.includes(userId)) {
-      comment.likes = comment.likes.filter(id => id.toString() !== userId);
-    } else {
-      // add like
-      comment.likes.push(userId);
+        const username = req.user.username;
+
+        if (comment.likes.includes(username)) {
+            comment.likes = comment.likes.filter(u => u !== username);
+        } else {
+            comment.likes.push(username);
+        }
+
+        await comment.save();
+        res.json(comment);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    await comment.save();
-    res.json(comment);
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
 });
 
 module.exports = router;
