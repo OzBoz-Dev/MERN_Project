@@ -59,6 +59,23 @@ ThemeData lightTheme = ThemeData(
       Color(0xFFFFA500).withAlpha(50)
     )
   ),
+  inputDecorationTheme: InputDecorationThemeData(
+    filled: true,
+    fillColor: Color(0xFFFDF8EA),
+    floatingLabelStyle: TextStyle(
+      color: Color(0xFFFFA500)
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Color(0xFFFFA500)
+      )
+    ),
+  ),
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: Color(0xFFFFA500),
+    selectionHandleColor: Color(0xFFFFA500),
+    selectionColor: Colors.grey[400],
+  )
 );
 
 ThemeData darkTheme = ThemeData(
