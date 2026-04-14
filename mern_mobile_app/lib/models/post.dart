@@ -5,6 +5,7 @@ class Post {
   final List<String> likes;
   final List<String> tags;
   final String authorUsername;
+  final DateTime datePosted;
 
   Post({
     required this.id,
@@ -12,6 +13,7 @@ class Post {
     required this.body,
     required this.likes,
     required this.tags,
-    required this.authorUsername
+    required this.authorUsername,
+    required this.datePosted
   });
 }
