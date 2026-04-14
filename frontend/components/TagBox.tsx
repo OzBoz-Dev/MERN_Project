@@ -25,10 +25,10 @@ export default function TagBox({ tags, setTags, label, description }: TagBoxProp
             <TextInput
             label={label}
             description={description}
-            placeholder="ML, DevOps"
+            placeholder="ml, devops"
             leftSection={searchIcon}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value.toLowerCase())}
             onKeyDown={(e) => {
                 if (e.key === "Enter") handleAddTag();
             }}

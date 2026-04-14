@@ -26,6 +26,7 @@ router.get("/:username", async(req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             bio: user.bio,
+            tags: user.tags,
             profilePicture: user.profilePicture,
             createdAt: user._id.getTimestamp()
         })
@@ -39,11 +40,12 @@ router.get("/:username", async(req, res) => {
 router.put("/:username", async(req, res) => {
   try {
         const { username } = req.params;
-        const { firstName, lastName, bio, tags } = req.body;
+        const { firstName, lastName, bio, tags } = req.body.data;
 
         if (!username) {
             return res.status(400).json({ error: 'Please provide a username' })
         }
+        tags.sort()
 
         // find user
         const user = await User.findOneAndUpdate(
@@ -69,6 +71,7 @@ router.put("/:username", async(req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             bio: user.bio,
+            tags: user.tags,
             profilePicture: user.profilePicture,
             createdAt: user._id.getTimestamp()
         })

@@ -27,7 +27,6 @@ import { API_ENTRYPOINT } from '@/constants/constants'
 import { deleteCookie, getCookie, setCookie } from "cookies-next/client";
 
 async function getProfile(username: any){
-  console.log(username)
   const res = await fetch(API_ENTRYPOINT+'/profile/' + username, {
     cache: 'no-store'
   });
@@ -41,7 +40,6 @@ async function getProfile(username: any){
 }
 
 async function saveProfile(username: string, data: any){
-  console.log(username)
   const res = await fetch(API_ENTRYPOINT+'/profile/' + username, {
     method: 'PUT',
     headers: {

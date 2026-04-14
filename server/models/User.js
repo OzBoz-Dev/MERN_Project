@@ -32,7 +32,9 @@ const userSchema = new mongoose.Schema(
             type: String,
             index: {
                 collation: { locale: 'en', strength: 2 }
-            }
+            },
+            unique: true
+            
         }],
         verified: {
             type: Boolean,

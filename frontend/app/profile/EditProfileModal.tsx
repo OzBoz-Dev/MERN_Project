@@ -81,12 +81,15 @@ export default function EditProfileModal({
       onClose={onClose}
       title="Edit Profile"
       styles={{
-        title: {fontWeight: 700}
+        title: {fontWeight: 700},
+        inner: {
+          paddingTop: '100px'
+        }
       }}
       size="md"
       centered
     >
-      <form onSubmit={handleSubmit} style={{ display: "contents" }}>
+      <form onSubmit={handleSubmit} style={{ display: "contents" }} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault();}}>
         {/* First Name */}
         <TextInput
           label="First Name"
