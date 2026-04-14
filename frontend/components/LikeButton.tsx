@@ -6,7 +6,7 @@ import { Button, Flex, Text } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import { getCookie } from "cookies-next/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   postId?: string;
@@ -65,7 +65,11 @@ export default function LikeButton({
   const [clicked, toggle] = useToggle([false, true]);
 
   // Use initial like value
-  toggle(initiallyLiked);
+  useEffect(() => {
+    if (initiallyLiked) {
+      toggle(); // set initial state ONCE
+    }
+  }, [initiallyLiked]);
 
   return (
     <Flex direction={"column"} gap={3} align={"center"}>
@@ -78,9 +82,7 @@ export default function LikeButton({
         onClick={async () => {
           toggle();
           // Immediate feedback client side
-          clicked == false
-            ? setLikeCount(likeCount + 1)
-            : setLikeCount(likeCount - 1);
+          setLikeCount((prev) => (clicked ? prev - 1 : prev + 1));
           if (postId) {
             try {
               await likePostById(postId);
