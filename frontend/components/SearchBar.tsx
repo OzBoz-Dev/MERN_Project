@@ -4,9 +4,15 @@ import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
 import { API_ENTRYPOINT } from "@/constants/constants";
+import { Post } from "@/types/Post";
+import { title } from "process";
 
 
-export default function SearchBar() {
+type SearchBarProp = {
+    onResults: (posts: Post[]) => void
+}
+
+export default function SearchBar({ onResults }: SearchBarProp) {
 
     const [inputText, setInputText] = useState("");
     const [searchText, setSearchText] = useState("");
@@ -14,25 +20,62 @@ export default function SearchBar() {
     const [byBody, setByBody] = useState<any>(null);
     const searchIcon = <IconSearch size={16} />;
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const [tags, setTags] = useState<string[]>([]);
 
-    useEffect(() => {
-        if (searchText.trim()) {
-            Promise.all([
-                fetch(API_ENTRYPOINT + '/posts/title?q=' + encodeURIComponent(searchText)),
-                fetch(API_ENTRYPOINT + '/posts/body?q=' + encodeURIComponent(searchText)),
-            ]).then(([titleRes, bodyRes]) => {
-                return Promise.all([titleRes.json(), bodyRes.json()]);
-            }).then(([titleData, bodyData]) => {
-                setByTitle(titleData);
-                setByBody(bodyData);
+useEffect(() => {
+    if (searchText.trim()) {
+        // api request
+        Promise.all([
+            fetch(API_ENTRYPOINT + '/posts/title?q=' + encodeURIComponent(searchText)),
+            fetch(API_ENTRYPOINT + '/posts/body?q=' + encodeURIComponent(searchText)),
+        ]).then(([titleRes, bodyRes]) => {
+            return Promise.all([titleRes.json(), bodyRes.json()]);
+        }).then(([titleData, bodyData]) => {
+            const titlePosts = (Array.isArray(titleData) ? titleData : []).map(post => ({
+                id: post._id,
+                title: post.title,
+                body: post.body,
+                author: post.author || 'Unknown',
+                likes: Array.isArray(post.likes) ? post.likes : [],
+                array_tags_id: Array.isArray(post.tags) ? post.tags : [],
+                attachments: post.attachments || '',
+                author_username: post.author || 'Unknown',
+                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
+            }));
 
-                console.log(byTitle);
-                console.log(byBody);
-            });
-        }
-    }, [searchText]);
+            const bodyPosts = (Array.isArray(bodyData) ? bodyData : []).map(post => ({
+                id: post._id,
+                title: post.title,
+                body: post.body,
+                author: post.author || 'Unknown',
+                likes: Array.isArray(post.likes) ? post.likes : [],
+                array_tags_id: Array.isArray(post.tags) ? post.tags : [],
+                attachments: post.attachments || '',
+                author_username: post.author || 'Unknown',
+                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
+            }));
 
-  return (
+            // include tags that are also in the search
+            const mergedPosts = [...titlePosts, ...bodyPosts];
+
+            const filteredPosts = tags.length === 0
+            ? mergedPosts :
+            mergedPosts.filter(post =>
+                Array.isArray(post.array_tags_id) && 
+                tags.every(tag => post.array_tags_id.includes(tag))
+            )
+
+            onResults(filteredPosts);
+
+
+    }).catch((error) => {
+        console.error("search error", error);
+        onResults([]);
+    });
+    }
+}, [searchText, tags, onResults]);
+
+return (
     <div style={{width: "100%"}}>
         <div style={{display: "flex", gap: "12px", alignItems:"flex-end"}}>
             <TextInput
@@ -43,7 +86,11 @@ export default function SearchBar() {
             leftSection={searchIcon}
             value={inputText}
             onChange={(e) => setInputText(e.currentTarget.value)}
-            onBlur={(e) => setSearchText(e.currentTarget.value.trim())}
+            onKeyDown={(e) => {
+                if(e.key === "Enter") {
+                    setSearchText(e.currentTarget.value.trim());
+                }
+            }}
             />
             <ActionIcon
                 variant="light"
@@ -56,7 +103,7 @@ export default function SearchBar() {
 
         {showAdvanced && (
         <div style={{ marginTop: "12px" }}>
-            <AdvancedSettings />
+            <AdvancedSettings tags={tags} setTags={setTags}/>
         </div>
         )}
     </div>

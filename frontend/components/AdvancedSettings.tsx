@@ -4,8 +4,13 @@ import TagBox from "./TagBox";
 import ProjectTag from "./ProjectTag";
 import DatePostedBox from "./DatePostedBox";
 
-export default function AdvancedSettings() {
-    const [tags, setTags] = useState<string[]>([]);
+
+type AdvancedSettingsProp = {
+    tags: string[];
+    setTags: (tags: string[]) => void;
+};
+
+export default function AdvancedSettings({tags, setTags}: AdvancedSettingsProp) {
     return (
         <div
             style={{

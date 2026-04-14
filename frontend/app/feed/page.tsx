@@ -25,12 +25,10 @@ export default async function Feed() {
     array_tags_id: ["ML dev", "devops"],
     datePosted: new ObjectId("69b07c3d754d16127d7fc4e7").getTimestamp(), // Extract timestamp
   };
-  const searchBar = <SearchBar />;
   // 20 of mockPost
   const initialPosts: Post[] = Array.from({ length: 20 }, () => ({
     ...mockPost,
   }));
-
   return (
     <Flex
       direction={"column"}
@@ -42,7 +40,6 @@ export default async function Feed() {
         alignContent: "center",
       }}
     >
-      {searchBar}
       {/* Use FeedClient, giving it the fetched initial posts */}
       <FeedClient initialPosts={initialPosts} />
       <Flex justify={"flex-end"}>
