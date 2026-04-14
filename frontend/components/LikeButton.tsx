@@ -74,6 +74,15 @@ export default function LikeButton({
   return (
     <Flex direction={"column"} gap={3} align={"center"}>
       <Button
+        disabled={getCookie("username") == undefined} // disable when not logged in
+        title={
+          // tooltip
+          getCookie("username") != undefined
+            ? "Like"
+            : postId
+              ? "Log in to like this post!"
+              : "Log in to like this comment!"
+        }
         size="md"
         radius="md"
         style={{ width: 40, height: 36, padding: 0 }}

@@ -34,10 +34,10 @@ export default function FeedClient({ initialPosts }: Props) {
   // Make handleResults stable
   const handleResults = useCallback((posts: Post[]) => {
     setItems(posts);
-  }, [])
+  }, []);
   // Builds off of initialPosts
   const fetchMoreData = useCallback(() => {
-    if(!initialPosts || initialPosts.length === 0) return
+    if (!initialPosts || initialPosts.length === 0) return;
     // Would need to fetch more items from api
     // Example: await fetch('api/posts?page=...')
 
@@ -49,7 +49,7 @@ export default function FeedClient({ initialPosts }: Props) {
   }, [initialPosts]);
   return (
     <>
-      <SearchBar onResults={handleResults}/>
+      <SearchBar onResults={handleResults} />
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}
@@ -65,7 +65,7 @@ export default function FeedClient({ initialPosts }: Props) {
             body={item.body}
             author={item.author_username}
             tags={item.array_tags_id}
-            likes={item.likes.length}
+            likes={item.likes}
             datePosted={item.datePosted}
           />
         ))}

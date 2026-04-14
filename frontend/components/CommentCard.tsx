@@ -52,7 +52,11 @@ export default function CommentCard({
         <LikeButton
           commentId={commentId}
           likes={likes.length}
-          initiallyLiked={likes.includes(getCookie("username")!)}
+          initiallyLiked={
+            getCookie("username") != undefined
+              ? likes.includes(getCookie("username")!)
+              : false
+          }
         />
       </Group>
     </Card>
