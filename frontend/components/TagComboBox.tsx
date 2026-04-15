@@ -6,9 +6,10 @@ interface TagComboProps {
   color: string;
   setTags: (tags: string[]) => void;
   selectedTags: string[];
+  allowMissing: boolean
 }
 
-export default function TagComboBox({ color, setTags, selectedTags }: TagComboProps) {
+export default function TagComboBox({ color, setTags, selectedTags, allowMissing }: TagComboProps) {
   const [search, setSearch] = useState('');
   const [tags, setTagsList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -86,7 +87,7 @@ export default function TagComboBox({ color, setTags, selectedTags }: TagComboPr
           rightSectionPointerEvents="none"
           styles={{
             input: {
-              backgroundColor: "white"
+              backgroundColor: color
             }
           }}
         >
@@ -94,12 +95,12 @@ export default function TagComboBox({ color, setTags, selectedTags }: TagComboPr
         </InputBase>
       </Combobox.Target>
 
-      <Combobox.Dropdown bg={'#FFFFFF'}>
+      <Combobox.Dropdown bg={color}>
         <Combobox.Search
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
           onKeyDown={(event) => {
-          if (event.key === 'Enter' && search.trim() !== '') {
+          if (event.key === 'Enter' && search.trim() !== '' && allowMissing) {
             handleAddTag(search);
             combobox.closeDropdown();
           }
@@ -107,12 +108,12 @@ export default function TagComboBox({ color, setTags, selectedTags }: TagComboPr
           placeholder="Search tags"
           styles={{
             input: {
-              backgroundColor: "white"
+              backgroundColor: color
             }
           }}
         />
-        <Combobox.Options mah={100} style={{ overflowY: 'auto' }}>
-          {options.length > 0 ? options : <Combobox.Empty>Press enter to add new tag</Combobox.Empty>}
+        <Combobox.Options mah={100} style={{ overflowY: 'auto', backgroundColor: color }} bg={color}>
+          {options.length > 0 ? options : <Combobox.Empty>{allowMissing ? "Press enter to add new tag" : "Tag not found"}</Combobox.Empty>}
         </Combobox.Options>
       </Combobox.Dropdown>
     </Combobox>

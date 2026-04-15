@@ -9,7 +9,6 @@ import {
   Box,
   Divider,
 } from "@mantine/core";
-import TagBox from "@/components/TagBox";
 import ProjectTag from "@/components/ProjectTag";
 import TagComboBox from "@/components/TagComboBox";
 import { designTokens } from "../GlobalTheme";
@@ -143,11 +142,12 @@ export default function EditProfileModal({
             }
           }}
         />
-        
+
         <TagComboBox
           setTags={setTags}
           selectedTags={tags}
-          color="designTokens.colors.cardBackground"
+          color='#FFFFFF'
+          allowMissing={true}
         />
 
         <div style={{
