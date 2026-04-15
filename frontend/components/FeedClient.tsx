@@ -65,7 +65,7 @@ export default function FeedClient({ initialPosts }: Props) {
             title={item.title}
             body={item.body}
             author={item.author_username}
-            tags={item.array_tags_id}
+            tags={item.array_tags}
             likes={item.likes}
             datePosted={item.datePosted}
           />

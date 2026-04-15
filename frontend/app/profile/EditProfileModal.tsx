@@ -11,6 +11,8 @@ import {
 } from "@mantine/core";
 import TagBox from "@/components/TagBox";
 import ProjectTag from "@/components/ProjectTag";
+import TagComboBox from "@/components/TagComboBox";
+import { designTokens } from "../GlobalTheme";
 
 // 8 solid colors for profile picture
 const COLOR_OPTIONS = [
@@ -79,14 +81,21 @@ export default function EditProfileModal({
     <Modal
       opened={isOpen}
       onClose={onClose}
+      zIndex={3000}
       title="Edit Profile"
       styles={{
         title: {fontWeight: 700},
+        content: {
+          backgroundColor: designTokens.colors.cardBackground
+        },
+        header: {
+          backgroundColor: designTokens.colors.cardBackground
+        },
         inner: {
-          paddingTop: '100px'
+          paddingTop: '10px'
         }
       }}
-      size="md"
+      size="lg"
       centered
     >
       <form onSubmit={handleSubmit} style={{ display: "contents" }} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault();}}>
@@ -97,6 +106,11 @@ export default function EditProfileModal({
           onChange={(e) => setFirstName(e.target.value)}
           required
           placeholder="Enter first name"
+          styles={{
+            input: {
+              backgroundColor: designTokens.colors.cardBackground
+            }
+          }}
         />
 
         {/* Last Name */}
@@ -106,6 +120,11 @@ export default function EditProfileModal({
           onChange={(e) => setLastName(e.target.value)}
           required
           placeholder="Enter last name"
+          styles={{
+            input: {
+              backgroundColor: designTokens.colors.cardBackground
+            }
+          }}
         />
 
         {/* Bio */}
@@ -118,18 +137,29 @@ export default function EditProfileModal({
           description={bio.length + "/300"}
           autosize
           minRows={3}
+          styles={{
+            input: {
+              backgroundColor: designTokens.colors.cardBackground
+            }
+          }}
         />
 
         {/* Tags */}
-        <Text fw={500} mt="md" mb="xs">
+        {/* <Text fw={500} mt="md" mb="xs">
           Tags
-        </Text>
+        </Text> */}
 
-        <TagBox 
+        {/* <TagBox 
           tags={tags}
           setTags={setTags}
           label=""
           description="Select tags to add to your profile"
+        /> */}
+
+        <TagComboBox
+          setTags={setTags}
+          selectedTags={tags}
+          color="designTokens.colors.cardBackground"
         />
 
         <div style={{

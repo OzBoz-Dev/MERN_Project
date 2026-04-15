@@ -72,7 +72,9 @@ export default function ProjectCard({
       >
         <IconUser size="20px" /> Looking for:
       </div>
-      <TagHolder tags={tags} />
+      {tags ? 
+      <TagHolder tags={tags} /> : <>No Tags</>
+      }
       <p style={{ margin: "0 0 12px", color: "#555" }}>{body}</p>
       <Flex justify={"flex-end"} align={"flex-start"} gap={"16px"}>
         <ReadFullPostButton id={id} />

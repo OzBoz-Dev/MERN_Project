@@ -4,7 +4,7 @@ export type Post = {
   body: string;
   attachments: string;
   likes: string[];
-  array_tags_id: string[];
+  array_tags: string[];
   author_username: string;
   datePosted: Date;
 };

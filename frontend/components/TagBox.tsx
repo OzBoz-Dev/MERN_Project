@@ -21,10 +21,6 @@ export default function TagBox({ tags, setTags, label, description }: TagBoxProp
         }
     }
 
-    const handleTagSearch = async () => {
-        
-    }
-
     return (
         <div>
             <TextInput
