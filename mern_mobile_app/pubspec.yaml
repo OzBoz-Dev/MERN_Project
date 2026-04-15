@@ -12,6 +12,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   flutter_tabler_icons: ^1.43.0
   google_fonts: ^6.2.1
+  http: ^1.6.0
   material_symbols_icons: ^4.2928.1
   objectid: ^4.0.3
   password_strength_checker: ^1.3.2
@@ -26,3 +27,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - .env
