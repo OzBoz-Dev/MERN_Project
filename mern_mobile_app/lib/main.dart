@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mern_mobile_app/pages/login/login_page.dart';
 import 'package:mern_mobile_app/pages/profile/profile_page.dart';
 import 'package:mern_mobile_app/pages/signup/signup_page.dart';
@@ -12,6 +13,8 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load env
+  await dotenv.load(fileName: ".env");
   // Init cache
   await SharedPrefsService.init();
 
