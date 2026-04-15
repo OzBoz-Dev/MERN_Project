@@ -115,7 +115,6 @@ export default function ProfilePage() {
   // Handle profile save
   const handleSaveProfile = async (data: any) => {
     try {
-      setIsLoading(true);
       const updatedUser = await saveProfile(username as string, data);
       if (updatedUser) {
         setProfileData(updatedUser);
@@ -127,7 +126,7 @@ export default function ProfilePage() {
       alert("Could not save profile. Please try again"+error);
     }
     finally{
-      setIsLoading(false);
+      
     }
   };
 
