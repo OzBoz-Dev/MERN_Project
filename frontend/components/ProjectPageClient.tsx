@@ -49,7 +49,7 @@ export default function ProjectPageClient({ post, comments }: Props) {
             Looking for:
           </Text>
         </Group>
-        {/* <TagHolder tags={post.array_tags_id} /> */}
+        <TagHolder tags={post.array_tags} />
 
         <Text c="#555" dangerouslySetInnerHTML={{ __html: post.body }} />
 

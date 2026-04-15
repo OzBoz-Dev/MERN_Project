@@ -46,7 +46,7 @@ async function postProject(
       body,
       attachments: "",
       likes: [], // default no likes on a post (empty array of usernames)
-      array_tags_id: [], // no tags for now, but need to include these later
+      array_tags: [], // no tags for now, but need to include these later
       author_username,
     }),
   });

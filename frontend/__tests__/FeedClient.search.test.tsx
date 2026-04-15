@@ -50,7 +50,7 @@ describe('FeedClient - Search Functionality', () => {
       body: 'Some initial content',
       attachments: '',
       likes: ['user3'],
-      array_tags_id: ['general'],
+      array_tags: ['general'],
       author_username: 'John Doe',
       datePosted: new Date('2026-04-10'),
     },

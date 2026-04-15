@@ -1,22 +1,17 @@
+import { API_ENTRYPOINT } from '@/constants/constants';
 import { Combobox, Input, InputBase, useCombobox } from '@mantine/core';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const tags = [
-  'react',
-  'nodejs',
-  'mongodb',
-  'docker',
-  'linux'
-];
-
-interface TagComboProps{
-  color: string,
-  setTags: (tags: string[]) => void
-  selectedTags: string[]
+interface TagComboProps {
+  color: string;
+  setTags: (tags: string[]) => void;
+  selectedTags: string[];
 }
 
-export default function TagComboBox({color, setTags, selectedTags}: TagComboProps) {
+export default function TagComboBox({ color, setTags, selectedTags }: TagComboProps) {
   const [search, setSearch] = useState('');
+  const [tags, setTagsList] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const combobox = useCombobox({
     onDropdownClose: () => {
       combobox.resetSelectedOption();
@@ -29,25 +24,46 @@ export default function TagComboBox({color, setTags, selectedTags}: TagComboProp
     },
   });
 
-  const [value, setValue] = useState<string | null>(null);
+  const fetchTags = async (query: string) => {
+    if (!query.trim()) {
+      setTagsList([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_ENTRYPOINT}/tags/${query}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTagsList(data.map((tag: any) => tag.value));
+      } else {
+        setTagsList([]);
+      }
+    } catch (err) {
+      setTagsList([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchTags(search);
+  }, [search]);
 
   const handleAddTag = (val: string) => {
-    if (val){
-      if (val.trim() && !selectedTags.includes(val.trim())) {
-          setTags([...selectedTags, val.trim()]);
-          setValue("");
+    if (val) {
+      const trimmedVal = val.trim().toLowerCase();
+      if (trimmedVal && !selectedTags.includes(trimmedVal)) {
+        setTags([...selectedTags, trimmedVal]);
+        setSearch('');
       }
-    }
-  }
+  };
+}
 
-  const options = tags
-    .filter((item) => item.toLowerCase().includes(search.toLowerCase().trim()))
-    .map((item) => (
-      <Combobox.Option value={item} key={item}>
-        {item}
-      </Combobox.Option>
-    ));
+  const options = tags.map((tag: string) => (
+    <Combobox.Option value={tag} key={tag}>
+      {tag}
+    </Combobox.Option>
+  ));
 
   return (
     <Combobox
@@ -74,7 +90,7 @@ export default function TagComboBox({color, setTags, selectedTags}: TagComboProp
             }
           }}
         >
-          {value || <Input.Placeholder>Select tags</Input.Placeholder>}
+          {search.length > 0 ? search : <Input.Placeholder>Select tags</Input.Placeholder>}
         </InputBase>
       </Combobox.Target>
 

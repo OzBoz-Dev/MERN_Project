@@ -143,19 +143,7 @@ export default function EditProfileModal({
             }
           }}
         />
-
-        {/* Tags */}
-        {/* <Text fw={500} mt="md" mb="xs">
-          Tags
-        </Text> */}
-
-        {/* <TagBox 
-          tags={tags}
-          setTags={setTags}
-          label=""
-          description="Select tags to add to your profile"
-        /> */}
-
+        
         <TagComboBox
           setTags={setTags}
           selectedTags={tags}

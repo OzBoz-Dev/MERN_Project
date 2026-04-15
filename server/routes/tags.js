@@ -42,10 +42,11 @@ router.get('/:value', async (req, res) => {
 router.post('/:value', async (req, res) => {
     try {
         const { value } = req.params;
-        const tagExists = await Tag.exists( {value} );
+        const normalizedValue = value.toLowerCase().trim();
+        const tagExists = await Tag.exists({ value: normalizedValue });
         if (tagExists) return res.status(200).json({message: "Tag already exists"});
         const tag = await Tag.create({
-            value: value
+            value: normalizedValue
         });
         res.status(201).json(tag);
 

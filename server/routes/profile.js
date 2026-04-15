@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const User = require('../models/User');
+const Tag = require('../models/Tag');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs')
 
@@ -45,7 +46,20 @@ router.put("/:username", async(req, res) => {
         if (!username) {
             return res.status(400).json({ error: 'Please provide a username' })
         }
-        tags.sort()
+
+        // Ensure tags is an array and create any new tags in the database
+        const tagArray = Array.isArray(tags) ? tags : [];
+        const normalizedTags = tagArray.map(tag => tag.toLowerCase().trim());
+        
+        // Create new tags in database if they don't exist
+        for (const tagValue of normalizedTags) {
+          const existingTag = await Tag.findOne({ value: tagValue });
+          if (!existingTag) {
+            await Tag.create({ value: tagValue });
+          }
+        }
+
+        normalizedTags.sort()
 
         // find user
         const user = await User.findOneAndUpdate(
@@ -55,7 +69,7 @@ router.put("/:username", async(req, res) => {
                     firstName, 
                     lastName,
                     bio,
-                    tags
+                    tags: normalizedTags
                 }
             },
             { new: true, runValidators: true }

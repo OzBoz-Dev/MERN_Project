@@ -49,7 +49,7 @@ async function saveProfile(username: string, data: any){
     body: JSON.stringify({
       data
     })
-  });
+});
 
   if (!res.ok) {
     throw new Error('Failed to update profile!' + res.status);

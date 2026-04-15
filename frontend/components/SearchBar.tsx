@@ -37,7 +37,7 @@ useEffect(() => {
                 body: post.body,
                 author: post.author || 'Unknown',
                 likes: Array.isArray(post.likes) ? post.likes : [],
-                array_tags_id: Array.isArray(post.tags) ? post.tags : [],
+                array_tags: Array.isArray(post.tags) ? post.tags : [],
                 attachments: post.attachments || '',
                 author_username: post.author || 'Unknown',
                 datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
@@ -49,7 +49,7 @@ useEffect(() => {
                 body: post.body,
                 author: post.author || 'Unknown',
                 likes: Array.isArray(post.likes) ? post.likes : [],
-                array_tags_id: Array.isArray(post.tags) ? post.tags : [],
+                array_tags: Array.isArray(post.tags) ? post.tags : [],
                 attachments: post.attachments || '',
                 author_username: post.author || 'Unknown',
                 datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
@@ -61,8 +61,8 @@ useEffect(() => {
             const filteredPosts = tags.length === 0
             ? mergedPosts :
             mergedPosts.filter(post =>
-                Array.isArray(post.array_tags_id) && 
-                tags.every(tag => post.array_tags_id.includes(tag))
+                Array.isArray(post.array_tags) && 
+                tags.every(tag => post.array_tags.includes(tag))
             )
 
             onResults(filteredPosts);

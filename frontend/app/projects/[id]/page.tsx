@@ -57,7 +57,7 @@ export default async function ProjectPage({ params }: PageProps) {
       attachments: postJson.attachments,
       likes: postJson.likes,
       author_username: postJson.author_username,
-      array_tags_id: postJson.array_tags_id,
+      array_tags: postJson.array_tags,
       datePosted: new ObjectId(postJson._id).getTimestamp(),
     };
   } catch (e) {

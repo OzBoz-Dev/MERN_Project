@@ -29,7 +29,7 @@ describe('FeedClient', () => {
     body: 'This is an example post body',
     attachments: '',
     likes: ['user1', 'user2'],
-    array_tags_id: ['react', 'testing'],
+    array_tags: ['react', 'testing'],
     author_username: 'John Doe',
     datePosted: new Date('2026-04-11'),
   };
