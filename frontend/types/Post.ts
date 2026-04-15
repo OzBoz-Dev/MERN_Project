@@ -2,8 +2,9 @@ export type Post = {
   id: string;
   title: string;
   body: string;
-  author: string;
-  likes: number;
-  tags: string[];
+  attachments: string;
+  likes: string[];
+  array_tags: string[];
+  author_username: string;
   datePosted: Date;
 };

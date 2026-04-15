@@ -16,10 +16,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
+      args:
+        - NEXT_PUBLIC_API_ENTRYPOINT=${API_ENTRYPOINT}
+        - API_SERVER_ENTRYPOINT=${API_SERVER_ENTRYPOINT}
     ports:
-      - "3000:3000"
+      - "3000:3000"   
     environment:
-      - API_ENTRYPOINT=${API_ENTRYPOINT}
+      - NEXT_PUBLIC_API_ENTRYPOINT=${API_ENTRYPOINT}
       - API_SERVER_ENTRYPOINT=${API_SERVER_ENTRYPOINT}
       - FRONTEND_URL=${FRONTEND_URL}
     depends_on:
@@ -31,11 +34,7 @@ services:
       context: ./server
       dockerfile: Dockerfile.backend
     ports:
-      - "5000:5000"
-    env_file:
-      - .env
-    dns:
-      - 8.8.8.8
+      - "5000:5000"   
     depends_on:
       db:
         condition: service_healthy
@@ -43,16 +42,16 @@ services:
       - MONGO_URI=mongodb://db:27017/finder_db # It's local!
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=7d
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
-
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - API_ENTRYPOINT=${API_ENTRYPOINT}
+      - FRONTEND_URL=${FRONTEND_URL}
     networks:
       - mern_net
   db:
     volumes:
       - mern_db:/data/db
     image: mongo:7.0.30
-    networks:
+    networks: 
       - mern_net
     ports:
       - "127.0.0.1:27017:27017" # Bind ONLY to the local loopback interface
@@ -62,9 +61,9 @@ services:
       timeout: 5s
       retries: 5
 volumes:
-  mern_db:
-  caddy_data:
-  caddy_config:
+   mern_db:
+   caddy_data:
+   caddy_config:
 networks:
-  mern_net:
-    driver: bridge
+    mern_net:
+        driver: bridge

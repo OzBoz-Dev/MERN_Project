@@ -3,9 +3,15 @@ import { useState } from "react";
 import TagBox from "./TagBox";
 import ProjectTag from "./ProjectTag";
 import DatePostedBox from "./DatePostedBox";
+import TagComboBox from "./TagComboBox";
 
-export default function AdvancedSettings() {
-    const [tags, setTags] = useState<string[]>([]);
+
+type AdvancedSettingsProp = {
+    tags: string[];
+    setTags: (tags: string[]) => void;
+};
+
+export default function AdvancedSettings({tags, setTags}: AdvancedSettingsProp) {
     return (
         <div
             style={{
@@ -34,8 +40,8 @@ export default function AdvancedSettings() {
                     <h2>
                         Tags
                     </h2>
-                    <TagBox tags={tags} setTags={setTags}></TagBox>
-                    
+                    {/* <TagBox tags={tags} setTags={setTags} label="Search" description="What posts are you looking for?"></TagBox> */}
+                    <TagComboBox selectedTags={tags} setTags={setTags} color={designTokens.colors.cardBackground} allowMissing={false}/>
                     <div style={{
                         display:"flex", 
                         flexWrap:"wrap",

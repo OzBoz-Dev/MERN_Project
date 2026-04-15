@@ -13,13 +13,43 @@ router.get('/', async (req, res) => {
 });
 
 // get a tag by id
-router.get('/:id', async (req, res) => {
+router.get('/by-id/:id', async (req, res) => {
     try {
         const tag = await Tag.findById(req.params.id);
         if (!tag) {
             return res.status(404).json({ error: 'Tag not found' });
         }
         res.json(tag);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Search tags by value
+router.get('/:value', async (req, res) => {
+    try {
+        const { value } = req.params;
+        const tags = await Tag.find({
+              value: { $regex: value, $options: "i" },
+        });
+        res.json(tags);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Add tags by value
+router.post('/:value', async (req, res) => {
+    try {
+        const { value } = req.params;
+        const normalizedValue = value.toLowerCase().trim();
+        const tagExists = await Tag.exists({ value: normalizedValue });
+        if (tagExists) return res.status(200).json({message: "Tag already exists"});
+        const tag = await Tag.create({
+            value: normalizedValue
+        });
+        res.status(201).json(tag);
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

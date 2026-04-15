@@ -9,18 +9,9 @@ import {
   Box,
   Divider,
 } from "@mantine/core";
-
-// Hardcoded tag list for now
-const AVAILABLE_TAGS = [
-  "react",
-  "python",
-  "javascript",
-  "typescript",
-  "node",
-  "mongodb",
-  "css",
-  "html",
-];
+import ProjectTag from "@/components/ProjectTag";
+import TagComboBox from "@/components/TagComboBox";
+import { designTokens } from "../GlobalTheme";
 
 // 8 solid colors for profile picture
 const COLOR_OPTIONS = [
@@ -56,38 +47,11 @@ export default function EditProfileModal({
   const [firstName, setFirstName] = useState(initialData?.firstName || "");
   const [lastName, setLastName] = useState(initialData?.lastName || "");
   const [bio, setBio] = useState(initialData?.bio || "");
-  const [selectedTags, setSelectedTags] = useState(
+  const [tags, setTags] = useState(
     initialData?.tags || []
   );
   const [tagInput, setTagInput] = useState("");
   const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
-
-  // Filter tags based on input (after 2+ chars)
-  const handleTagInputChange = (value: string) => {
-    setTagInput(value);
-    if (value.length >= 2) {
-      const filtered = AVAILABLE_TAGS.filter((tag) =>
-        tag.toLowerCase().startsWith(value.toLowerCase())
-      );
-      setTagSuggestions(filtered);
-    } else {
-      setTagSuggestions([]);
-    }
-  };
-
-  // Handle tag selection from dropdown
-  const handleTagSelect = (tag: string) => {
-    if (!selectedTags.includes(tag)) {
-      setSelectedTags([...selectedTags, tag]);
-      setTagInput("");
-      setTagSuggestions([]);
-    }
-  };
-
-  // Handle tag removal
-  const handleTagRemove = (tagToRemove: string) => {
-    setSelectedTags(selectedTags.filter((tag) => tag !== tagToRemove));
-  };
 
   // Handle form submission
   const handleSubmit = async (e: React.SubmitEvent) => {
@@ -102,18 +66,12 @@ export default function EditProfileModal({
       firstName,
       lastName,
       bio,
-      // tags: selectedTags,
+      tags: tags,
     };
 
-    await onSave(updatedData);
+    console.log(tags);
 
-    // // Reset form
-    // setFirstName("");
-    // setLastName("");
-    // setBio("");
-    // setSelectedTags([]);
-    // setTagInput("");
-    // setTagSuggestions([]);
+    await onSave(updatedData);
 
     onClose();
   };
@@ -122,14 +80,24 @@ export default function EditProfileModal({
     <Modal
       opened={isOpen}
       onClose={onClose}
+      zIndex={3000}
       title="Edit Profile"
       styles={{
-        title: {fontWeight: 700}
+        title: {fontWeight: 700},
+        content: {
+          backgroundColor: designTokens.colors.cardBackground
+        },
+        header: {
+          backgroundColor: designTokens.colors.cardBackground
+        },
+        inner: {
+          paddingTop: '10px'
+        }
       }}
-      size="md"
+      size="lg"
       centered
     >
-      <form onSubmit={handleSubmit} style={{ display: "contents" }}>
+      <form onSubmit={handleSubmit} style={{ display: "contents" }} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault();}}>
         {/* First Name */}
         <TextInput
           label="First Name"
@@ -137,6 +105,11 @@ export default function EditProfileModal({
           onChange={(e) => setFirstName(e.target.value)}
           required
           placeholder="Enter first name"
+          styles={{
+            input: {
+              backgroundColor: designTokens.colors.cardBackground
+            }
+          }}
         />
 
         {/* Last Name */}
@@ -146,6 +119,11 @@ export default function EditProfileModal({
           onChange={(e) => setLastName(e.target.value)}
           required
           placeholder="Enter last name"
+          styles={{
+            input: {
+              backgroundColor: designTokens.colors.cardBackground
+            }
+          }}
         />
 
         {/* Bio */}
@@ -158,84 +136,38 @@ export default function EditProfileModal({
           description={bio.length + "/300"}
           autosize
           minRows={3}
+          styles={{
+            input: {
+              backgroundColor: designTokens.colors.cardBackground
+            }
+          }}
         />
 
-        {/* Tags */}
-        <Text fw={500} mt="md" mb="xs">
-          Tags
-        </Text>
+        <TagComboBox
+          setTags={setTags}
+          selectedTags={tags}
+          color='#FFFFFF'
+          allowMissing={true}
+        />
 
-        {/* Tag Input with Dropdown */}
-        <Group mt="md">
-          <TextInput
-            value={tagInput}
-            onChange={(e) => handleTagInputChange(e.target.value)}
-            placeholder="Type to search tags..."
-            data-placeholder="Type to search tags..."
-          />
-
-          {/* Tag Suggestions Dropdown */}
-          {tagSuggestions.length > 0 && (
-            <Box
-              mt="-1"
-              style={{
-                position: "absolute",
-                zIndex: 10,
-                background: "white",
-                borderRadius: "4px",
-                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                minWidth: 200,
-              }}
-            >
-              {tagSuggestions.map((tag) => (
-                <Box
-                  key={tag}
-                  p="8"
-                  style={{
-                    cursor: "pointer",
-                    borderBottom: "1px solid #f0f0f0",
-                  }}
-                  onClick={() => handleTagSelect(tag)}
-                >
-                  <Text size="sm" c="gray">#{tag}</Text>
-                </Box>
-              ))}
-            </Box>
-          )}
-        </Group>
-
-        {/* Selected Tags Display */}
-        {selectedTags.length > 0 && (
-          <Group wrap="wrap" mt="md" gap="xs">
-            {selectedTags.map((tag) => (
-              <Box
-                key={tag}
-                style={{
-                  background: "#dbeafe",
-                  color: "#1e40af",
-                  padding: "4px 12px",
-                  borderRadius: "16px",
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
+        <div style={{
+          display:"flex", 
+          flexWrap:"wrap",
+          marginTop:"8px",
+        }}>
+        {tags.length === 0 ? (
+        <></>
+        ) : (
+          tags.map((tag, idx) => (
+            <ProjectTag key={tag+idx}
+              tag={tag}
+              isRemovable={true}
+              onRemove={() => setTags(tags.filter(t => t !== tag))}
               >
-                #{tag}
-                <Box
-                  style={{
-                    cursor: "pointer",
-                    color: "#1e40af",
-                    fontWeight: 700,
-                  }}
-                  onClick={() => handleTagRemove(tag)}
-                >
-                </Box>
-              </Box>
-            ))}
-          </Group>
+            </ProjectTag>
+          ))
         )}
+        </div>
 
         {/* Divider */}
         <Divider my="md" />

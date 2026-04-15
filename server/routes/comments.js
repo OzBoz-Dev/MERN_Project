@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 // to get all comments belonging to a certain post
 router.get('/post/:post_id', async (req, res) => {
   try {
-    const comments = await Comment.find({ post_id: req.params.post_id });
+    const comments = await Comment.find({ post_id_belong: req.params.post_id });
     res.json(comments);
   } catch (err) {
     res.status(500).json({ error: err.message });

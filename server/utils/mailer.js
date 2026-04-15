@@ -1,24 +1,15 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require('resend')
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 // sends verification email
 const sendVerificationEmail = async (toEmail, token) => {
-  const link = `http://localhost:5000/auth/verify/${token}`;
+  const link = `${process.env.API_ENTRYPOINT}/auth/verify/${token}`;
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+  await resend.emails.send({
+    from: "ChipIn <noreply@contact.poosd.lol>",
     to: toEmail,
-    subject: "Verify your email lol",
+    subject: "Verify your email to begin Chipping In!",
     html: `<p>Click the link to verify your email:</p><a href="${link}">${link}</a>`,
   });
 };
@@ -27,8 +18,8 @@ const sendVerificationEmail = async (toEmail, token) => {
 const sendResetEmail = async (toEmail, token) => {
     const link = `${process.env.FRONTEND_URL}/auth/reset/${token}`
  
-    await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+    await resend.emails.send({
+        from: "ChipIn <noreply@contact.poosd.lol>",
         to: toEmail,
         subject: 'Reset your password',
         html: `

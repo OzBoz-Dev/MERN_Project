@@ -1,3 +1,4 @@
+import TagHolder from "@/components/TagHolder";
 import UserAvatar from "@/components/UserAvatar";
 import { Avatar, Text, Group, Box, Divider, Flex } from "@mantine/core";
 
@@ -83,34 +84,19 @@ export default function ProfileInfoCard({
           No bio yet
         </Text>
       )}
+      {/* Divider */}
+      <Divider my="md" />
 
       {/* Tags */}
       {tags && tags.length > 0 ? (
-        <Group wrap="wrap" mt="md" gap="xs">
-          {tags.map((tag) => (
-            <Box
-              key={tag}
-              style={{
-                background: "#e5e7eb",
-                color: "#374151",
-                padding: "4px 12px",
-                borderRadius: "16px",
-                fontSize: "12px",
-                fontWeight: 500,
-              }}
-            >
-              #{tag}
-            </Box>
-          ))}
-        </Group>
+        <TagHolder
+          tags={tags}
+        />
       ) : (
         <Text ta="center" c="dimmed" mt="md">
           No tags yet
         </Text>
       )}
-
-      {/* Divider */}
-      <Divider my="md" />
     </Box>
   );
 }

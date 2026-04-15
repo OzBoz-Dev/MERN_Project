@@ -1,5 +1,6 @@
 "use client";
 
+import { hasCookie } from "cookies-next/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -7,8 +8,7 @@ export default function globalRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    if (hasCookie('token')) {
       router.push("/feed");
     } else {
       router.push("/auth");

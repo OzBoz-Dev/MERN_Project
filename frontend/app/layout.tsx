@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { NavTabs } from "@/components/NavTabs";
 import { theme } from './GlobalTheme';
+import { LayoutWrapper } from "./layoutWrapper";
 
 export const metadata: Metadata = {
   icons: {
@@ -54,9 +55,9 @@ export default function RootLayout({
           <header>
             <NavTabs />
           </header>
-          <main style={{ paddingTop: 60 }}>
+          <LayoutWrapper>
             {children}
-          </main>
+          </LayoutWrapper>
         </MantineProvider>
       </body>
     </html>
