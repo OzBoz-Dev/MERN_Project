@@ -107,13 +107,32 @@ router.get("/body", async (req, res) => {
 //get by tag value
 router.get("/tag/:value", async (req, res) => {
   try {
-    const posts = await Post.find({ array_tags: req.params.value });
+    const tagValues = req.params.value.split(",").map(t => t.trim()).filter(Boolean);
+    // debug
+    // console.log("tagValues:", tagValues); 
+    // console.log("tagValues type:", typeof tagValues);
 
+    // find posts that have at least one of the tags in the array
+    const posts = await Post.find(); 
+
+    const sorted = posts
+    .map(post => ({
+      post,
+      matchCount: post.array_tags.filter(tag => tagValues.includes(tag)).length // counts how many tags match the query
+      }))
+  
+    // sorts by number of matches first, and then by most recent
+    .sort((a, b) =>
+      b.matchCount - a.matchCount || new Date(b.post.createdAt) - new Date(a.post.createdAt)
+    )
+    .map(({ post }) => post);
+
+    // if no posts are found with the given tags, return a 404
     if (!posts || posts.length == 0) {
       return res.status(404).json({ message: "No posts found under this tag" });
     }
-
-    res.json(posts);
+    
+    res.json(sorted);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
