@@ -59,6 +59,9 @@ class _LoginPageState extends State<LoginPage> {
                             children: [
                               TextFormField(
                                 controller: _emailController,
+                                style: TextStyle(
+                                  fontSize: 14
+                                ),
                                 keyboardType: TextInputType.text,
                                 decoration: const InputDecoration(
                                   labelText: "Email",
@@ -68,6 +71,9 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 16),
                               TextFormField(
                                 controller: _passwordController,
+                                style: TextStyle(
+                                  fontSize: 14
+                                ),
                                 obscureText: _isPasswordObscured,
                                 decoration: InputDecoration(
                                   labelText: "Password",
