@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mern_mobile_app/pages/signup/verification_sent_page.dart';
+import 'package:mern_mobile_app/providers/auth_provider.dart';
 import 'package:mern_mobile_app/widgets/animated_grid_background.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
+import 'package:provider/provider.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -294,22 +297,78 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                             const SizedBox(height: 20),
                             // login button
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _isFormValid ? () {
-                                  final email = _emailController.text;
-                                  final username = _usernameController.text;
-                                  final password = _passwordController.text;
-                
-                                  debugPrint("email: $email");
-                                  debugPrint("Username: $username");
-                                  debugPrint("Password: $password");
-                
-                                  // TODO: call AuthProvider signup
-                                } : null,
-                                child: Text("Create Account", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
-                              ),
+                            Consumer<AuthProvider>(
+                              builder: (context, authProvider, child) {
+                                // Show snackbar on error
+                                if(authProvider.error != null) {
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    // Show error message
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          authProvider.error!,
+                                          style: GoogleFonts.montserrat(
+                                            color: Colors.white
+                                          ),
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      )
+                                    );
+                                    // Then clear it for another attempt
+                                    authProvider.clearError();
+                                  });
+                                }
+                                if(authProvider.isLoading) {
+                                  return const SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      onPressed: null,
+                                      child: SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  );
+                                }
+                                else {
+                                  return SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      onPressed: _isFormValid ? () async {
+                                        // Collect input
+                                        final email = _emailController.text.trim();
+                                        final username = _usernameController.text.trim();
+                                        final firstName = _firstNameController.text.trim();
+                                        final lastName = _lastNameController.text.trim();
+                                        final password = _passwordController.text.trim();
+
+                                        // Call signup
+                                        await authProvider.signup(
+                                          username: username,
+                                          email: email,
+                                          password: password,
+                                          firstName: firstName,
+                                          lastName: lastName
+                                        );
+
+                                        if (!context.mounted) return;
+
+                                        // No error after signup
+                                        if (authProvider.error == null) {
+                                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VerificationSentPage(email: email,)));
+                                        }
+                                      } : null,
+                                      child: Text(
+                                        "Create Account",
+                                        style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                             const SizedBox(height: 20,),
                             GestureDetector(
