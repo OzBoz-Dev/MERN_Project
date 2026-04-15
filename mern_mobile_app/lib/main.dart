@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mern_mobile_app/pages/login/login_page.dart';
 import 'package:mern_mobile_app/pages/profile/profile_page.dart';
-import 'package:mern_mobile_app/pages/singup/signup_page.dart';
+import 'package:mern_mobile_app/pages/signup/signup_page.dart';
 import 'package:mern_mobile_app/providers/auth_provider.dart';
 import 'package:mern_mobile_app/providers/navigation_provider.dart';
 import 'package:mern_mobile_app/services/shared_prefs_service.dart';
