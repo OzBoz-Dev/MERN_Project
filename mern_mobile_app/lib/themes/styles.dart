@@ -25,7 +25,16 @@ ThemeData lightTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll(Color(0xFFFFA500)),
+      backgroundColor: WidgetStateColor.resolveWith(
+        (states) {
+          if(states.contains(WidgetState.disabled)) {
+            return Color(0xFFB9B9B9);
+          }
+          else {
+            return Color(0xFFFFA500);
+          }
+        }
+      ),
       foregroundColor: WidgetStatePropertyAll(Colors.white),
       shape: WidgetStatePropertyAll(RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6)
@@ -67,8 +76,13 @@ ThemeData lightTheme = ThemeData(
     labelStyle: TextStyle(
       fontSize: 14
     ),
-    floatingLabelStyle: TextStyle(
-      color: Color(0xFFFFA500)
+    floatingLabelStyle: WidgetStateTextStyle.resolveWith(
+      (states) {
+        if (states.contains(WidgetState.error)) {
+          return const TextStyle(color: Colors.red);
+        }
+        return const TextStyle(color: Color(0xFFFFA500));
+      }
     ),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(
@@ -78,6 +92,16 @@ ThemeData lightTheme = ThemeData(
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(
         color: Color(0xFFFFA500)
+      )
+    ),
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.red
+      )
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.red
       )
     ),
   ),
