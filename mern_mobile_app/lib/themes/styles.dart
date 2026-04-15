@@ -61,8 +61,12 @@ ThemeData lightTheme = ThemeData(
     )
   ),
   inputDecorationTheme: InputDecorationThemeData(
+    isDense: true,
     filled: true,
     fillColor: Color(0xFFFDF8EA),
+    labelStyle: TextStyle(
+      fontSize: 14
+    ),
     floatingLabelStyle: TextStyle(
       color: Color(0xFFFFA500)
     ),
