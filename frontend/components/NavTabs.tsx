@@ -1,0 +1,145 @@
+"use client";
+
+import styles from "./NavTabs.module.css";
+import { Avatar, Box, Flex, Tabs, Text, Tooltip } from "@mantine/core";
+import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
+import { usePathname, useRouter } from "next/navigation";
+import UserAvatar from "./UserAvatar";
+import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { designTokens, theme } from "@/app/GlobalTheme";
+import { getCookie } from "cookies-next/client";
+
+export function NavTabs() {
+  const pathname = usePathname(); // Pathname of the current page
+  const router = useRouter();
+
+  // Define routes where NavTabs should be hidden
+  const hiddenRoutes = ['/auth'];
+  
+  // Check if current route should hide NavTabs
+  if (hiddenRoutes.some(route => pathname.startsWith(route))) {
+    return null;
+  }
+
+  const [user, setUser] = useState<{ username: string; firstName: string; lastName: string } | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const username = getCookie('username');
+    if (username) {
+      setUser({
+        username,
+        firstName: getCookie('firstName') || "",
+        lastName: getCookie('lastName') || "",
+      });
+    }
+  }, []);
+
+  // For tab icons
+  const iconSize = 18;
+
+  // Tab items w/ name, icon, and path for easy editing
+  const tabItems = [
+    {
+      name: "Feed",
+      icon: IconHome,
+      path: "/feed",
+    },
+    {
+      name: "My Projects",
+      icon: IconCode,
+      path: "/my-projects",
+    },
+    {
+      name: "Messages",
+      icon: IconMessage,
+      path: "/messages",
+    },
+  ];
+
+  // Determine the current active tab
+  // If pathname matches with a tabItem's "path", then this is the active tab
+  const activeTab =
+    tabItems.find((item) => item.path === pathname)?.name || null;
+
+  // Create a Tab for each tabItem
+  const tabs = tabItems.map((tabItem) => {
+    const Icon = tabItem.icon;
+    return (
+      <Tabs.Tab
+        key={tabItem.name}
+        value={tabItem.name}
+        onClick={() => {
+          router.push(tabItem.path); // navigate to defined path
+        }}
+        leftSection={<Icon size={iconSize} />}
+      >
+        {tabItem.name}
+      </Tabs.Tab>
+    );
+  });
+
+  return (
+    // Space between to separate tabs and profile
+    <Flex 
+      justify={"space-between"} 
+      px={10} 
+      // py={10} 
+      pt={10}
+      w="100%" 
+      style={{ 
+        position: "fixed", 
+        zIndex: 1500, 
+        backgroundColor: theme.white, 
+        boxShadow: '0px 1px 5px rgba(0,0,0,0.07)'
+      }}>
+      {/* Main navigation tabs */}
+      <Flex gap="lg">
+        {/* Logo */}
+        <Link href='/'>
+          <Image
+            src="/ChipIn-nobg.png"
+            alt="ChipIn logo"
+            width={150}
+            height={50}
+          />
+        </Link>
+        {/* Default value is the first tab always */}
+        <Tabs
+          classNames={{ tab: styles.tab }}
+          defaultValue={tabItems[0].name}
+          value={activeTab} // use active tab for the current tab value
+          variant="unstyled"
+        >
+          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'stretch', height:'100%'}}>{tabs}</Tabs.List>
+        </Tabs>
+      </Flex>
+      <div style={{ flex: 1 }} />
+      {/* Profile component */}
+      { isMounted && user ? (
+      <Tooltip
+            label="View Profile"
+            zIndex={2000}
+      >
+      <Link 
+        href={`/profile/${getCookie('username')}`} 
+        style={{ textDecoration: 'none', color: 'inherit' }}
+      >
+          <UserAvatar 
+            username={getCookie('username') as string} 
+            firstName={getCookie('firstName') as string}
+            lastName={getCookie('lastName') as string}
+            radius="xl" 
+            size="md"
+          />
+      </Link>
+      </Tooltip>
+      ) : (
+        <></>
+      )}
+    </Flex>
+  );
+}

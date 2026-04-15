@@ -1,8 +1,8 @@
-# Does /dev/null support sharding?
+# ChipIn
 
 To run the stack, perform
 ```
 docker compose up --build
 ```
 
-Testing
+MongoDB is web scale
