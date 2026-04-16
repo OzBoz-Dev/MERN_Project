@@ -167,6 +167,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   return StatefulBuilder(
                                     builder: (context, setDialogState) {
                                       return AlertDialog(
+                                        backgroundColor: Colors.white,
                                         title: Text(
                                           "Confirm Account Deletion",
                                           textAlign: TextAlign.center,
