@@ -80,13 +80,21 @@ class _ProfilePageState extends State<ProfilePage> {
                                         borderRadius: BorderRadius.circular(6)
                                       )
                                     ),
-                                    onPressed: () {
-                                      Navigator.push(
+                                    onPressed: () async {
+                                      final updated = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => EditProfilePage(user: user),
-                                        )
+                                        ),
                                       );
+
+                                      if (updated == true) {
+                                        setState(() {
+                                          _userFuture = profileService.getProfileByUserName(
+                                            username: widget.username,
+                                          );
+                                        });
+                                      }
                                     },
                                     icon: Icon(TablerIcons.pencil)
                                   ),

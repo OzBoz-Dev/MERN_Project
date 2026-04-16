@@ -1,7 +1,11 @@
 import 'package:chip_in/models/user.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/services/profile_service.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
   final User user;
@@ -84,10 +88,78 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
+                              onPressed: () async {
+                                final authService = context.read<AuthProvider>();
+                                final profileService = ProfileService();
+
+                                // Collect fields
+                                final firstName = _firstNameController.text.trim();
+                                final lastName = _lastNameController.text.trim();
+                                final bio = _bioController.text.trim();
+                                // TODO: Actually impelement tags via search later
+                                // For now use existing tags
+                                final tags = widget.user.tags;
+
+                                try {
+                                  await profileService.editProfile(
+                                    token: authService.token ?? '',
+                                    username: widget.user.username,
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    bio: bio,
+                                    tags: tags.map((tag) => tag.label).toList()
+                                  );
+                                }
+                                catch(e) {
+                                  if(mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          e.toString()
+                                        ),
+                                      )
+                                    );
+                                  }
+                                }
+
+                                if(mounted) Navigator.pop(context, true);
                               },
                               child: const Text("Save"),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Divider(),
+                          const SizedBox(height: 12),
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(TablerIcons.alert_triangle, color: Colors.red, size: 18,),
+                                const SizedBox(width: 6,),
+                                Text(
+                                  "Danger Zone",
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red
+                            ),
+                            onPressed: () {
+                            },
+                            child: Text(
+                              "Delete Account",
+                              style: GoogleFonts.montserrat(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                              ),
                             ),
                           ),
                         ],
