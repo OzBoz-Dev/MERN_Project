@@ -1,25 +1,16 @@
+import 'package:chip_in/models/post.dart';
+import 'package:chip_in/pages/projects/project_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:chip_in/models/tag.dart';
 import 'package:chip_in/widgets/tag_container.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectCard extends StatefulWidget {
-  final String title;
-  final String poster;
-  final String description;
-  final int numLikes;
-  final List<Tag> tags;
-  final DateTime dateTimePosted;
+  final Post post;
 
   const ProjectCard({
     super.key,
-    required this.title,
-    required this.poster,
-    required this.description,
-    required this.numLikes,
-    required this.tags,
-    required this.dateTimePosted
+    required this.post
   });
 
   @override
@@ -74,12 +65,12 @@ class _ProjectCardState extends State<ProjectCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.title,
+                  widget.post.title,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5,),
                 Text(
-                  "Posted by: ${widget.poster} • ${timeago.format(widget.dateTimePosted)}",
+                  "Posted by: ${widget.post.authorUsername} • ${timeago.format(widget.post.datePosted)}",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                 ),
                 const SizedBox(height: 5,),
@@ -98,16 +89,16 @@ class _ProjectCardState extends State<ProjectCard> {
                   height: 35,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
-                    itemCount: widget.tags.length,
+                    itemCount: widget.post.tags.length,
                     itemBuilder: (context, index) {
-                      return TagContainer(tag: widget.tags[index]);
+                      return TagContainer(tag: widget.post.tags[index]);
                     },
                     separatorBuilder: (context, index) => const SizedBox(width: 5,),
                   ),
                 ),
                 const SizedBox(height: 15,),
                 Text(
-                  widget.description,
+                  widget.post.body,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 15,),
@@ -120,7 +111,15 @@ class _ProjectCardState extends State<ProjectCard> {
                           backgroundColor: WidgetStatePropertyAll(Colors.transparent),
                           foregroundColor: WidgetStatePropertyAll(Color(0xFFFFA500))
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProjectPage(
+                                post: widget.post,
+                              )
+                            )
+                          );
+                        },
                         label: Text(
                           "Read Full Post",
                           style: TextStyle(

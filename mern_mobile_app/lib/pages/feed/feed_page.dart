@@ -1,22 +1,23 @@
+import 'package:chip_in/models/post.dart';
 import 'package:flutter/material.dart';
 import 'package:chip_in/models/tag.dart';
 import 'package:chip_in/widgets/project_card.dart';
+import 'package:objectid/objectid.dart';
 
 class FeedPage extends StatelessWidget {
   FeedPage({super.key});
 
   // Mock data
   final mockPosts = List.filled(20, ProjectCard(
-    title: "Project Title",
-    poster: "hml786",
-    numLikes: 1000,
-    description: "The quick brown fox jumped over the lazy dog.",
-    tags: [
-      Tag(label: "ML Developer"),
-      Tag(label: "Frontend Developer"),
-      Tag(label: "DevOps"),
-    ],
-    dateTimePosted: DateTime.now().add(Duration(hours: -2)),
+    post: Post(
+      id: "69daa24cabc881c47249492b",
+      title: "New Project",
+      body: "lorem ipsum",
+      likes: ["user1", "user2"],
+      tags: [Tag(label: "mobile")],
+      authorUsername: "hml786",
+      datePosted: ObjectId.fromHexString("69daa24cabc881c47249492b").timestamp
+    ),
   ));
 
   @override
