@@ -1,9 +1,11 @@
+import 'package:chip_in/models/tag.dart';
+
 class Post {
   final String id;
   final String title;
   final String body;
   final List<String> likes;
-  final List<String> tags;
+  final List<Tag> tags;
   final String authorUsername;
   final DateTime datePosted;
 
