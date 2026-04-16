@@ -153,6 +153,146 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               backgroundColor: Colors.red
                             ),
                             onPressed: () {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) {
+
+                                  final passwordController = TextEditingController();
+                                  bool isPasswordObscured = true;
+
+                                  // To stop from canceling when deletion is in progress
+                                  bool deletionInProgress = false;
+
+                                  return StatefulBuilder(
+                                    builder: (context, setDialogState) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          "Confirm Account Deletion",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        ),
+                                        content: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              "Type your password to confirm deletion of your account:",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 24,),
+                                            TextField(
+                                              controller: passwordController,
+                                              style: TextStyle(
+                                                fontSize: 14
+                                              ),
+                                              obscureText: isPasswordObscured,
+                                              onChanged: (value) {
+                                                setDialogState(() {}); 
+                                              },
+                                              decoration: InputDecoration(
+                                                labelText: "Password",
+                                                prefixIcon: Icon(TablerIcons.password),
+                                                suffixIcon: IconButton(
+                                                  onPressed: () {
+                                                    setDialogState(() {
+                                                      isPasswordObscured = !isPasswordObscured;
+                                                    });
+                                                  },
+                                                  icon: Icon(isPasswordObscured ? TablerIcons.eye : TablerIcons.eye_off)
+                                                )
+                                              ),
+                                            ),
+                                            const SizedBox(height: 15,),
+                                            SizedBox(
+                                              width: double.infinity,
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.red,
+                                                  foregroundColor: Colors.white
+                                                ),
+                                                onPressed: passwordController.text.isNotEmpty ? () async {
+
+                                                  // Show that deletion is in progress
+                                                  setDialogState(() {
+                                                    deletionInProgress = true;
+                                                  });
+
+                                                  final authProvider = context.read<AuthProvider>();
+                                                  final profileService = ProfileService();
+                                                  final token = authProvider.token;
+                                                  final username = widget.user.username;
+                                                  final password = passwordController.text;
+
+                                                  try {
+                                                    // Delete the profile
+                                                    await profileService.deleteProfile(
+                                                      token: token!,
+                                                      username: username,
+                                                      password: password
+                                                    );
+
+                                                    // Once done, logout
+                                                    await authProvider.logout();
+
+                                                    // Pop until
+                                                    if (context.mounted) {
+                                                      Navigator.pushNamedAndRemoveUntil(
+                                                        context, 
+                                                        '/login', 
+                                                        (route) => false,
+                                                      );
+                                                    }
+                                                  }
+                                                  catch(e) {
+                                                    // Error occurred
+                                                    setDialogState(() {
+                                                      deletionInProgress = false;
+                                                    });
+                                                    if(mounted) {
+                                                       ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(
+                                                          backgroundColor: Colors.red,
+                                                          content: Text(
+                                                            e.toString(),
+                                                            style: TextStyle(
+                                                              color: Colors.white
+                                                            ),
+                                                          ),
+                                                        )
+                                                      );
+                                                    }
+                                                  }
+                                                } : null,
+                                                child: deletionInProgress ?  SizedBox(
+                                                    width: 18,
+                                                    height: 18,
+                                                    child: CircularProgressIndicator(
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                : Text("Delete Account", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5,),
+                                            SizedBox(
+                                              width: double.infinity,
+                                              child: ElevatedButton(
+                                                onPressed: !deletionInProgress ? () {
+                                                  Navigator.pop(context);
+                                                } : null,
+                                                child: Text("Cancel", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  );
+                                }
+                              );
                             },
                             child: Text(
                               "Delete Account",
