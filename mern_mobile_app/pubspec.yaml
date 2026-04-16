@@ -1,5 +1,5 @@
-name: mern_mobile_app
-description: "A new Flutter project."
+name: ChipIn
+description: "Chip In on projects!"
 publish_to: 'none'
 version: 0.1.0
 
@@ -26,6 +26,22 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/chip.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/chip.png"
+  adaptive_icon_foreground_inset: 24
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false
+
 
 flutter:
   uses-material-design: true
