@@ -53,6 +53,38 @@ router.post("/likes/:_id", auth, async (req, res) => {
   }
 });
 
+// get post by title, body and tags
+router.get("/search", async (req, res) => {
+  try {
+    console.log("received search request")
+    const query = (req.query.q || "").trim();
+    const tags = req.query.tags ? [].concat(req.query.tags) : [];
+
+    if (!query && tags.length === 0) return res.json([]);
+
+    // find the posts that match the query
+    const search = {
+      $and: [
+        {
+          $or: [
+            {title: {$regex: query, $options: "i"}},
+            {body: {$regex: query, $options: "i"}}
+          ]
+        }
+      ]
+    }
+  // check the tags
+  if(tags.length > 0) {
+    search.$and.push({array_tags : {$all: tags}});
+  }
+  // finally grab the posts
+  const posts = await Post.find(search);
+
+  res.json(posts);
+  } catch(err) {
+    res.status(500).json({error: err.message});
+  }
+})
 // get likes count for a post
 router.get("/likes/:_id", async (req, res) => {
   try {

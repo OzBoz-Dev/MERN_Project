@@ -22,58 +22,24 @@ export default function SearchBar({ onResults }: SearchBarProp) {
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
 
-useEffect(() => {
-    if (searchText.trim()) {
-        // api request
-        Promise.all([
-            fetch(API_ENTRYPOINT + '/posts/title?q=' + encodeURIComponent(searchText)),
-            fetch(API_ENTRYPOINT + '/posts/body?q=' + encodeURIComponent(searchText)),
-        ]).then(([titleRes, bodyRes]) => {
-            return Promise.all([titleRes.json(), bodyRes.json()]);
-        }).then(([titleData, bodyData]) => {
-            const titlePosts = (Array.isArray(titleData) ? titleData : []).map(post => ({
-                id: post._id,
-                title: post.title,
-                body: post.body,
-                author: post.author || 'Unknown',
-                likes: Array.isArray(post.likes) ? post.likes : [],
-                array_tags: Array.isArray(post.tags) ? post.tags : [],
-                attachments: post.attachments || '',
-                author_username: post.author || 'Unknown',
-                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
-            }));
+    useEffect(() => {
+        if(searchText.trim() || tags.length > 0) {
+            const param = new URLSearchParams();
+            param.append("q", searchText);
 
-            const bodyPosts = (Array.isArray(bodyData) ? bodyData : []).map(post => ({
-                id: post._id,
-                title: post.title,
-                body: post.body,
-                author: post.author || 'Unknown',
-                likes: Array.isArray(post.likes) ? post.likes : [],
-                array_tags: Array.isArray(post.tags) ? post.tags : [],
-                attachments: post.attachments || '',
-                author_username: post.author || 'Unknown',
-                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
-            }));
+            tags.forEach(tag => param.append("tags", tag));
 
-            // include tags that are also in the search
-            const mergedPosts = [...titlePosts, ...bodyPosts];
-
-            const filteredPosts = tags.length === 0
-            ? mergedPosts :
-            mergedPosts.filter(post =>
-                Array.isArray(post.array_tags) && 
-                tags.every(tag => post.array_tags.includes(tag))
-            )
-
-            onResults(filteredPosts);
-
-
-    }).catch((error) => {
-        console.error("search error", error);
-        onResults([]);
-    });
-    }
-}, [searchText, tags, onResults]);
+            fetch(API_ENTRYPOINT + '/posts/search?' + param.toString())
+            .then(res => res.json())
+            .then(posts => {
+                onResults(posts);
+            })
+            .catch((error) => {
+                console.log("search error found: ", error);
+                onResults([]);
+            });
+        }
+    }, [searchText, tags, onResults]);
 
 return (
     <div style={{width: "100%"}}>
