@@ -112,18 +112,36 @@ class _ProjectCardState extends State<ProjectCard> {
                 ),
                 const SizedBox(height: 15,),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Expanded(
                       child: TextButton.icon(
+                        style: Theme.of(context).textButtonTheme.style!.copyWith(
+                          backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+                          foregroundColor: WidgetStatePropertyAll(Color(0xFFFFA500))
+                        ),
                         onPressed: () {},
                         label: Text(
-                          "Message",
+                          "Read Full Post",
                           style: TextStyle(
                             fontWeight: FontWeight.bold
                           ),
                         ),
-                        icon: Icon(TablerIcons.send),
+                        icon: Icon(TablerIcons.arrow_right),
+                        iconAlignment: IconAlignment.end,
                       ),
+                    ),
+                    const SizedBox(width: 5,),
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: Color(0xFFB9B9B9),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)
+                        )
+                      ),
+                      onPressed: () {},
+                      icon: Icon(TablerIcons.send)
                     ),
                     const SizedBox(width: 5,),
                     // Like button
