@@ -2,23 +2,36 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:mern_mobile_app/constants/storage_keys.dart';
 import 'package:mern_mobile_app/services/shared_prefs_service.dart';
 
 class AuthService {
   final String _baseUrl = dotenv.env['API_ENTRYPOINT'] ?? '';
-  static const String _tokenKey = 'token';
 
   // Token management
   Future<void> saveToken(String token) async {
-    await SharedPrefsService.instance.setString(_tokenKey, token);
+    await SharedPrefsService.instance.setString(StorageKeys.token, token);
   }
 
   String? getToken() {
-    return SharedPrefsService.instance.getString(_tokenKey);
+    return SharedPrefsService.instance.getString(StorageKeys.token);
   }
 
   Future<void> clearToken() async {
-    await SharedPrefsService.instance.remove(_tokenKey);
+    await SharedPrefsService.instance.remove(StorageKeys.token);
+  }
+
+  // Username management
+  Future<void> saveUsername(String username) async {
+    await SharedPrefsService.instance.setString(StorageKeys.usernameKey, username);
+  }
+
+  String? getUsername() {
+    return SharedPrefsService.instance.getString(StorageKeys.usernameKey);
+  }
+
+  Future<void> clearUsername() async {
+    await SharedPrefsService.instance.remove(StorageKeys.usernameKey);
   }
 
   // Signup
@@ -69,6 +82,9 @@ class AuthService {
     if (response.statusCode == 200) {
       if (data['token'] != null) {
         await saveToken(data['token']);
+      }
+      if (data['user']['username'] != null) {
+        await saveUsername(data['user']['username']);
       }
       return data;
     } else {
