@@ -37,7 +37,8 @@ export default function ProjectCard({
         margin: "16px 0",
         boxShadow: designTokens.colors.cardShadow,
         background: designTokens.colors.glassyBackground,
-        position: "relative",
+        backdropFilter: "blur(7px)",
+        position: "relative"
       }}
     >
       <div
