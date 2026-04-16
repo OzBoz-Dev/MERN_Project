@@ -9,7 +9,8 @@ import {
   Alert,
   Text,
   Group,
-  Stack
+  Stack,
+  Collapse
 } from "@mantine/core";
 
 import {
@@ -221,7 +222,7 @@ export default function Auth() {
       >
         {type === "Log In" ? "Welcome Back" : "Create Account"}
       </Title>
-      <Stack justify="flex-start">
+      <Stack justify="flex-start" gap={0}>
         {/* Success message */}
         {success && (
           <Alert
@@ -247,29 +248,17 @@ export default function Auth() {
           </Alert>
         )}
         {/* Email Field */}
-        {type === "Log In" ? (
-          <InputValidation
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(e.target.value)
-            }
-            onValidChange={setEmailValid}
-          />
-        ) : (
-          <InputValidation
-            value={email}
-            label="Email"
-            type="email"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(e.target.value)
-            }
-            onValidChange={setEmailValid}
-          />
-        )}
+        <InputValidation
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setEmail(e.target.value)
+          }
+          onValidChange={setEmailValid}
+        />
+        <Collapse in={type === "Sign Up"} transitionTimingFunction="ease" transitionDuration={700}>
         {/* Username Field */}
-        {type !== "Log In" ? (
           <FloatingLabelInput
             label="Username"
             type="username"
@@ -278,11 +267,7 @@ export default function Auth() {
               setUsername(e.target.value)
             }
           />
-        ) : (
-          <></>
-        )}
         {/* First and Last Name Field */}
-        {type !== "Log In" ? (
           <Group grow>
             <FloatingLabelInput
               label="First Name"
@@ -301,11 +286,10 @@ export default function Auth() {
               }
             />
           </Group>
-        ) : (
-          <></>
-        )}
+        </Collapse>
         {/* Password Field */}
-        {type === "Log In" ? (
+        <div style={{ position: 'relative' }}>
+        <Collapse in={type === 'Log In'} transitionDuration={700}>
           <ForgotPasswordInput
             value={password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -313,7 +297,8 @@ export default function Auth() {
             }
             onClick={() => setResettingPassword(true)}
           />
-        ) : (
+        </Collapse>
+        <Collapse in={type === 'Sign Up'}>
           <PasswordStrength
             value={password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -321,7 +306,8 @@ export default function Auth() {
             }
             onValidChange={setPasswordValid}
           />
-        )}
+        </Collapse>
+        </div>
         <Box mt="md">
           <Button
             variant="filled"
@@ -348,7 +334,7 @@ export default function Auth() {
       style={{ backgroundColor: designTokens.colors.glassyBackground }}
     >
       <Stack align='center'>
-                    <IconMailCheck color="orange" size={100}/>
+      <IconMailCheck color="orange" size={100}/>
       <Title
         order={1}
         ff={designTokens.fonts.heading}
