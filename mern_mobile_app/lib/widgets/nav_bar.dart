@@ -3,6 +3,8 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:mern_mobile_app/pages/feed/feed_page.dart';
 import 'package:mern_mobile_app/pages/messages/messages_page.dart';
 import 'package:mern_mobile_app/pages/my-projects/my_projects_page.dart';
+import 'package:mern_mobile_app/pages/profile/profile_page.dart';
+import 'package:mern_mobile_app/providers/auth_provider.dart';
 import 'package:mern_mobile_app/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -37,8 +39,12 @@ class _NavBarState extends State<NavBar> {
   
   @override
   Widget build(BuildContext context) {
+
     // Contains page controller
     final navProvider = context.watch<NavigationProvider>();
+
+    // Contains user info (username)
+    final authProvider = context.watch<AuthProvider>();
     
     return Scaffold(
       extendBody: false,
@@ -48,7 +54,7 @@ class _NavBarState extends State<NavBar> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/profile');
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(username: authProvider.username ?? "jaedo2")));
             },
             icon: Icon(TablerIcons.user_circle)
           )
