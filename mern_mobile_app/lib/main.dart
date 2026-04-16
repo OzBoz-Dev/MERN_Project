@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mern_mobile_app/pages/login/login_page.dart';
-import 'package:mern_mobile_app/pages/profile/profile_page.dart';
 import 'package:mern_mobile_app/pages/signup/signup_page.dart';
 import 'package:mern_mobile_app/providers/auth_provider.dart';
 import 'package:mern_mobile_app/providers/navigation_provider.dart';
@@ -18,11 +18,22 @@ void main() async {
   // Init cache
   await SharedPrefsService.init();
 
+  // Create AuthProvider instance first
+  final authProvider = AuthProvider();
+
+  // Attempt auto login
+  authProvider.tryAutoLogin();
+
+  // Check token expiration - logout if expired
+  if(authProvider.token != null && JwtDecoder.isExpired(authProvider.token!)) {
+    authProvider.logout();
+  }
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider())
+        ChangeNotifierProvider.value(value: authProvider)
       ],
       child: MainApp(),
     )
@@ -37,12 +48,19 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
-      initialRoute: '/', // Lead user to sign up before using
+      home: Consumer<AuthProvider>(
+        builder: (context, auth, _) {
+          // Check if we have a token
+          if (auth.isAuthenticated) {
+            return const NavBar();
+          } else {
+            return const LoginPage();
+          }
+        },
+      ),
       routes: {
-        '/': (context) => NavBar(),
         '/signup': (context) => SignupPage(),
         '/login': (context) => LoginPage(),
-        '/profile': (context) => ProfilePage()
       },
     );
   }
