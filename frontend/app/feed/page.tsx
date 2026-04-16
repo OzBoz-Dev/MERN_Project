@@ -20,6 +20,7 @@ export default async function Feed() {
   const initialPosts = await result.json();
 
   return (
+    <div className="static-grid">
     <Flex
       direction={"column"}
       style={{
@@ -36,5 +37,6 @@ export default async function Feed() {
         <CreateProjectButton />
       </Flex>
     </Flex>
+    </div>
   );
 }

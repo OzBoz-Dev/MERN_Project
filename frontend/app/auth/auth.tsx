@@ -16,6 +16,9 @@ import {
   setCookie,
 } from 'cookies-next/client';
 
+import { IconMailCheck } from "@tabler/icons-react";
+import { IconUserKey } from "@tabler/icons-react";
+
 import { useState } from "react";
 import { designTokens } from "../GlobalTheme";
 import { PasswordStrength } from "./PasswordStrength";
@@ -344,9 +347,10 @@ export default function Auth() {
       shadow="md"
       style={{ backgroundColor: designTokens.colors.glassyBackground }}
     >
+      <Stack align='center'>
+                    <IconMailCheck color="orange" size={100}/>
       <Title
         order={1}
-        mb="xl"
         ff={designTokens.fonts.heading}
         style={{ textAlign: "center" }}
       >
@@ -361,9 +365,8 @@ export default function Auth() {
       </Text>
       <Group justify="space-between">
         <Button
-          variant="subtle"
+          variant="outline"
           color="orange"
-          fullWidth
           loading={resendLoading}
           disabled={resendCooldown > 0}
           onClick={handleResendEmail}
@@ -371,9 +374,8 @@ export default function Auth() {
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Email"}
         </Button>
         <Button
-          variant="subtle"
+          variant="outline"
           color="orange"
-          fullWidth
           onClick={() => {
             location.reload();
           }}
@@ -381,6 +383,7 @@ export default function Auth() {
           Back to Log In
         </Button>
       </Group>
+      </Stack>
     </Paper>
   );
 
@@ -393,6 +396,8 @@ export default function Auth() {
       shadow="md"
       style={{ backgroundColor: designTokens.colors.glassyBackground }}
     >
+      <Stack align="center">
+      <IconUserKey color="orange" size={70}/>
       <Title
         order={1}
         mb="xl"
@@ -404,7 +409,7 @@ export default function Auth() {
       <Text size="sm" mb="lg">
         Type your recovery email below to send a reset request
       </Text>
-      <Stack justify="flex-start">
+      <Stack w="100%">
         {success && (
           <Alert
             color="green"
@@ -458,6 +463,7 @@ export default function Auth() {
           >
           Back to Log In
         </Button>
+        </Stack>
       </Stack>
     </Paper>
   );
