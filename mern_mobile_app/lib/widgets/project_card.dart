@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:mern_mobile_app/models/tag.dart';
+import 'package:mern_mobile_app/widgets/tag_container.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectCard extends StatefulWidget {
@@ -99,21 +100,7 @@ class _ProjectCardState extends State<ProjectCard> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.tags.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFf0f0ff),
-                          borderRadius: BorderRadius.circular(6)
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          widget.tags[index].label,
-                          style: TextStyle(
-                            color: Color(0xFF4b4be6),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      );
+                      return TagContainer(tag: widget.tags[index]);
                     },
                     separatorBuilder: (context, index) => const SizedBox(width: 5,),
                   ),
