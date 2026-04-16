@@ -33,4 +33,33 @@ class ProfileService {
     }
   }
 
+  Future<void> editProfile({
+    required String token,
+    required String username,
+    required String firstName,
+    required String lastName,
+    required String bio,
+    required List<String> tags
+  }) async {
+    final response = await http.put(
+      Uri.parse("$_baseUrl/profile/$username"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+      body: jsonEncode({
+        "data": {
+          "firstName": firstName,
+          "lastName": lastName,
+          "bio": bio,
+          "tags": tags,
+        }
+      })
+    );
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    if(response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+  }
+
 }
