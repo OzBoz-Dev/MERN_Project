@@ -22,8 +22,11 @@ class AuthProvider extends ChangeNotifier {
 
   /// Attempt to restore a previously-saved token on app start
   void tryAutoLogin() {
+    // Try to get stored token
     _token = _authService.getToken();
-    if (_token != null) notifyListeners();
+    // Try to get stored username
+    _username = _authService.getUsername();
+    notifyListeners();
   }
 
 
@@ -115,6 +118,7 @@ class AuthProvider extends ChangeNotifier {
   // Logout - clears token and username
   Future<void> logout() async {
     await _authService.clearToken();
+    await _authService.clearUsername();
     _token = null;
     _username = null;
     _error = null;
