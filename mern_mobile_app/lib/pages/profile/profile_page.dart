@@ -11,7 +11,8 @@ import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   final String username;
-  const ProfilePage({super.key, required this.username});
+  final bool? isUser;
+  const ProfilePage({super.key, required this.username, this.isUser});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -66,7 +67,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Row(
+                              // Only allow edits and logout if its the user's profile
+                              (widget.isUser == true) ? Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   IconButton(
@@ -101,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     },
                                   )
                                 ],
-                              ),
+                              ) : SizedBox.shrink(),
                               const SizedBox(height: 16,),
                               ProfileSquare(firstName: user.firstName, lastName: user.lastName),
                               const SizedBox(height: 16,),

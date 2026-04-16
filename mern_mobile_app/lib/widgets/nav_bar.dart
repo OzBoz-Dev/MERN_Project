@@ -54,7 +54,20 @@ class _NavBarState extends State<NavBar> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(username: authProvider.username ?? "jaedo2")));
+              if(authProvider.username != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(
+                      username: authProvider.username!,
+                      isUser: true, // Allows edits and logout
+                    )
+                  )
+                );
+              }
+              else {
+                return;
+              }
             },
             icon: Icon(TablerIcons.user_circle)
           )
