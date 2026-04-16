@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mern_mobile_app/providers/auth_provider.dart';
 import 'package:mern_mobile_app/widgets/animated_grid_background.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,10 +21,13 @@ class _LoginPageState extends State<LoginPage> {
   // Obscure passwrod
   bool _isPasswordObscured = true;
 
+  // Form validation
+  final _formKey = GlobalKey<FormState>();
+  bool _isFormValid = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Log In"), centerTitle: true,),
       body: AnimatedGridBackground(
         backgroundColor: Color(0xFFFDF8EA),
         child: Center(
@@ -55,10 +60,22 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 48,),
                       Form(
+                        key: _formKey,
+                        onChanged: () {
+                          setState(() {
+                            _isFormValid = _formKey.currentState?.validate() ?? false;
+                          });
+                        },
                         child: Column(
                             children: [
                               TextFormField(
                                 controller: _emailController,
+                                validator: (value) {
+                                  if(value == null || value.isEmpty) {
+                                    return "Email is required";
+                                  }
+                                  return null;
+                                },
                                 style: TextStyle(
                                   fontSize: 14
                                 ),
@@ -71,6 +88,12 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 16),
                               TextFormField(
                                 controller: _passwordController,
+                                validator: (value) {
+                                  if(value == null || value.isEmpty) {
+                                    return "Password is required";
+                                  }
+                                  return null;
+                                },
                                 style: TextStyle(
                                   fontSize: 14
                                 ),
@@ -90,20 +113,63 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               const SizedBox(height: 20),
                               // login button
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    final email = _emailController.text;
-                                    final password = _passwordController.text;
-                  
-                                    debugPrint("email: $email");
-                                    debugPrint("Password: $password");
-                  
-                                    // TODO: call AuthProvider login
-                                  },
-                                  child: Text("Login", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
-                                ),
+                              Consumer<AuthProvider>(
+                                builder: (context, authProvider, child) {
+                                  if(authProvider.error != null) {
+                                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                                      // Show error message
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            authProvider.error!,
+                                            style: GoogleFonts.montserrat(
+                                              color: Colors.white
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        )
+                                      );
+                                      // Then clear it for another attempt
+                                      authProvider.clearError();
+                                    });
+                                  }
+                                  if(authProvider.isLoading) {
+                                    return const SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: null,
+                                        child: SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      )
+                                    );
+                                  }
+                                  else {
+                                    return SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: _isFormValid ? () async {
+                                          final email = _emailController.text.trim();
+                                          final password = _passwordController.text.trim();
+
+                                          await authProvider.login(email: email, password: password);
+
+                                          if (!context.mounted) return;
+
+                                          // No error after login - go to main page
+                                          if (authProvider.error == null) {
+                                            Navigator.pushReplacementNamed(context, '/');
+                                          }
+                                        }: null,
+                                        child: Text("Log In", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
+                                      ),
+                                    );
+                                  }
+                                }
                               ),
                               const SizedBox(height: 20,),
                               GestureDetector(
