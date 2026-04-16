@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:mern_mobile_app/services/auth_service.dart';
+import 'package:chip_in/services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();

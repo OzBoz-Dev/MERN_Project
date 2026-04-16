@@ -1,4 +1,4 @@
-package com.example.mern_mobile_app
+package com.example.chip_in
 
 import io.flutter.embedding.android.FlutterActivity
 

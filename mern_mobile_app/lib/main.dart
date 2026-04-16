@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:mern_mobile_app/pages/login/login_page.dart';
-import 'package:mern_mobile_app/pages/signup/signup_page.dart';
-import 'package:mern_mobile_app/providers/auth_provider.dart';
-import 'package:mern_mobile_app/providers/navigation_provider.dart';
-import 'package:mern_mobile_app/services/shared_prefs_service.dart';
-import 'package:mern_mobile_app/themes/styles.dart';
-import 'package:mern_mobile_app/widgets/nav_bar.dart';
+import 'package:chip_in/pages/login/login_page.dart';
+import 'package:chip_in/pages/signup/signup_page.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/providers/navigation_provider.dart';
+import 'package:chip_in/services/shared_prefs_service.dart';
+import 'package:chip_in/themes/styles.dart';
+import 'package:chip_in/widgets/nav_bar.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

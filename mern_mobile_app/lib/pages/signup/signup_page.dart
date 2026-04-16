@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mern_mobile_app/pages/signup/verification_sent_page.dart';
-import 'package:mern_mobile_app/providers/auth_provider.dart';
-import 'package:mern_mobile_app/widgets/animated_grid_background.dart';
+import 'package:chip_in/pages/signup/verification_sent_page.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
 import 'package:provider/provider.dart';
 

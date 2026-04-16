@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:mern_mobile_app/pages/feed/feed_page.dart';
-import 'package:mern_mobile_app/pages/messages/messages_page.dart';
-import 'package:mern_mobile_app/pages/my-projects/my_projects_page.dart';
-import 'package:mern_mobile_app/pages/profile/profile_page.dart';
-import 'package:mern_mobile_app/providers/auth_provider.dart';
-import 'package:mern_mobile_app/providers/navigation_provider.dart';
+import 'package:chip_in/pages/feed/feed_page.dart';
+import 'package:chip_in/pages/messages/messages_page.dart';
+import 'package:chip_in/pages/my-projects/my_projects_page.dart';
+import 'package:chip_in/pages/profile/profile_page.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
 
 class NavBar extends StatefulWidget {

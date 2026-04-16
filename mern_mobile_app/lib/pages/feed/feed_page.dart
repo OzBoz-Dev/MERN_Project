@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mern_mobile_app/models/tag.dart';
-import 'package:mern_mobile_app/widgets/project_card.dart';
+import 'package:chip_in/models/tag.dart';
+import 'package:chip_in/widgets/project_card.dart';
 
 class FeedPage extends StatelessWidget {
   FeedPage({super.key});

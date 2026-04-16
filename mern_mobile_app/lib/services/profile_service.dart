@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mern_mobile_app/models/tag.dart';
-import 'package:mern_mobile_app/models/user.dart';
+import 'package:chip_in/models/tag.dart';
+import 'package:chip_in/models/user.dart';
 import 'package:http/http.dart' as http;
 
 class ProfileService {

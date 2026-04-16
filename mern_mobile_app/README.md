@@ -1,3 +1,3 @@
-# mern_mobile_app
+# chip_in
 
 A new Flutter project.

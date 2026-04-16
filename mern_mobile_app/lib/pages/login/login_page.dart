@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mern_mobile_app/providers/auth_provider.dart';
-import 'package:mern_mobile_app/widgets/animated_grid_background.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {

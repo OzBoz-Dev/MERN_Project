@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:mern_mobile_app/models/tag.dart';
-import 'package:mern_mobile_app/widgets/tag_container.dart';
+import 'package:chip_in/models/tag.dart';
+import 'package:chip_in/widgets/tag_container.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectCard extends StatefulWidget {

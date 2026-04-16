@@ -1,4 +1,4 @@
-name: ChipIn
+name: chip_in
 description: "Chip In on projects!"
 publish_to: 'none'
 version: 0.1.0

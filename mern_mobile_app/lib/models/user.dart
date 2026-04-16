@@ -1,4 +1,4 @@
-import 'package:mern_mobile_app/models/tag.dart';
+import 'package:chip_in/models/tag.dart';
 
 class User {
   final String username;

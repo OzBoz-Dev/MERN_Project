@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mern_mobile_app/models/user.dart';
-import 'package:mern_mobile_app/providers/auth_provider.dart';
-import 'package:mern_mobile_app/services/profile_service.dart';
-import 'package:mern_mobile_app/widgets/animated_grid_background.dart';
-import 'package:mern_mobile_app/widgets/profile_square.dart';
-import 'package:mern_mobile_app/widgets/tag_container.dart';
+import 'package:chip_in/models/user.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/services/profile_service.dart';
+import 'package:chip_in/widgets/animated_grid_background.dart';
+import 'package:chip_in/widgets/profile_square.dart';
+import 'package:chip_in/widgets/tag_container.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {

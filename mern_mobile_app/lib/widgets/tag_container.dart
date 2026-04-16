@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mern_mobile_app/models/tag.dart';
+import 'package:chip_in/models/tag.dart';
 
 class TagContainer extends StatelessWidget {
   final Tag tag;

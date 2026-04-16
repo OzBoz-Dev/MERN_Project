@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:mern_mobile_app/constants/storage_keys.dart';
-import 'package:mern_mobile_app/services/shared_prefs_service.dart';
+import 'package:chip_in/constants/storage_keys.dart';
+import 'package:chip_in/services/shared_prefs_service.dart';
 
 class AuthService {
   final String _baseUrl = dotenv.env['API_ENTRYPOINT'] ?? '';
