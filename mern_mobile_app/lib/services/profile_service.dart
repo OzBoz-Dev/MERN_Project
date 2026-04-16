@@ -62,4 +62,25 @@ class ProfileService {
     }
   }
 
+  Future<void> deleteProfile({
+    required String token,
+    required String username,
+    required String password
+  }) async {
+    final response = await http.delete(
+      Uri.parse("$_baseUrl/profile/$username"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+      body: jsonEncode({
+        "password": password
+      })
+    );
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    if(response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+  }
+
 }
