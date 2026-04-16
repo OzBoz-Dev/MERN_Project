@@ -29,10 +29,7 @@ const userSchema = new mongoose.Schema(
             select: false,
         },
         tags: [{
-            type: String,
-            index: {
-                collation: { locale: 'en', strength: 2 }
-            }
+            type: String
         }],
         verified: {
             type: Boolean,

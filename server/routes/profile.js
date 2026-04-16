@@ -53,7 +53,8 @@ router.put("/:username", async(req, res) => {
         
         // Create new tags in database if they don't exist
         for (const tagValue of normalizedTags) {
-          const existingTag = await Tag.findOne({ value: tagValue });
+          const existingTag = await Tag.findOne({ value: tagValue })
+            .collation({ locale: 'en', strength: 2 });
           if (!existingTag) {
             await Tag.create({ value: tagValue });
           }
