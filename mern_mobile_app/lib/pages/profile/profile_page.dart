@@ -1,3 +1,4 @@
+import 'package:chip_in/pages/profile/edit_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -79,7 +80,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                         borderRadius: BorderRadius.circular(6)
                                       )
                                     ),
-                                    onPressed: () {}, icon: Icon(TablerIcons.pencil)
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditProfilePage(user: user),
+                                        )
+                                      );
+                                    },
+                                    icon: Icon(TablerIcons.pencil)
                                   ),
                                   const SizedBox(width: 4,),
                                   Consumer<AuthProvider>(
