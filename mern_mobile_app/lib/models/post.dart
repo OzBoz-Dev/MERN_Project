@@ -4,7 +4,7 @@ class Post {
   final String id;
   final String title;
   final String body;
-  final List<String> likes;
+  Set<String> likes;
   final List<Tag> tags;
   final String authorUsername;
   final DateTime datePosted;

@@ -1,12 +1,11 @@
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/providers/auth_provider.dart';
-import 'package:chip_in/services/content_service.dart';
+import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:flutter/material.dart';
-import 'package:chip_in/models/tag.dart';
 import 'package:chip_in/widgets/project_card.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:objectid/objectid.dart';
 import 'package:provider/provider.dart';
 
 class FeedPage extends StatefulWidget {
@@ -17,18 +16,21 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
-  // Mock data
-  final mockPosts = List.filled(20, ProjectCard(
-    post: Post(
-      id: "69daa24cabc881c47249492b",
-      title: "New Project",
-      body: "lorem ipsum",
-      likes: ["user1", "user2"],
-      tags: [Tag(label: "mobile")],
-      authorUsername: "jaedo",
-      datePosted: ObjectId.fromHexString("69daa24cabc881c47249492b").timestamp
-    ),
-  ));
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Load feed after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+      final projects = context.read<PostProvider>();
+
+      if (auth.username != null) {
+        projects.loadFeed(auth.username!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,20 +52,63 @@ class _FeedPageState extends State<FeedPage> {
           );
         }
         else {
-          final contentService = ContentService();
-          Future<List<Post>> feedFuture = contentService.getFeedPosts(authProvider.username!);
-          return FutureBuilder(
-            future: feedFuture,
-            builder: (context, snapshot) {
-              if(snapshot.hasError) {
-                return Center(
-                  child: Text(snapshot.error.toString()),
+          return Consumer<PostProvider>(
+            builder: (context, projectsProvider, child) {
+              if(projectsProvider.isLoading || !projectsProvider.hasLoaded) {
+                return AnimatedGridBackground(
+                  backgroundColor: const Color(0xFFFDF8EA),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Give us a moment...",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18
+                        ),
+                      ),
+                      const SizedBox(height: 24,),
+                      CircularProgressIndicator(
+                        color: Color(0xFFFFA500),
+                      ),
+                    ],
+                  ),
                 );
               }
-              else if(snapshot.hasData) {
+              else if(projectsProvider.error != null) {
+                return Center(
+                  child: Text(projectsProvider.error!),
+                );
+              }
+              else {
                 // List of posts
-                List<Post> feedPosts = snapshot.data!;
-
+                List<Post> feedPosts = projectsProvider.posts;
+                if(feedPosts.isEmpty) {
+                  return AnimatedGridBackground(
+                    backgroundColor: const Color(0xFFFDF8EA),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            TablerIcons.mood_confuzed,
+                            color: Color(0xFFFFA500),
+                            size: 48,
+                          ),
+                          const SizedBox(height: 12,),
+                          Text(
+                            textAlign: TextAlign.center,
+                            "No posts available!",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
                 return AnimatedGridBackground(
                   backgroundColor: const Color(0xFFFDF8EA),
                   child: ListView.builder(
@@ -88,23 +133,6 @@ class _FeedPageState extends State<FeedPage> {
                       );
                     },
                   ),
-                );
-              }
-              else {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Give us a moment...",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 18
-                      ),
-                    ),
-                    const SizedBox(height: 24,),
-                    CircularProgressIndicator(
-                      color: Color(0xFFFFA500),
-                    ),
-                  ],
                 );
               }
             },

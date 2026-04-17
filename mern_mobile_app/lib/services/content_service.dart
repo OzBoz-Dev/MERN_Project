@@ -30,7 +30,7 @@ class ContentService {
             id: post['_id'],
             title: post['title'],
             body: post['body'],
-            likes: (post['likes'] as List).map((usernameLiked) => usernameLiked as String).toList(),
+            likes: (post['likes'] as List).map((usernameLiked) => usernameLiked as String).toSet(),
             tags: (post['array_tags'] as List).map((tag) => Tag(label: tag)).toList(),
             authorUsername: post['author_username'],
             datePosted: ObjectId.fromHexString(post['_id']).timestamp

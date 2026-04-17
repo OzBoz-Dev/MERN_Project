@@ -2,7 +2,7 @@ import 'package:chip_in/models/post.dart';
 import 'package:chip_in/pages/profile/profile_page.dart';
 import 'package:chip_in/pages/projects/project_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
-import 'package:chip_in/services/content_service.dart';
+import 'package:chip_in/providers/post_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -25,11 +25,6 @@ class ProjectCard extends StatefulWidget {
 
 class _ProjectCardState extends State<ProjectCard> {
 
-  // Whether post has been liked
-  late bool _isLiked;
-
-  late int likeCount;
-
   // For clicking on usernames
   late TapGestureRecognizer _tapRecognizer;
 
@@ -42,8 +37,6 @@ class _ProjectCardState extends State<ProjectCard> {
   @override
   void initState() {
     super.initState();
-    _isLiked = false; // default hasn't been liked
-    likeCount = widget.post.likes.length; // Set the initial number of likes
     _tapRecognizer = TapGestureRecognizer()
       ..onTap = () {
         Navigator.push(
@@ -53,16 +46,6 @@ class _ProjectCardState extends State<ProjectCard> {
           )
         );
       };
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Set default likes based on username in likes array
-    final authProvider = context.read<AuthProvider>();
-    if(widget.post.likes.contains(authProvider.username)) {
-      _isLiked = true;
-    }
   }
 
   @override
@@ -186,86 +169,101 @@ class _ProjectCardState extends State<ProjectCard> {
                     ),
                     const SizedBox(width: 5,),
                     // Like button
-                    Column(
-                      children: [
-                        IconButton(
-                          style: IconButton.styleFrom(
-                            backgroundColor: Color(0xFFFFA500),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6)
-                            )
-                          ),
-                          onPressed: () async {
-                            // Auth provider for token
-                            final authProvider = context.read<AuthProvider>();
-                        
-                            // Content service to like the post
-                            final contentService = ContentService();
-                        
-                            // Optimistic update
-                            setState(() {
-                              _isLiked = !_isLiked;
-                              if(_isLiked) {
-                                likeCount++;
-                              }
-                              else {
-                                likeCount--;
-                              }
-                            });
-                        
-                            // Attempt to like (or unlike) the post
-                            try {
-                              await contentService.likePostById(authProvider.token!, widget.post.id);
-                            }
-                            catch(e) {
-                              debugPrint("Error liking/unliking: ${e.toString()}");
-                              // Tell user
-                              if(mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: _isLiked == true ? Text("Failed to unlike post.") : Text("Failed to like post."),
+                    Consumer<PostProvider>(
+                      builder: (context, projectsProvider, child) {
+                        if(projectsProvider.posts.isNotEmpty) {
+                          // Auth provider for username
+                          final authProvider = context.read<AuthProvider>();
+                          final post = widget.post;
+
+                          // Whether this post was liked by the user
+                          bool isLiked = post.likes.contains(authProvider.username);
+
+                          return Column(
+                            children: [
+                              IconButton(
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Color(0xFFFFA500),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6)
                                   )
-                                );
-                              }
-                              // Revert if like failed
-                              setState(() {
-                                _isLiked = !_isLiked;
-                                if(_isLiked) {
-                                  likeCount++;
-                                }
-                                else {
-                                  likeCount--;
-                                }
-                              });
-                            }
-                          },
-                          icon: AnimatedSwitcher(
-                            duration: Duration(milliseconds: 200),
-                            switchInCurve: Curves.easeOutBack,
-                            switchOutCurve: Curves.easeIn,
-                            transitionBuilder: (child, animation) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: ScaleTransition(
-                                  scale: animation,
-                                  child: child,
                                 ),
-                              );
-                            },
-                            child: Icon(
-                              key: ValueKey(_isLiked),
-                              _isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          "$likeCount",
-                          style: TextStyle(
-                            fontSize: 12
-                          ),
-                        )
-                      ],
+                                onPressed: () async {
+                                  projectsProvider.toggleLike(
+                                    token: authProvider.token!,
+                                    postId: post.id,
+                                    username: authProvider.username!
+                                  );
+                                },
+                                icon: AnimatedSwitcher(
+                                  duration: Duration(milliseconds: 200),
+                                  switchInCurve: Curves.easeOutBack,
+                                  switchOutCurve: Curves.easeIn,
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: ScaleTransition(
+                                        scale: animation,
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: Icon(
+                                    key: ValueKey(isLiked),
+                                    isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                "${post.likes.length}",
+                                style: TextStyle(
+                                  fontSize: 12
+                                ),
+                              )
+                            ],
+                          );
+                        }
+                        else {
+                          return Column(
+                            children: [
+                              IconButton(
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Color(0xFFFFA500),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6)
+                                  )
+                                ),
+                                onPressed: null,
+                                icon: AnimatedSwitcher(
+                                  duration: Duration(milliseconds: 200),
+                                  switchInCurve: Curves.easeOutBack,
+                                  switchOutCurve: Curves.easeIn,
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: ScaleTransition(
+                                        scale: animation,
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: Icon(
+                                    TablerIcons.heart,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                "0",
+                                style: TextStyle(
+                                  fontSize: 12
+                                ),
+                              )
+                            ],
+                          );
+                        }
+                      },
                     )
                   ],
                 ),
