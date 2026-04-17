@@ -9,6 +9,9 @@ ThemeData lightTheme = ThemeData(
     displayColor: Colors.black, // larger text sizes
     bodyColor: Color(0xFF2d3748) // Body texts
   ),
+  appBarTheme: AppBarThemeData(
+    backgroundColor: Colors.white
+  ),
   cardTheme: CardThemeData(
     color: Color(0xFFFFFEFB),
     elevation: 2,

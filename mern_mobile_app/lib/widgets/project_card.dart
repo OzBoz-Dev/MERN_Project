@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:chip_in/widgets/tag_container.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectCard extends StatefulWidget {
@@ -26,6 +27,12 @@ class _ProjectCardState extends State<ProjectCard> {
 
   // For clicking on usernames
   late TapGestureRecognizer _tapRecognizer;
+
+  // For showing project bodies on the card itself
+  String stripHtml(String htmlString) {
+    final document = html_parser.parse(htmlString);
+    return document.body?.text ?? '';
+  }
 
   @override
   void initState() {
@@ -128,7 +135,7 @@ class _ProjectCardState extends State<ProjectCard> {
                 ),
                 const SizedBox(height: 15,),
                 Text(
-                  widget.post.body,
+                  stripHtml(widget.post.body),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 15,),
