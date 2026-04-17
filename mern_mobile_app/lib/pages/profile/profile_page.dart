@@ -45,6 +45,30 @@ class _ProfilePageState extends State<ProfilePage> {
             future: _userFuture,
             builder: (context, snapshot) {
               if(snapshot.hasError) {
+                if(snapshot.error.toString() == "Exception: User not found") {
+                  return Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          TablerIcons.mood_puzzled,
+                          color: Color(0xFFFFA500),
+                          size: 48,
+                        ),
+                        const SizedBox(height: 12,),
+                        Text(
+                          textAlign: TextAlign.center,
+                          "Profile not found...",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
                 return Text("Error Occurred: ${snapshot.error}");
               }
               else if(snapshot.hasData) {
