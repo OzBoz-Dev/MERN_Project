@@ -30,12 +30,19 @@ void main() async {
     authProvider.logout();
   }
 
+  final postProvider = PostProvider();
+
+  // Startup path: kick off the feed load before any widgets exist.
+  if (authProvider.username != null) {
+    postProvider.loadFeed(authProvider.username!);
+  }
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider.value(value: authProvider),
-        ChangeNotifierProvider(create: (_) => PostProvider()),
+        ChangeNotifierProvider.value(value: postProvider,),
       ],
       child: MainApp(),
     )

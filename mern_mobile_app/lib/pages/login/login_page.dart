@@ -1,3 +1,4 @@
+import 'package:chip_in/providers/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -156,7 +157,14 @@ class _LoginPageState extends State<LoginPage> {
                                           final email = _emailController.text.trim();
                                           final password = _passwordController.text.trim();
 
+                                          // Post provider which will load the feed
+                                          final posts = context.read<PostProvider>();
+
                                           await authProvider.login(email: email, password: password);
+
+                                          if (authProvider.isAuthenticated) {
+                                            posts.loadFeed(authProvider.username!);
+                                          }
 
                                           if (!context.mounted) return;
 

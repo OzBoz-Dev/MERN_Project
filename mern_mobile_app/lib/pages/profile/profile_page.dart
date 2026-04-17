@@ -1,4 +1,5 @@
 import 'package:chip_in/pages/profile/edit_profile_page.dart';
+import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/widgets/tag_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -134,8 +135,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                           )
                                         ),
                                         onPressed: () async {
+                                          // Post provider to reset feed
+                                          final postProvider = context.read<PostProvider>();
                                           // Log out
                                           await authProvider.logout();
+                                          // Clear old feed
+                                          postProvider.reset();
                                           if(mounted) {
                                             Navigator.pop(context);
                                           }

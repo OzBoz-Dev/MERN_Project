@@ -16,22 +16,6 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Load feed after build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = context.read<AuthProvider>();
-      final projects = context.read<PostProvider>();
-
-      if (auth.username != null) {
-        projects.loadFeed(auth.username!);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
@@ -54,7 +38,7 @@ class _FeedPageState extends State<FeedPage> {
         else {
           return Consumer<PostProvider>(
             builder: (context, projectsProvider, child) {
-              if(projectsProvider.isLoading || !projectsProvider.hasLoaded) {
+              if(projectsProvider.isLoading) {
                 return AnimatedGridBackground(
                   backgroundColor: const Color(0xFFFDF8EA),
                   child: Column(

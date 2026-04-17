@@ -20,6 +20,14 @@ class PostProvider extends ChangeNotifier {
   // Used for likes
   Post? getPostById(String postId) => _posts[postId];
 
+  // Prevents a stale feed when switcing users
+  void reset() {
+    _posts.clear();
+    _error = null;
+    _isLoading = false;
+    notifyListeners();
+  }
+
   Future<void> loadFeed(String username) async {
     _isLoading = true;
     _error = null;
