@@ -81,18 +81,6 @@ class _ProjectCardState extends State<ProjectCard> {
               color: Color(0xFFffe082),
             ),
           ),
-          // Bookmark
-          // Positioned(
-          //   top: 0,
-          //   right: 0,
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(24),
-          //     child: IconButton(
-          //       onPressed: () {},
-          //       icon: Icon(Symbols.bookmark),
-          //     ),
-          //   )
-          // ),
           // Main content
           Padding(
             padding: const EdgeInsets.all(24),
