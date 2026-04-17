@@ -44,6 +44,21 @@ class ContentService {
     }
   }
 
+  // Likes a post
+  Future<void> likePostById(String token, String postId) async {
+    final response = await http.post(
+      Uri.parse("$_baseUrl/posts/likes/$postId"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+    );
+    final data = jsonDecode(response.body);
+    if(response.statusCode == 404 || response.statusCode == 500) {
+      throw Exception(data['error']);
+    }
+  }
+
   // COMMENTS
 
   // TAGS

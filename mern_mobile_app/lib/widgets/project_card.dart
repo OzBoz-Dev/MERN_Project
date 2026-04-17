@@ -1,11 +1,14 @@
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/pages/profile/profile_page.dart';
 import 'package:chip_in/pages/projects/project_page.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/services/content_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:chip_in/widgets/tag_container.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:provider/provider.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectCard extends StatefulWidget {
@@ -47,6 +50,16 @@ class _ProjectCardState extends State<ProjectCard> {
           )
         );
       };
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Set default likes based on username in likes array
+    final authProvider = context.read<AuthProvider>();
+    if(widget.post.likes.contains(authProvider.username)) {
+      _isLiked = true;
+    }
   }
 
   @override
@@ -189,10 +202,37 @@ class _ProjectCardState extends State<ProjectCard> {
                           borderRadius: BorderRadius.circular(6)
                         )
                       ),
-                      onPressed: () {
+                      onPressed: () async {
+                        // Auth provider for token
+                        final authProvider = context.read<AuthProvider>();
+
+                        // Content service to like the post
+                        final contentService = ContentService();
+
+                        // Optimistic update
                         setState(() {
                           _isLiked = !_isLiked;
                         });
+
+                        // Attempt to like (or unlike) the post
+                        try {
+                          await contentService.likePostById(authProvider.token!, widget.post.id);
+                        }
+                        catch(e) {
+                          debugPrint("Error liking/unliking: ${e.toString()}");
+                          // Tell user
+                          if(mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: _isLiked == true ? Text("Failed to unlike post.") : Text("Failed to like post."),
+                              )
+                            );
+                          }
+                          // Revert if like failed
+                          setState(() {
+                            _isLiked = !_isLiked;
+                          });
+                        }
                       },
                       icon: AnimatedSwitcher(
                         duration: Duration(milliseconds: 200),
