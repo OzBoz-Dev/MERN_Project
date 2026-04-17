@@ -2,6 +2,7 @@
 
 import styles from "./NavTabs.module.css";
 import { Avatar, Box, Flex, Tabs, Text, Tooltip } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import UserAvatar from "./UserAvatar";
@@ -15,16 +16,17 @@ export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
   const router = useRouter();
 
-  // Define routes where NavTabs should be hidden
   const hiddenRoutes = ['/auth'];
-  
-  // Check if current route should hide NavTabs
   if (hiddenRoutes.some(route => pathname.startsWith(route))) {
     return null;
   }
 
   const [user, setUser] = useState<{ username: string; firstName: string; lastName: string } | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+
+  // Breakpoints for responsive behavior
+  const isCompact = useMediaQuery('(max-width: 768px)');   // icon + text → icon only
+  const isTiny    = useMediaQuery('(max-width: 400px)');   // shrink logo too
 
   useEffect(() => {
     setIsMounted(true);
@@ -38,26 +40,13 @@ export function NavTabs() {
     }
   }, []);
 
-  // For tab icons
   const iconSize = 18;
 
   // Tab items w/ name, icon, and path for easy editing
   const tabItems = [
-    {
-      name: "Feed",
-      icon: IconHome,
-      path: "/feed",
-    },
-    {
-      name: "My Projects",
-      icon: IconCode,
-      path: "/my-projects",
-    },
-    {
-      name: "Messages",
-      icon: IconMessage,
-      path: "/messages",
-    },
+    { name: "Feed",        icon: IconHome,    path: "/feed"        },
+    { name: "My Projects", icon: IconCode,    path: "/my-projects" },
+    { name: "Messages",    icon: IconMessage, path: "/messages"    },
   ];
 
   // Determine the current active tab
@@ -68,78 +57,86 @@ export function NavTabs() {
   // Create a Tab for each tabItem
   const tabs = tabItems.map((tabItem) => {
     const Icon = tabItem.icon;
-    return (
+    const tab = (
       <Tabs.Tab
         key={tabItem.name}
         value={tabItem.name}
-        onClick={() => {
-          router.push(tabItem.path); // navigate to defined path
-        }}
-        leftSection={<Icon size={iconSize} />}
+        onClick={() => router.push(tabItem.path)}
+        // On compact screens, remove leftSection and use the icon as the only child
+        leftSection={!isCompact ? <Icon size={iconSize} /> : undefined}
+        // Tighten padding on small screens so tabs don't overflow
+        style={isCompact ? { padding: '8px 10px' } : undefined}
       >
-        {tabItem.name}
+        {isCompact
+          ? <Icon size={iconSize} />   // icon only
+          : tabItem.name               // icon (leftSection) + text
+        }
       </Tabs.Tab>
     );
+
+    // Wrap icon-only tabs in a Tooltip so the label isn't lost
+    return isCompact ? (
+      <Tooltip key={tabItem.name} label={tabItem.name} position="bottom" withArrow>
+        {tab}
+      </Tooltip>
+    ) : tab;
   });
 
   return (
-    // Space between to separate tabs and profile
-    <Flex 
-      justify={"space-between"} 
-      px={10} 
-      // py={10} 
+    <Flex
+      justify={"space-between"}
+      px={isTiny ? 6 : 10}
       pt={10}
-      w="100%" 
-      style={{ 
-        position: "fixed", 
-        zIndex: 1500, 
-        backgroundColor: theme.white, 
+      w="100%"
+      style={{
+        position: "fixed",
+        zIndex: 1500,
+        backgroundColor: theme.white,
         boxShadow: '0px 1px 5px rgba(0,0,0,0.07)'
-      }}>
-      {/* Main navigation tabs */}
-      <Flex gap="lg">
-        {/* Logo */}
+      }}
+    >
+      <Flex gap={isCompact ? "xs" : "lg"} align="center">
+        {/* Shrink the logo on very small screens */}
         <Link href='/'>
           <Image
             src="/ChipIn-nobg.png"
             alt="ChipIn logo"
-            width={150}
-            height={50}
+            width={isTiny ? 90 : 150}
+            height={isTiny ? 30 : 50}
+            style={{ objectFit: 'contain' }}
           />
         </Link>
-        {/* Default value is the first tab always */}
+
         <Tabs
           classNames={{ tab: styles.tab }}
           defaultValue={tabItems[0].name}
-          value={activeTab} // use active tab for the current tab value
+          value={activeTab}
           variant="unstyled"
         >
-          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'stretch', height:'100%'}}>{tabs}</Tabs.List>
+          <Tabs.List style={{ border: 'none', display: 'flex', alignItems: 'stretch', height: '100%' }}>
+            {tabs}
+          </Tabs.List>
         </Tabs>
       </Flex>
+
       <div style={{ flex: 1 }} />
-      {/* Profile component */}
-      { isMounted && user ? (
-      <Tooltip
-            label="View Profile"
-            zIndex={2000}
-      >
-      <Link 
-        href={`/profile/${getCookie('username')}`} 
-        style={{ textDecoration: 'none', color: 'inherit' }}
-      >
-          <UserAvatar 
-            username={getCookie('username') as string} 
-            firstName={getCookie('firstName') as string}
-            lastName={getCookie('lastName') as string}
-            radius="xl" 
-            size="md"
-          />
-      </Link>
-      </Tooltip>
-      ) : (
-        <></>
-      )}
+
+      {isMounted && user ? (
+        <Tooltip label="View Profile" zIndex={2000}>
+          <Link
+            href={`/profile/${getCookie('username')}`}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <UserAvatar
+              username={getCookie('username') as string}
+              firstName={getCookie('firstName') as string}
+              lastName={getCookie('lastName') as string}
+              radius="xl"
+              size={isCompact ? "sm" : "md"}   // shrink avatar too
+            />
+          </Link>
+        </Tooltip>
+      ) : null}
     </Flex>
   );
 }
