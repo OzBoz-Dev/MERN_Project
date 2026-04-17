@@ -15,7 +15,7 @@ class FeedPage extends StatelessWidget {
       body: "lorem ipsum",
       likes: ["user1", "user2"],
       tags: [Tag(label: "mobile")],
-      authorUsername: "hml786",
+      authorUsername: "jaedo",
       datePosted: ObjectId.fromHexString("69daa24cabc881c47249492b").timestamp
     ),
   ));

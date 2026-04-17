@@ -1,5 +1,7 @@
 import 'package:chip_in/models/post.dart';
+import 'package:chip_in/pages/profile/profile_page.dart';
 import 'package:chip_in/pages/projects/project_page.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:chip_in/widgets/tag_container.dart';
@@ -22,10 +24,22 @@ class _ProjectCardState extends State<ProjectCard> {
   // Whether post has been liked
   late bool _isLiked;
 
+  // For clicking on usernames
+  late TapGestureRecognizer _tapRecognizer;
+
   @override
   void initState() {
     super.initState();
     _isLiked = false; // default hasn't been liked
+    _tapRecognizer = TapGestureRecognizer()
+      ..onTap = () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(username: widget.post.authorUsername)
+          )
+        );
+      };
   }
 
   @override
@@ -69,9 +83,25 @@ class _ProjectCardState extends State<ProjectCard> {
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5,),
-                Text(
-                  "Posted by: ${widget.post.authorUsername} • ${timeago.format(widget.post.datePosted)}",
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                    children: [
+                      const TextSpan(text: "Posted by: "),
+                      TextSpan(
+                        text: widget.post.authorUsername,
+                        style: const TextStyle(
+                          color: Color(0xFFFFA500),
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xFFFFA500)
+                        ),
+                        recognizer: _tapRecognizer
+                      ),
+                      TextSpan(
+                        text: " • ${timeago.format(widget.post.datePosted)}",
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 5,),
                 Row(
@@ -184,5 +214,11 @@ class _ProjectCardState extends State<ProjectCard> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tapRecognizer.dispose();
   }
 }
