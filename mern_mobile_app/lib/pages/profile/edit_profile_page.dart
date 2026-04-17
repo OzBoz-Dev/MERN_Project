@@ -188,7 +188,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                 if(mounted) Navigator.pop(context, true);
                               },
-                              child: const Text("Save"),
+                              child: Text(
+                                "Save",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),
