@@ -1,11 +1,12 @@
 "use client";
-import { ActionIcon, Button, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Collapse, TextInput } from "@mantine/core";
 import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
 import { API_ENTRYPOINT } from "@/constants/constants";
 import { Post } from "@/types/Post";
 import { title } from "process";
+import { ObjectId } from "bson";
 
 
 type SearchBarProp = {
@@ -35,24 +36,24 @@ useEffect(() => {
                 id: post._id,
                 title: post.title,
                 body: post.body,
-                author: post.author || 'Unknown',
+                author: post.author_username || 'Unknown',
                 likes: Array.isArray(post.likes) ? post.likes : [],
                 array_tags: Array.isArray(post.tags) ? post.tags : [],
                 attachments: post.attachments || '',
-                author_username: post.author || 'Unknown',
-                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
+                author_username: post.author_username || 'Unknown',
+                datePosted: new ObjectId(post._id).getTimestamp(),
             }));
 
             const bodyPosts = (Array.isArray(bodyData) ? bodyData : []).map(post => ({
                 id: post._id,
                 title: post.title,
                 body: post.body,
-                author: post.author || 'Unknown',
+                author: post.author_username || 'Unknown',
                 likes: Array.isArray(post.likes) ? post.likes : [],
                 array_tags: Array.isArray(post.tags) ? post.tags : [],
                 attachments: post.attachments || '',
-                author_username: post.author || 'Unknown',
-                datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
+                author_username: post.author_username || 'Unknown',
+                datePosted: new ObjectId(post._id).getTimestamp(),
             }));
 
             // include tags that are also in the search
@@ -100,12 +101,12 @@ return (
                 <IconAdjustments />
             </ActionIcon>
         </div>
-
-        {showAdvanced && (
-        <div style={{ marginTop: "12px" }}>
-            <AdvancedSettings tags={tags} setTags={setTags}/>
-        </div>
-        )}
+        
+        <Collapse in={showAdvanced}>
+            <div style={{ marginTop: "12px" }}>
+                <AdvancedSettings tags={tags} setTags={setTags}/>
+            </div>
+        </Collapse>
     </div>
     
 

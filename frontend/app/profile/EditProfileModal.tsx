@@ -149,7 +149,6 @@ export default function EditProfileModal({
           setTags={setTags}
           selectedTags={tags}
           color='#FFFFFF'
-          allowMissing={true}
         />
 
         <div style={{

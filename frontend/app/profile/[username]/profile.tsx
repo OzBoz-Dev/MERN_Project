@@ -205,7 +205,7 @@ export default function ProfilePage() {
   return (
     <div className="animated-grid">
     <Container size='xl' py="xl">
-      <Paper withBorder p="lg" miw={500} radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
+      <Paper withBorder p="lg" w={700} radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
         <Flex direction="column" justify="flex-end" p="sm">
           {isMe? (
           <ProfileActions
