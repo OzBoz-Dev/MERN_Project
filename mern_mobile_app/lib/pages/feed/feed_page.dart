@@ -1,6 +1,7 @@
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/services/content_service.dart';
+import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:flutter/material.dart';
 import 'package:chip_in/models/tag.dart';
 import 'package:chip_in/widgets/project_card.dart';
@@ -63,24 +64,30 @@ class _FeedPageState extends State<FeedPage> {
                 // List of posts
                 List<Post> feedPosts = snapshot.data!;
 
-                return ListView.separated(
-                  itemCount: feedPosts.length,
-                  itemBuilder: (context, index) {
-                    if(index == feedPosts.length - 1) {
-                      return Column(
-                        children: [
-                          ProjectCard(post: feedPosts[index]),
-                          const SizedBox(height: 8,),
-                          Text("You've reached the end!"),
-                          const SizedBox(height: 12,),
-                        ],
+                return AnimatedGridBackground(
+                  backgroundColor: const Color(0xFFFDF8EA),
+                  child: ListView.builder(
+                    itemCount: feedPosts.length,
+                    itemBuilder: (context, index) {
+                      if(index == feedPosts.length - 1) {
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                              child: ProjectCard(post: feedPosts[index]),
+                            ),
+                            const SizedBox(height: 8,),
+                            Text("You've reached the end!"),
+                            const SizedBox(height: 12,),
+                          ],
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        child: ProjectCard(post: feedPosts[index])
                       );
-                    }
-                    return ProjectCard(post: feedPosts[index]);
-                  },
-                  separatorBuilder: (context, index) {
-                    return const SizedBox(height: 4,);
-                  },
+                    },
+                  ),
                 );
               }
               else {
