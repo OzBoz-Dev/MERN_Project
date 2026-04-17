@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const Tag = require("../models/Tag");
+const User = require("../models/User");
 
 //add a get by tag value
 
@@ -111,6 +112,42 @@ router.get("/tag/:value", async (req, res) => {
     // debug
     // console.log("tagValues:", tagValues); 
     // console.log("tagValues type:", typeof tagValues);
+
+    // find posts that have at least one of the tags in the array
+    const posts = await Post.find(); 
+
+    const sorted = posts
+    .map(post => ({
+      post,
+      matchCount: post.array_tags.filter(tag => tagValues.includes(tag)).length // counts how many tags match the query
+      }))
+  
+    // sorts by number of matches first, and then by most recent
+    .sort((a, b) =>
+      b.matchCount - a.matchCount || new Date(b.post.createdAt) - new Date(a.post.createdAt)
+    )
+    .map(({ post }) => post);
+
+    // if no posts are found with the given tags, return a 404
+    if (!posts || posts.length == 0) {
+      return res.status(404).json({ message: "No posts found under this tag" });
+    }
+    
+    res.json(sorted);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//get for a user
+router.get("/for-you/:username", async (req, res) => {
+  try {
+    console.log(req.params.username);
+    const user = await User.findOne({ username: req.params.username });
+
+    const tagValues = user ? user.tags : [];
+
+    console.log(tagValues);
 
     // find posts that have at least one of the tags in the array
     const posts = await Post.find(); 

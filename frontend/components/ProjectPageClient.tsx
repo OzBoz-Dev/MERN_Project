@@ -12,6 +12,7 @@ import TagHolder from "./TagHolder";
 import { Post } from "@/types/Post";
 import { notFound } from "next/navigation";
 import { getCookie } from "cookies-next/client";
+import Link from "next/link";
 
 type Props = {
   post: Post | null;
@@ -39,8 +40,7 @@ export default function ProjectPageClient({ post, comments }: Props) {
         </Group>
 
         <Text size="sm" c={designTokens.colors.textMuted}>
-          Posted by {post.author_username} &middot;{" "}
-          {<TimeAgo date={post.datePosted} />}
+          Posted by <Link href={`/profile/${post.author_username}`} style={{color: 'orange'}}>{post.author_username}</Link> &middot; {<TimeAgo date={post.datePosted} />}
         </Text>
 
         <Group gap="8px" align="center">
