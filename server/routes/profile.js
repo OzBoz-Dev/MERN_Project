@@ -51,14 +51,14 @@ router.put("/:username", async(req, res) => {
         const tagArray = Array.isArray(tags) ? tags : [];
         const normalizedTags = tagArray.map(tag => tag.toLowerCase().trim());
         
-        // Create new tags in database if they don't exist
-        for (const tagValue of normalizedTags) {
-          const existingTag = await Tag.findOne({ value: tagValue })
-            .collation({ locale: 'en', strength: 2 });
-          if (!existingTag) {
-            await Tag.create({ value: tagValue });
-          }
-        }
+        // // Create new tags in database if they don't exist
+        // for (const tagValue of normalizedTags) {
+        //   const existingTag = await Tag.findOne({ value: tagValue })
+        //     .collation({ locale: 'en', strength: 2 });
+        //   if (!existingTag) {
+        //     await Tag.create({ value: tagValue });
+        //   }
+        // }
 
         normalizedTags.sort()
 
@@ -73,7 +73,7 @@ router.put("/:username", async(req, res) => {
                     tags: normalizedTags
                 }
             },
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         )
         .collation({ locale: 'en', strength: 2 })
         .select('-password -token -email')
