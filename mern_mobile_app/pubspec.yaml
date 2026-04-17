@@ -12,6 +12,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   flutter_launcher_icons: ^0.14.4
   flutter_tabler_icons: ^1.43.0
+  flutter_typeahead: ^6.0.0
   google_fonts: ^6.2.1
   http: ^1.6.0
   jwt_decoder: ^2.0.1
