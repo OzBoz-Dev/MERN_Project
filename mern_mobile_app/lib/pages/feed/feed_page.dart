@@ -66,6 +66,16 @@ class _FeedPageState extends State<FeedPage> {
                 return ListView.separated(
                   itemCount: feedPosts.length,
                   itemBuilder: (context, index) {
+                    if(index == feedPosts.length - 1) {
+                      return Column(
+                        children: [
+                          ProjectCard(post: feedPosts[index]),
+                          const SizedBox(height: 8,),
+                          Text("You've reached the end!"),
+                          const SizedBox(height: 12,),
+                        ],
+                      );
+                    }
                     return ProjectCard(post: feedPosts[index]);
                   },
                   separatorBuilder: (context, index) {
