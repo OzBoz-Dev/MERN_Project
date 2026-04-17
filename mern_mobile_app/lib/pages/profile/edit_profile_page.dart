@@ -1,9 +1,13 @@
+import 'package:chip_in/models/tag.dart';
 import 'package:chip_in/models/user.dart';
 import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/services/content_service.dart';
 import 'package:chip_in/services/profile_service.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
+import 'package:chip_in/widgets/tag_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -22,9 +26,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _lastNameController;
   late TextEditingController _bioController;
 
+  // Tags to appear and edit in tag holder
+  late List<Tag> _tags;
+
   @override
   void initState() {
     super.initState();
+    _tags = widget.user.tags; // populate with user's initial tags
     _firstNameController = TextEditingController(text: widget.user.firstName);
     _lastNameController = TextEditingController(text: widget.user.lastName);
     _bioController = TextEditingController(text: widget.user.bio);
@@ -84,6 +92,58 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               border: OutlineInputBorder(),
                             ),
                           ),
+                          const SizedBox(height: 12),
+                          Divider(),
+                          const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Tags")
+                          ),
+                          const SizedBox(height: 12,),
+                          TypeAheadField<Tag>(
+                            itemBuilder: (context, Tag tag) {
+                              return ListTile(
+                                title: Text(tag.label),
+                              );
+                            },
+                            onSelected: (tag) {
+                              final alreadyExists = _tags.any((t) => t.label == tag.label);
+                              if(alreadyExists) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Your profile already has this tag!"),
+                                  )
+                                );
+                              }
+                              else {
+                                setState(() {
+                                  _tags.add(tag);
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Tag added!"),
+                                  )
+                                );
+                              }
+                            },
+                            suggestionsCallback: (pattern) async {
+                              if (pattern.isEmpty) return [];
+                              final contentService = ContentService();
+                              return await contentService.searchTagsByValue(pattern);
+                            },
+                            builder: (context, controller, focusNode) {
+                              return TextField(
+                                controller: controller,
+                                focusNode: focusNode,
+                                decoration: InputDecoration(
+                                  labelText: 'Search tags to add',
+                                  border: OutlineInputBorder(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 12,),
+                          TagHolder(tags: _tags),
                           const SizedBox(height: 20),
                           SizedBox(
                             width: double.infinity,
@@ -96,9 +156,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 final firstName = _firstNameController.text.trim();
                                 final lastName = _lastNameController.text.trim();
                                 final bio = _bioController.text.trim();
-                                // TODO: Actually impelement tags via search later
-                                // For now use existing tags
-                                final tags = widget.user.tags;
 
                                 try {
                                   await profileService.editProfile(
@@ -107,7 +164,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     firstName: firstName,
                                     lastName: lastName,
                                     bio: bio,
-                                    tags: tags.map((tag) => tag.label).toList()
+                                    tags: _tags.map((tag) => tag.label).toList()
                                   );
                                 }
                                 catch(e) {
