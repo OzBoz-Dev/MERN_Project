@@ -6,7 +6,22 @@ const auth = require("../middleware/auth");
 const Tag = require("../models/Tag");
 const User = require("../models/User");
 
+const { sendCommentNotif } = require("../utils/mailer");
+
 //add a get by tag value
+
+//reads by username (from most recent to less recent)
+router.get("/:author_username", async (req, res) => {
+  try {
+    const { author_username } = req.params;
+    const postsByUser = await Post.find({ author_username }).sort({
+      createdAt: -1,
+    });
+    res.json(postsByUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 //reads all the posts
 router.get("/", async (req, res) => {
@@ -18,16 +33,6 @@ router.get("/", async (req, res) => {
     } else {
       res.json(posts);
     }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-//reads by username
-router.get("/author_username", async (req, res) => {
-  try {
-    const posts = await Post.find({ post_id });
-    res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -108,31 +113,37 @@ router.get("/body", async (req, res) => {
 //get by tag value
 router.get("/tag/:value", async (req, res) => {
   try {
-    const tagValues = req.params.value.split(",").map(t => t.trim()).filter(Boolean);
+    const tagValues = req.params.value
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
     // debug
-    // console.log("tagValues:", tagValues); 
+    // console.log("tagValues:", tagValues);
     // console.log("tagValues type:", typeof tagValues);
 
     // find posts that have at least one of the tags in the array
-    const posts = await Post.find(); 
+    const posts = await Post.find();
 
     const sorted = posts
-    .map(post => ({
-      post,
-      matchCount: post.array_tags.filter(tag => tagValues.includes(tag)).length // counts how many tags match the query
+      .map((post) => ({
+        post,
+        matchCount: post.array_tags.filter((tag) => tagValues.includes(tag))
+          .length, // counts how many tags match the query
       }))
-  
-    // sorts by number of matches first, and then by most recent
-    .sort((a, b) =>
-      b.matchCount - a.matchCount || new Date(b.post.createdAt) - new Date(a.post.createdAt)
-    )
-    .map(({ post }) => post);
+
+      // sorts by number of matches first, and then by most recent
+      .sort(
+        (a, b) =>
+          b.matchCount - a.matchCount ||
+          new Date(b.post.createdAt) - new Date(a.post.createdAt),
+      )
+      .map(({ post }) => post);
 
     // if no posts are found with the given tags, return a 404
     if (!posts || posts.length == 0) {
       return res.status(404).json({ message: "No posts found under this tag" });
     }
-    
+
     res.json(sorted);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -214,6 +225,42 @@ router.post("/", auth, async (req, res) => {
     res.status(201).json(post);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+//sends email to og poster whenever a comment is added
+router.post("/:_id/comments", auth, async (req, res) => {
+  try {
+    //find by id
+    const post = await Post.findById(req.params._id);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    //extracts body
+    const { body } = req.body;
+
+    //Pushes comment to the database
+    post.comments.push({ username: req.user.username, body });
+    await post.save();
+
+    //finds email of og poster
+    const ogPoster = await User.findOne({ username: post.author_username });
+
+    //if email is found, notification is sent
+    if (poster?.email) {
+      await sendCommentNotification({
+        toEmail: poster.email,
+        posterUsername: post.autor_username,
+        commenterUsername: req.user.username,
+        postTitle: post.title,
+      });
+    }
+
+    res.status(201).json(post);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
   }
 });
 
