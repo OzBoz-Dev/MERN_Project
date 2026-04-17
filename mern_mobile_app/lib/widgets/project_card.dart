@@ -28,6 +28,8 @@ class _ProjectCardState extends State<ProjectCard> {
   // Whether post has been liked
   late bool _isLiked;
 
+  late int likeCount;
+
   // For clicking on usernames
   late TapGestureRecognizer _tapRecognizer;
 
@@ -41,6 +43,7 @@ class _ProjectCardState extends State<ProjectCard> {
   void initState() {
     super.initState();
     _isLiked = false; // default hasn't been liked
+    likeCount = widget.post.likes.length; // Set the initial number of likes
     _tapRecognizer = TapGestureRecognizer()
       ..onTap = () {
         Navigator.push(
@@ -154,6 +157,7 @@ class _ProjectCardState extends State<ProjectCard> {
                 const SizedBox(height: 15,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: TextButton.icon(
@@ -194,64 +198,86 @@ class _ProjectCardState extends State<ProjectCard> {
                     ),
                     const SizedBox(width: 5,),
                     // Like button
-                    IconButton(
-                      style: IconButton.styleFrom(
-                        backgroundColor: Color(0xFFFFA500),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)
-                        )
-                      ),
-                      onPressed: () async {
-                        // Auth provider for token
-                        final authProvider = context.read<AuthProvider>();
-
-                        // Content service to like the post
-                        final contentService = ContentService();
-
-                        // Optimistic update
-                        setState(() {
-                          _isLiked = !_isLiked;
-                        });
-
-                        // Attempt to like (or unlike) the post
-                        try {
-                          await contentService.likePostById(authProvider.token!, widget.post.id);
-                        }
-                        catch(e) {
-                          debugPrint("Error liking/unliking: ${e.toString()}");
-                          // Tell user
-                          if(mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: _isLiked == true ? Text("Failed to unlike post.") : Text("Failed to like post."),
-                              )
-                            );
-                          }
-                          // Revert if like failed
-                          setState(() {
-                            _isLiked = !_isLiked;
-                          });
-                        }
-                      },
-                      icon: AnimatedSwitcher(
-                        duration: Duration(milliseconds: 200),
-                        switchInCurve: Curves.easeOutBack,
-                        switchOutCurve: Curves.easeIn,
-                        transitionBuilder: (child, animation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: ScaleTransition(
-                              scale: animation,
-                              child: child,
+                    Column(
+                      children: [
+                        IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Color(0xFFFFA500),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)
+                            )
+                          ),
+                          onPressed: () async {
+                            // Auth provider for token
+                            final authProvider = context.read<AuthProvider>();
+                        
+                            // Content service to like the post
+                            final contentService = ContentService();
+                        
+                            // Optimistic update
+                            setState(() {
+                              _isLiked = !_isLiked;
+                              if(_isLiked) {
+                                likeCount++;
+                              }
+                              else {
+                                likeCount--;
+                              }
+                            });
+                        
+                            // Attempt to like (or unlike) the post
+                            try {
+                              await contentService.likePostById(authProvider.token!, widget.post.id);
+                            }
+                            catch(e) {
+                              debugPrint("Error liking/unliking: ${e.toString()}");
+                              // Tell user
+                              if(mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: _isLiked == true ? Text("Failed to unlike post.") : Text("Failed to like post."),
+                                  )
+                                );
+                              }
+                              // Revert if like failed
+                              setState(() {
+                                _isLiked = !_isLiked;
+                                if(_isLiked) {
+                                  likeCount++;
+                                }
+                                else {
+                                  likeCount--;
+                                }
+                              });
+                            }
+                          },
+                          icon: AnimatedSwitcher(
+                            duration: Duration(milliseconds: 200),
+                            switchInCurve: Curves.easeOutBack,
+                            switchOutCurve: Curves.easeIn,
+                            transitionBuilder: (child, animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: ScaleTransition(
+                                  scale: animation,
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: Icon(
+                              key: ValueKey(_isLiked),
+                              _isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
                             ),
-                          );
-                        },
-                        child: Icon(
-                          key: ValueKey(_isLiked),
-                          _isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
+                          ),
                         ),
-                      ),
+                        Text(
+                          "$likeCount",
+                          style: TextStyle(
+                            fontSize: 12
+                          ),
+                        )
+                      ],
                     )
                   ],
                 ),
