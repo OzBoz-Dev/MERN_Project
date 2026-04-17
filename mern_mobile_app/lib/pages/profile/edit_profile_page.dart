@@ -32,7 +32,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    _tags = widget.user.tags; // populate with user's initial tags
+    _tags = List<Tag>.from(widget.user.tags); // populate with user's initial tags
     _firstNameController = TextEditingController(text: widget.user.firstName);
     _lastNameController = TextEditingController(text: widget.user.lastName);
     _bioController = TextEditingController(text: widget.user.bio);
@@ -97,7 +97,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           const SizedBox(height: 12),
                           Align(
                             alignment: Alignment.centerLeft,
-                            child: Text("Tags")
+                            child: Text("Tags - tap to delete, search to add")
                           ),
                           const SizedBox(height: 12,),
                           TypeAheadField<Tag>(
@@ -143,7 +143,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             },
                           ),
                           const SizedBox(height: 12,),
-                          TagHolder(tags: _tags),
+                          _tags.isEmpty ? Text("No tags") : TagHolder(
+                            tags: _tags,
+                            onDelete: (deletedTag) {
+                              setState(() {
+                                _tags.remove(deletedTag);
+                              });
+                            },
+                          ),
                           const SizedBox(height: 20),
                           SizedBox(
                             width: double.infinity,
