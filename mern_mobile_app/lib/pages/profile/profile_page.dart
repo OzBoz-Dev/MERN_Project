@@ -161,8 +161,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               }
               else {
-                return CircularProgressIndicator(
-                  color: Color(0xFFFFA500),
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Give us a moment...",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 18
+                      ),
+                    ),
+                    const SizedBox(height: 24,),
+                    CircularProgressIndicator(
+                      color: Color(0xFFFFA500),
+                    ),
+                  ],
                 );
               }
             }
