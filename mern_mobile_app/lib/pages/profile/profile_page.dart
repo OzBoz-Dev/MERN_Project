@@ -1,4 +1,5 @@
 import 'package:chip_in/pages/profile/edit_profile_page.dart';
+import 'package:chip_in/widgets/tag_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +8,6 @@ import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/services/profile_service.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:chip_in/widgets/profile_square.dart';
-import 'package:chip_in/widgets/tag_container.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -151,17 +151,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SizedBox(height: 16,),
                               Divider(),
                               const SizedBox(height: 4,),
-                              SizedBox(
-                                height: 35,
-                                child: user.tags.isEmpty ? Text("No tags") : ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: user.tags.length,
-                                  itemBuilder: (context, index) {
-                                    return TagContainer(tag: user.tags[index]);
-                                  },
-                                  separatorBuilder: (context, index) => const SizedBox(width: 5,),
-                                ),
-                              ),
+                              user.tags.isEmpty ? Text("No tags") : TagHolder(tags: user.tags)
                             ],
                           ),
                         ),
