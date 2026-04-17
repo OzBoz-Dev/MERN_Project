@@ -18,6 +18,7 @@ const tagsRouter = require("./routes/tags");
 const profileRouter = require("./routes/profile");
 const postRouter = require("./routes/posts")
 const recoveryRouter = require("./routes/recovery");
+const myProjectsRouter = require("./routes/my-projects");
 
 app.use("/auth", authRoutes);
 app.use("/comments", commentsRouter);
@@ -27,6 +28,7 @@ app.use("/tags", tagsRouter);
 app.use("/profile", profileRouter);
 app.use("/posts", postRouter);
 app.use("/auth/recovery", recoveryRouter);
+app.use("/my-projects", myProjectsRouter);
 
 // Test route
 app.get("/", async (req, res) => {
