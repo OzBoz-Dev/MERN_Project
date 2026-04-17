@@ -9,12 +9,17 @@ import {
   Alert,
   Text,
   Group,
-  Stack
+  Stack,
+  Collapse,
+  Transition
 } from "@mantine/core";
 
 import {
   setCookie,
 } from 'cookies-next/client';
+
+import { IconMailCheck } from "@tabler/icons-react";
+import { IconUserKey } from "@tabler/icons-react";
 
 import { useState } from "react";
 import { designTokens } from "../GlobalTheme";
@@ -122,6 +127,7 @@ export default function Auth() {
         setSuccess("Signup Submitted!");
         setSubmittedEmail(email);
         setVerificationSent(true);
+        setPassword("");
       } else {
         const data = await apiLogin(email, password);
         // Store token
@@ -206,6 +212,8 @@ export default function Auth() {
           setPasswordValid(false);
           setError(null);
           setSuccess(null);
+          setFirstName("");
+          setLastName("");
         }}
         data={["Log In", "Sign Up"]}
       />
@@ -218,7 +226,7 @@ export default function Auth() {
       >
         {type === "Log In" ? "Welcome Back" : "Create Account"}
       </Title>
-      <Stack justify="flex-start">
+      <Stack justify="flex-start" gap={0}>
         {/* Success message */}
         {success && (
           <Alert
@@ -244,29 +252,18 @@ export default function Auth() {
           </Alert>
         )}
         {/* Email Field */}
-        {type === "Log In" ? (
-          <InputValidation
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(e.target.value)
-            }
-            onValidChange={setEmailValid}
-          />
-        ) : (
-          <InputValidation
-            value={email}
-            label="Email"
-            type="email"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(e.target.value)
-            }
-            onValidChange={setEmailValid}
-          />
-        )}
+        <InputValidation
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setEmail(e.target.value)
+          }
+          onValidChange={setEmailValid}
+        />
+        <Collapse in={type === "Sign Up"} transitionDuration={700}>
+        <Stack gap={10} pt={10}>
         {/* Username Field */}
-        {type !== "Log In" ? (
           <FloatingLabelInput
             label="Username"
             type="username"
@@ -275,12 +272,8 @@ export default function Auth() {
               setUsername(e.target.value)
             }
           />
-        ) : (
-          <></>
-        )}
         {/* First and Last Name Field */}
-        {type !== "Log In" ? (
-          <Group grow>
+          <Group grow mt={10}>
             <FloatingLabelInput
               label="First Name"
               type="firstName"
@@ -298,11 +291,12 @@ export default function Auth() {
               }
             />
           </Group>
-        ) : (
-          <></>
-        )}
+          </Stack>
+        </Collapse>
         {/* Password Field */}
-        {type === "Log In" ? (
+        <div style={{ position: 'relative' }}>
+        <Collapse in={type === 'Log In'} transitionDuration={700}>
+        <Stack gap={10} pt={10}>
           <ForgotPasswordInput
             value={password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -310,7 +304,10 @@ export default function Auth() {
             }
             onClick={() => setResettingPassword(true)}
           />
-        ) : (
+        </Stack>
+        </Collapse>
+        <Collapse in={type === 'Sign Up'}>
+        <Stack gap={10} pt={10}>
           <PasswordStrength
             value={password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -318,7 +315,9 @@ export default function Auth() {
             }
             onValidChange={setPasswordValid}
           />
-        )}
+        </Stack>
+        </Collapse>
+        </div>
         <Box mt="md">
           <Button
             variant="filled"
@@ -344,9 +343,10 @@ export default function Auth() {
       shadow="md"
       style={{ backgroundColor: designTokens.colors.glassyBackground }}
     >
+      <Stack align='center'>
+      <IconMailCheck color="orange" size={100}/>
       <Title
         order={1}
-        mb="xl"
         ff={designTokens.fonts.heading}
         style={{ textAlign: "center" }}
       >
@@ -361,9 +361,8 @@ export default function Auth() {
       </Text>
       <Group justify="space-between">
         <Button
-          variant="subtle"
+          variant="outline"
           color="orange"
-          fullWidth
           loading={resendLoading}
           disabled={resendCooldown > 0}
           onClick={handleResendEmail}
@@ -371,16 +370,21 @@ export default function Auth() {
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Email"}
         </Button>
         <Button
-          variant="subtle"
+          variant="outline"
           color="orange"
-          fullWidth
           onClick={() => {
-            location.reload();
+            setType("Log In");
+            setEmail("");
+            setEmailValid(false);
+            setError(null);
+            setSuccess(null);
+            setVerificationSent(false);
           }}
         >
           Back to Log In
         </Button>
       </Group>
+      </Stack>
     </Paper>
   );
 
@@ -393,6 +397,8 @@ export default function Auth() {
       shadow="md"
       style={{ backgroundColor: designTokens.colors.glassyBackground }}
     >
+      <Stack align="center">
+      <IconUserKey color="orange" size={70}/>
       <Title
         order={1}
         mb="xl"
@@ -404,7 +410,7 @@ export default function Auth() {
       <Text size="sm" mb="lg">
         Type your recovery email below to send a reset request
       </Text>
-      <Stack justify="flex-start">
+      <Stack w="100%">
         {success && (
           <Alert
             color="green"
@@ -453,35 +459,88 @@ export default function Auth() {
             color="orange"
             fullWidth
             onClick={() => {
-              location.reload();
+              setType("Log In");
+              setEmail("");
+              setEmailValid(false);
+              setError(null);
+              setSuccess(null);
+              setResettingPassword(false);
             }}
           >
           Back to Log In
         </Button>
+        </Stack>
       </Stack>
     </Paper>
   );
 
-  return (
-    <main>
-      <div style={{}} className="animated-grid">
-        <Container size="md" p="xl">
-          <Stack align='center'>
-          { !resettingPassword && !verificationSent  ? 
-          <Image
-            src="/ChipIn.png"
-            alt="ChipIn logo"
-            width={396}
-            height={125}
-          />
-          : <></>
-          }
-          { resettingPassword ? resetCard :
-          (verificationSent ? verifyCard : authCard)
-          }
-          </Stack>
-        </Container>
-      </div>
-    </main>
-  );
+return (
+  <main>
+    <div className="animated-grid">
+      <Container size="md" p="xl">
+        <Stack align="center" gap="xl">
+          
+          {/* Logo Transition */}
+          <Box>
+            <Image
+              src="/ChipIn.png"
+              alt="ChipIn logo"
+              width={396}
+              height={125}
+            />
+          </Box>
+
+          {/* Cards Container */}
+          <Box 
+            style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr', 
+              alignItems: 'start', 
+              width: '40vw'
+            }}
+          >
+            {/* Auth Card */}
+            <Transition
+              mounted={!resettingPassword && !verificationSent}
+              transition="pop"
+              duration={400}
+            >
+              {(styles) => (
+                <Box style={{ ...styles, gridArea: '1 / 1 / 2 / 2' }}>
+                  {authCard}
+                </Box>
+              )}
+            </Transition>
+
+            {/* Reset Card */}
+            <Transition
+              mounted={resettingPassword}
+              transition="pop"
+              duration={400}
+            >
+              {(styles) => (
+                <Box style={{ ...styles, gridArea: '1 / 1 / 2 / 2' }}>
+                  {resetCard}
+                </Box>
+              )}
+            </Transition>
+
+            {/* Verify Card */}
+            <Transition
+              mounted={verificationSent && !resettingPassword}
+              transition="pop"
+              duration={400}
+            >
+              {(styles) => (
+                <Box style={{ ...styles, gridArea: '1 / 1 / 2 / 2' }}>
+                  {verifyCard}
+                </Box>
+              )}
+            </Transition>
+          </Box>
+        </Stack>
+      </Container>
+    </div>
+  </main>
+);
 }

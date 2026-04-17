@@ -6,6 +6,7 @@ import { Post } from "@/types/Post";
 import { Flex } from "@mantine/core";
 import { ObjectId } from "bson";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
 
 // Metadata
 export const metadata: Metadata = {
@@ -16,10 +17,24 @@ export const metadata: Metadata = {
 
 export default async function Feed() {
   // Fetch posts here via endpoint
-  const result = await fetch(API_SERVER_ENTRYPOINT + '/posts/', {cache: "no-store"});
-  const initialPosts = await result.json();
+  const cookieStore = await cookies();
+  const currentUsername = cookieStore.get('username')?.value;
+  const result = await fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}`, {cache: "no-store"}
+  );
+  const postsData = await result.json();
+  const initialPosts: Post[] = postsData.map((post: any) => ({
+    id: post._id,
+    title: post.title,
+    body: post.body,
+    attachments: post.attachments,
+    likes: post.likes,
+    array_tags: post.array_tags,
+    author_username: post.author_username,
+    datePosted: new ObjectId(post._id).getTimestamp(),
+  }));
 
   return (
+    <div className="static-grid">
     <Flex
       direction={"column"}
       style={{
@@ -36,5 +51,6 @@ export default async function Feed() {
         <CreateProjectButton />
       </Flex>
     </Flex>
+    </div>
   );
 }

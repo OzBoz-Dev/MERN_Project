@@ -8,6 +8,7 @@ import {
   Button,
   Box,
   Divider,
+  Stack,
 } from "@mantine/core";
 import ProjectTag from "@/components/ProjectTag";
 import TagComboBox from "@/components/TagComboBox";
@@ -50,9 +51,7 @@ export default function EditProfileModal({
   const [tags, setTags] = useState(
     initialData?.tags || []
   );
-  const [tagInput, setTagInput] = useState("");
-  const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
-
+  
   // Handle form submission
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -85,7 +84,8 @@ export default function EditProfileModal({
       styles={{
         title: {fontWeight: 700},
         content: {
-          backgroundColor: designTokens.colors.cardBackground
+          backgroundColor: designTokens.colors.cardBackground,
+          minHeight: '80vh'
         },
         header: {
           backgroundColor: designTokens.colors.cardBackground
@@ -98,6 +98,8 @@ export default function EditProfileModal({
       centered
     >
       <form onSubmit={handleSubmit} style={{ display: "contents" }} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault();}}>
+        <Stack>
+        <Group grow>
         {/* First Name */}
         <TextInput
           label="First Name"
@@ -125,7 +127,7 @@ export default function EditProfileModal({
             }
           }}
         />
-
+        </Group>
         {/* Bio */}
         <Textarea
           label="Bio"
@@ -147,7 +149,6 @@ export default function EditProfileModal({
           setTags={setTags}
           selectedTags={tags}
           color='#FFFFFF'
-          allowMissing={true}
         />
 
         <div style={{
@@ -168,7 +169,6 @@ export default function EditProfileModal({
           ))
         )}
         </div>
-
         {/* Divider */}
         <Divider my="md" />
 
@@ -186,6 +186,7 @@ export default function EditProfileModal({
             Save Changes
           </Button>
         </Group>
+        </Stack>
       </form>
     </Modal>
   );

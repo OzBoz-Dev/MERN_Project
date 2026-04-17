@@ -6,8 +6,9 @@ import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
 import ReadFullPostButton from "./ReadFullPostButton";
 import TimeAgoClient from "./TimeAgoClient";
-import { Flex } from "@mantine/core";
+import { Flex, NavLink } from "@mantine/core";
 import { getCookie } from "cookies-next/client";
+import Link from "next/link";
 
 type Props = {
   id: string;
@@ -37,7 +38,8 @@ export default function ProjectCard({
         margin: "16px 0",
         boxShadow: designTokens.colors.cardShadow,
         background: designTokens.colors.glassyBackground,
-        position: "relative",
+        backdropFilter: "blur(7px)",
+        position: "relative"
       }}
     >
       <div
@@ -58,7 +60,7 @@ export default function ProjectCard({
           marginBottom: "8px",
         }}
       >
-        Posted by {author} &middot; {<TimeAgoClient date={datePosted} />}
+        Posted by <Link href={`/profile/${author}`} style={{color: 'orange'}}>{author}</Link> &middot; {<TimeAgoClient date={datePosted} />}
       </div>
 
       <div
@@ -75,7 +77,7 @@ export default function ProjectCard({
       {tags ? 
       <TagHolder tags={tags} /> : <>No Tags</>
       }
-      <p style={{ margin: "0 0 12px", color: "#555" }}>{body}</p>
+      <p style={{ margin: "0 0 12px", color: "#555" }}>{body.length > 70 ? body.substring(0, 70) + '...' : body}</p>
       <Flex justify={"flex-end"} align={"flex-start"} gap={"16px"}>
         <ReadFullPostButton id={id} />
         <MessageButton />

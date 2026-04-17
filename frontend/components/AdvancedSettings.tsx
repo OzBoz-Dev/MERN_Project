@@ -1,6 +1,5 @@
 import { designTokens } from "@/app/GlobalTheme"
 import { useState } from "react";
-import TagBox from "./TagBox";
 import ProjectTag from "./ProjectTag";
 import DatePostedBox from "./DatePostedBox";
 import TagComboBox from "./TagComboBox";
@@ -40,8 +39,7 @@ export default function AdvancedSettings({tags, setTags}: AdvancedSettingsProp) 
                     <h2>
                         Tags
                     </h2>
-                    {/* <TagBox tags={tags} setTags={setTags} label="Search" description="What posts are you looking for?"></TagBox> */}
-                    <TagComboBox selectedTags={tags} setTags={setTags} color={designTokens.colors.cardBackground} allowMissing={false}/>
+                    <TagComboBox selectedTags={tags} setTags={setTags} color={designTokens.colors.cardBackground}/>
                     <div style={{
                         display:"flex", 
                         flexWrap:"wrap",
