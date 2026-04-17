@@ -93,7 +93,7 @@ class _ProjectCardState extends State<ProjectCard> {
                     itemBuilder: (context, index) {
                       return TagContainer(tag: widget.post.tags[index]);
                     },
-                    separatorBuilder: (context, index) => const SizedBox(width: 4,),
+                    separatorBuilder: (context, index) => const SizedBox(width: 6,),
                   ),
                 ),
                 const SizedBox(height: 15,),
