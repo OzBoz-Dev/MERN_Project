@@ -19,7 +19,7 @@ type Props = {
   tags: string[];
   datePosted: Date;
 };
-
+  
 export default function ProjectCard({
   id,
   title,
@@ -29,6 +29,14 @@ export default function ProjectCard({
   tags,
   datePosted,
 }: Props) {
+  const plainBody = body
+    .replace(/<[^>]*>/g, " ")   // remove HTML tags
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const preview =
+    plainBody.length > 70 ? `${plainBody.slice(0, 70).trimEnd()}...` : plainBody;
   return (
     <div
       style={{
@@ -50,7 +58,15 @@ export default function ProjectCard({
         }}
       >
         <h2>{title}</h2>
-        <BookmarkButton />
+        <LikeButton
+          likes={likes.length}
+          postId={id}
+          initiallyLiked={
+            getCookie("username") != undefined
+              ? likes.includes(getCookie("username")!)
+              : false
+          }
+        />
       </div>
 
       <div
@@ -77,19 +93,11 @@ export default function ProjectCard({
       {tags ? 
       <TagHolder tags={tags} /> : <>No Tags</>
       }
-      <p style={{ margin: "0 0 12px", color: "#555" }}>{body.length > 70 ? body.substring(0, 70) + '...' : body}</p>
+
+      <p style={{ margin: "0 0 12px", color: "#555" }}>{preview}</p>
       <Flex justify={"flex-end"} align={"flex-start"} gap={"16px"}>
         <ReadFullPostButton id={id} />
         <MessageButton />
-        <LikeButton
-          likes={likes.length}
-          postId={id}
-          initiallyLiked={
-            getCookie("username") != undefined
-              ? likes.includes(getCookie("username")!)
-              : false
-          }
-        />
       </Flex>
     </div>
   );

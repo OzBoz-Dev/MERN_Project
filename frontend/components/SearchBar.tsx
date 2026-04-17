@@ -3,16 +3,16 @@ import { ActionIcon, Button, Collapse, TextInput } from "@mantine/core";
 import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
-import { API_ENTRYPOINT } from "@/constants/constants";
+import { API_ENTRYPOINT, API_SERVER_ENTRYPOINT } from "@/constants/constants";
 import { Post } from "@/types/Post";
 import { title } from "process";
 import { ObjectId } from "bson";
+import { getCookie } from "cookies-next/client";
 
 
 type SearchBarProp = {
     onResults: (posts: Post[]) => void
 }
-
 export default function SearchBar({ onResults }: SearchBarProp) {
 
     const [inputText, setInputText] = useState("");
@@ -40,6 +40,20 @@ export default function SearchBar({ onResults }: SearchBarProp) {
                 onResults([]);
             });
         }
+        else {
+            // use the for you page backend algo
+            const currentUsername = getCookie("username");
+
+            if(currentUsername) {
+                fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}`, {cache: "no-store"})
+                .then(res => res.json())
+                .then(posts => onResults(posts))
+                .catch(() => onResults([]));
+            }
+            else {
+                onResults([]);
+            }
+        }
     }, [searchText, tags, onResults]);
 
 return (
@@ -59,6 +73,16 @@ return (
                 }
             }}
             />
+            <Button
+            name="Clear Search"
+            onClick={() => {
+                setInputText("");
+                setTags([]);
+                setSearchText("");
+            }}
+            >
+                Clear Search
+            </Button>
             <ActionIcon
                 variant="light"
                 size={"lg"}

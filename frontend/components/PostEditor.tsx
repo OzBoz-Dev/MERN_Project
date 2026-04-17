@@ -23,6 +23,9 @@ import { IconRocket } from "@tabler/icons-react";
 import { API_ENTRYPOINT } from "@/constants/constants";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next/client";
+import TagBox from "./TagBox";
+import TagComboBox from "./TagComboBox";
+import ProjectTag from "./ProjectTag";
 
 const content = "";
 const TITLE_LIMIT = 50;
@@ -34,6 +37,7 @@ async function postProject(
   title: string,
   body: string,
   author_username: string,
+  array_tags: string[]
 ) {
   const response = await fetch(API_ENTRYPOINT + "/posts/", {
     method: "POST",
@@ -46,7 +50,7 @@ async function postProject(
       body,
       attachments: "",
       likes: [], // default no likes on a post (empty array of usernames)
-      array_tags: [], // no tags for now, but need to include these later
+      array_tags, // put in tags from post
       author_username,
     }),
   });
@@ -64,6 +68,7 @@ export default function PostEditor() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [createdPostId, setCreatedPostId] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
 
   const router = useRouter();
 
@@ -173,6 +178,37 @@ export default function PostEditor() {
               </Text>
             }
           />
+          <Divider my="md" />
+          <Stack gap={0}>
+            <Text style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                Tags
+            </Text>
+            <TagComboBox selectedTags={tags} setTags={setTags} color={designTokens.colors.cardBackground}/>
+                <div style={{
+                    display:"flex", 
+                    flexWrap:"wrap",
+                    marginTop:"8px",
+                    minWidth: 500,
+                }}>
+                {tags.length === 0 ? (
+                    <></>
+                ) : (
+                    tags.map((tag: string, idx: any) => (
+                        <ProjectTag key={tag+idx}
+                        tag={tag}
+                        isRemovable={true}
+                        onRemove={() => setTags(tags.filter((t: string) => t !== tag))}
+                        >
+
+                        </ProjectTag>
+                    ))
+                )}  
+                </div>          
+          </Stack>
           <Divider my="md" />
           <Stack gap={0}>
             <Group gap={0}>
@@ -292,7 +328,7 @@ export default function PostEditor() {
 
               let postId: string;
               try {
-                postId = await postProject(title, body, author_username);
+                postId = await postProject(title, body, author_username, tags);
                 setCreatedPostId(postId);
                 setLoading(false);
                 setSuccess(true); // Show success modal
