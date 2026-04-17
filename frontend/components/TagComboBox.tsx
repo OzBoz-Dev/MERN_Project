@@ -6,18 +6,20 @@ interface TagComboProps {
   color: string;
   setTags: (tags: string[]) => void;
   selectedTags: string[];
-  allowMissing: boolean
 }
 
-export default function TagComboBox({ color, setTags, selectedTags, allowMissing }: TagComboProps) {
+export default function TagComboBox({ color, setTags, selectedTags }: TagComboProps) {
   const [search, setSearch] = useState('');
   const [tags, setTagsList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  
   const combobox = useCombobox({
     onDropdownClose: () => {
-      combobox.resetSelectedOption();
+      combobox.selectFirstOption();
       combobox.focusTarget();
       setSearch('');
+      setSelectedOption(null);
     },
 
     onDropdownOpen: () => {
@@ -61,7 +63,7 @@ export default function TagComboBox({ color, setTags, selectedTags, allowMissing
 }
 
   const options = tags.map((tag: string) => (
-    <Combobox.Option value={tag} key={tag}>
+    <Combobox.Option value={tag} key={tag} onMouseOver={() => setSelectedOption(tag)}>
       {tag}
     </Combobox.Option>
   ));
@@ -100,10 +102,12 @@ export default function TagComboBox({ color, setTags, selectedTags, allowMissing
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
           onKeyDown={(event) => {
-          if (event.key === 'Enter' && search.trim() !== '' && allowMissing) {
-            handleAddTag(search);
-            combobox.closeDropdown();
-          }
+            if (event.key === 'Enter') {
+              if (selectedOption) {
+                handleAddTag(selectedOption);
+                combobox.closeDropdown();
+              }
+            }
           }}
           placeholder="Search tags"
           styles={{
@@ -113,7 +117,7 @@ export default function TagComboBox({ color, setTags, selectedTags, allowMissing
           }}
         />
         <Combobox.Options mah={100} style={{ overflowY: 'auto', backgroundColor: color }} bg={color}>
-          {options.length > 0 ? options : <Combobox.Empty>{allowMissing ? "Press enter to add new tag" : "Tag not found"}</Combobox.Empty>}
+          {options.length > 0 ? options : <Combobox.Empty>{"Tag not found"}</Combobox.Empty>}
         </Combobox.Options>
       </Combobox.Dropdown>
     </Combobox>

@@ -39,7 +39,7 @@ export default function AdvancedSettings({tags, setTags}: AdvancedSettingsProp) 
                     <h2>
                         Tags
                     </h2>
-                    <TagComboBox selectedTags={tags} setTags={setTags} color={designTokens.colors.cardBackground} allowMissing={false}/>
+                    <TagComboBox selectedTags={tags} setTags={setTags} color={designTokens.colors.cardBackground}/>
                     <div style={{
                         display:"flex", 
                         flexWrap:"wrap",

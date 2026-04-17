@@ -1,11 +1,12 @@
 "use client";
-import { ActionIcon, Button, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Collapse, TextInput } from "@mantine/core";
 import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
 import { API_ENTRYPOINT } from "@/constants/constants";
 import { Post } from "@/types/Post";
 import { title } from "process";
+import { ObjectId } from "bson";
 
 
 type SearchBarProp = {
@@ -66,12 +67,12 @@ return (
                 <IconAdjustments />
             </ActionIcon>
         </div>
-
-        {showAdvanced && (
-        <div style={{ marginTop: "12px" }}>
-            <AdvancedSettings tags={tags} setTags={setTags}/>
-        </div>
-        )}
+        
+        <Collapse in={showAdvanced}>
+            <div style={{ marginTop: "12px" }}>
+                <AdvancedSettings tags={tags} setTags={setTags}/>
+            </div>
+        </Collapse>
     </div>
     
 

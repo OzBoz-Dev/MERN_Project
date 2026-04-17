@@ -2,6 +2,7 @@
 
 *.next
 *.swc
+Caddyfile
 
 # dependencies
 node_modules/*
