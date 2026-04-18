@@ -81,20 +81,20 @@ class _NavBarState extends State<NavBar> {
         onDestinationSelected: navProvider.onNavItemTapped,
         selectedIndex: navProvider.selectedIndex,
         destinations: [
-          NavigationDestination(
-            icon: Icon(TablerIcons.home),
+          const NavigationDestination(
+            icon: Icon(TablerIcons.home, color: Color(0xFFFFA500),),
             selectedIcon: Icon(TablerIcons.home, color: Colors.white,),
             label: "Feed"
           ),
-          NavigationDestination(
-            icon: Icon(TablerIcons.code),
+          const NavigationDestination(
+            icon: Icon(TablerIcons.code, color: Color(0xFFFFA500),),
             selectedIcon: Icon(TablerIcons.code, color: Colors.white,),
             label: "My Projects"
           ),
-          NavigationDestination(
-            icon: Icon(TablerIcons.message),
+          const NavigationDestination(
+            icon: Icon(TablerIcons.message, color: Color(0xFFFFA500),),
             selectedIcon: Icon(TablerIcons.message, color: Colors.white,),
-            label: "Messages"
+            label: "Messages",
           ),
         ],
         
