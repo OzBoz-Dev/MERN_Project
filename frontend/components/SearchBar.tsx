@@ -33,7 +33,17 @@ export default function SearchBar({ onResults }: SearchBarProp) {
             fetch(API_ENTRYPOINT + '/posts/search?' + param.toString())
             .then(res => res.json())
             .then(posts => {
-                onResults(posts);
+                const transformed = posts.map((post: any) => ({
+                    _id: post._id,
+                    title: post.title,
+                    body: post.body,
+                    attachments: post.attachments,
+                    likes: post.likes,
+                    array_tags: post.array_tags,
+                    author_username: post.author_username,
+                    datePosted: new ObjectId(post._id).getTimestamp(),
+                }));
+                onResults(transformed);
             })
             .catch((error) => {
                 console.log("search error found: ", error);
@@ -47,7 +57,19 @@ export default function SearchBar({ onResults }: SearchBarProp) {
             if(currentUsername) {
                 fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}`, {cache: "no-store"})
                 .then(res => res.json())
-                .then(posts => onResults(posts))
+                .then(posts => {
+                    const transformed = posts.map((post: any) => ({
+                        _id: post._id,
+                        title: post.title,
+                        body: post.body,
+                        attachments: post.attachments,
+                        likes: post.likes,
+                        array_tags: post.array_tags,
+                        author_username: post.author_username,
+                        datePosted: new ObjectId(post._id).getTimestamp(),
+                    }));
+                    onResults(transformed);
+                })
                 .catch(() => onResults([]));
             }
             else {
@@ -76,9 +98,15 @@ return (
                     setSearchText(e.currentTarget.value.trim());
                 }
             }}
+            styles={{
+                input: {
+                    backgroundColor:'#FEFBF2'
+                }
+            }}
             />
             <Button
             name="Clear Search"
+            variant="outline"
             onClick={() => {
                 setInputText("");
                 setTags([]);

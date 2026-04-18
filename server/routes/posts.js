@@ -120,7 +120,7 @@ router.get("/title", async (req, res) => {
 //reads by post id
 router.get("/post_id", async (req, res) => {
   try {
-    const posts = await Post.find({ post_id });
+    const posts = await Post.find({ _id });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -250,7 +250,6 @@ router.post("/", auth, async (req, res) => {
     const post = await Post.create({
       ...rest,
       author_username: req.user.username,
-      post_id: req.user._id,
       array_tags: array_tags,
     });
 

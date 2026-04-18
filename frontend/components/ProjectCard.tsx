@@ -61,11 +61,7 @@ export default function ProjectCard({
         <LikeButton
           likes={likes.length}
           postId={id}
-          initiallyLiked={
-            getCookie("username") != undefined
-              ? likes.includes(getCookie("username")!)
-              : false
-          }
+          likedBy={likes}
         />
       </div>
 
