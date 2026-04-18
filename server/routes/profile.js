@@ -4,7 +4,10 @@ const mongoose = require("mongoose");
 const User = require('../models/User');
 const Tag = require('../models/Tag');
 const auth = require('../middleware/auth');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const Post = require("../models/Post");
+const Message = require("../models/Message");
+const Comment = require("../models/Comment");
 
 router.get("/:username", async(req, res) => {
   try {
@@ -121,6 +124,10 @@ router.delete("/:username", auth, async(req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid password' });
         }
+
+        await Post.deleteMany({ author_username: username });
+        await Comment.deleteMany({ author_username: username });
+        await Message.deleteMany({ author_username: username });
         
         await User.findByIdAndUpdate(user._id, {
             $set: {
