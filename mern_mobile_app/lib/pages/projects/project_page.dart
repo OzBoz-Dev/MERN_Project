@@ -10,7 +10,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:html/parser.dart' as html_parser;
+import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
@@ -32,12 +32,6 @@ class _ProjectPageState extends State<ProjectPage> {
 
   // Will have comments
   late Future<List<Comment>> _commentsFuture;
-
-  // For showing project bodies on the card itself
-  String stripHtml(String htmlString) {
-    final document = html_parser.parse(htmlString);
-    return document.body?.text ?? '';
-  }
 
   @override
   void initState() {
@@ -74,7 +68,7 @@ class _ProjectPageState extends State<ProjectPage> {
               const SizedBox(height: 5,),
               RichText(
                 text: TextSpan(
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                   children: [
                     const TextSpan(text: "Posted by: "),
                     TextSpan(
@@ -99,11 +93,11 @@ class _ProjectPageState extends State<ProjectPage> {
                   const SizedBox(width: 8,),
                   Text(
                     "Looking for:",
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                   )
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 14,),
               SizedBox(
                 height: 35,
                 child: ListView.separated(
@@ -116,9 +110,8 @@ class _ProjectPageState extends State<ProjectPage> {
                 ),
               ),
               const SizedBox(height: 15,),
-              Text(
-                stripHtml(widget.post.body),
-                style: Theme.of(context).textTheme.bodySmall,
+              Html(
+                data: widget.post.body,
               ),
               const SizedBox(height: 15,),
               Row(
