@@ -1,6 +1,7 @@
 // Deals with posts, comments, tags 
 import 'dart:convert';
 
+import 'package:chip_in/models/comment.dart';
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/models/tag.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -60,6 +61,47 @@ class ContentService {
   }
 
   // COMMENTS
+  // Fetch comments by post id
+  Future<List<Comment>> getCommentsByPostId(String postId) async {
+    final response = await http.get(
+      Uri.parse("$_baseUrl/comments/post/$postId"),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    );
+    final data = jsonDecode(response.body);
+    if(response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+    else {
+      final List<Comment> comments = (data as List).map(
+        (comment) => Comment(
+          id: comment['_id'],
+          authorUsername: comment['author_username'],
+          body: comment['body'],
+          likes: (comment['likes'] as List).map((usernameLiked) => usernameLiked as String).toSet(),
+          postIdBelong: comment['post_id_belong'],
+          datePosted: ObjectId.fromHexString(comment['_id']).timestamp
+        )
+      ).toList();
+      return comments;
+    }
+  }
+
+  // Like comment by id
+  Future<void> likeCommentById(String token, String commentId) async {
+    final response = await http.post(
+      Uri.parse("$_baseUrl/comments/likes/$commentId"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+    );
+    final data = jsonDecode(response.body);
+    if(response.statusCode == 404 || response.statusCode == 500) {
+      throw Exception(data['error']);
+    }
+  }
 
   // TAGS
   Future<List<Tag>> searchTagsByValue(String value) async {
