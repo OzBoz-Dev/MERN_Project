@@ -123,6 +123,8 @@ class _ProjectCardState extends State<ProjectCard> {
                 const SizedBox(height: 15,),
                 Text(
                   stripHtml(widget.post.body),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 15,),
