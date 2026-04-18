@@ -39,10 +39,53 @@ body {
   /* Cool ass drifting animation */
   animation: drift 5s linear infinite;
   min-height: 100vh;
-  display: flex;
-  justify-content: flex-start;
+  /* display: flex; */
+  /* justify-content: center; */
   flex-direction: column;
   align-items: center;
+}
+
+.static-grid-blurry{
+  position: relative;
+  will-change: background-position;
+  background-color: var(--background);
+  background-image: 
+    /* linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px); */
+    /* Minor lines (light) */
+    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px),
+    /* Major lines (slightly darker) */
+    linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
+  /* background-size: 20px 20px; */
+  background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+  /* Cool ass drifting animation */
+  /* animation: drift 5s linear infinite; */
+  min-height: 100vh;
+  /* display: flex; */
+  /* justify-content: center; */
+  flex-direction: column;
+  align-items: center;
+}
+
+.static-grid-blurry::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit;
+  background-attachment: fixed;
+  filter: blur(1.5px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.static-grid-blurry > * {
+  position: relative;
+  z-index: 1;
 }
 
 .static-grid{
@@ -72,6 +115,7 @@ body {
 .glass-card{
   background: var(--card-glass);
   backdrop-filter: blur(3px);
+  filter: drop-shadow(1px)
 }
 
 .button-gradient {
