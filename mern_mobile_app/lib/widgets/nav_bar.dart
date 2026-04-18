@@ -75,6 +75,9 @@ class _NavBarState extends State<NavBar> {
       ),
       bottomNavigationBar: NavigationBar(
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.black,
+        elevation: 1,
         onDestinationSelected: navProvider.onNavItemTapped,
         selectedIndex: navProvider.selectedIndex,
         destinations: [

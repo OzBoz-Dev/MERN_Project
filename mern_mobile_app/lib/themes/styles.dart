@@ -10,7 +10,10 @@ ThemeData lightTheme = ThemeData(
     bodyColor: Color(0xFF2d3748) // Body texts
   ),
   appBarTheme: AppBarThemeData(
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
+    surfaceTintColor: Colors.transparent,
+    shadowColor: Colors.black,
+    elevation: 1,
   ),
   cardTheme: CardThemeData(
     color: Color(0xFFFFFEFB),
