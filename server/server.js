@@ -64,7 +64,7 @@ app.get("/", async (req, res) => {
 });
 
 // MongoDB connection
-const PORT = 5001;
+const PORT = 5000;
 console.log(process.env.MONGO_URI);
 mongoose
   .connect(process.env.MONGO_URI)
@@ -72,6 +72,9 @@ mongoose
     console.log("MongoDB connected!");
     server.listen(PORT, () => {
       console.log(`Server running on port ${PORT}!`);
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}!`);
+    })
     });
   })
   .catch((err) => console.log(err));
