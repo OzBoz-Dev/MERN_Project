@@ -10,7 +10,7 @@ export default function MessagesPage() {
   // Mock data for now
   const conversations = [
     {
-      id: "1",
+      id: "69e3b7aeb8674d3fd34046c0",
       members: ["John Aedo", "hml786"],
       lastMessage: "Hi, it's me, John Aedo.",
       lastMessageDate: "2 hours ago",

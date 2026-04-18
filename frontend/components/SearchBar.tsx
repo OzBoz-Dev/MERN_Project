@@ -73,7 +73,11 @@ export default function SearchBar({ onResults }: SearchBarProp) {
                 .catch(() => onResults([]));
             }
             else {
-                onResults([]);
+                // fetch the initial posts (get the recent posts)
+                fetch(API_SERVER_ENTRYPOINT + '/posts/', {cache: "no-store"})
+                .then(res => res.json())
+                .then(posts => onResults(posts))
+                .catch(() => onResults([]));
             }
         }
     }, [searchText, tags, onResults]);
