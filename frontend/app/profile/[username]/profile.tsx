@@ -203,8 +203,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="animated-grid">
-    <Container size='xl' py="xl">
+    <div className="animated-grid" style={{display: 'flex'}}>
       <Paper withBorder p="lg" w={700} radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
         <Flex direction="column" justify="flex-end" p="sm">
           {isMe? (
@@ -248,7 +247,6 @@ export default function ProfilePage() {
           onSuccessClose={() => setDeleteSuccess(null)}
         />
       </Paper>
-    </Container>
     </div>
   );
 }

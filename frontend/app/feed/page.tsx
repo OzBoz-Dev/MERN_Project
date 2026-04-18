@@ -34,15 +34,17 @@ export default async function Feed() {
   }));
 
   return (
-    <div className="static-grid">
+    <div className="static-grid-blurry">
     <Flex
       direction={"column"}
       style={{
+        position: "relative",
         width: "100%",
         maxWidth: "1000px",
         padding: "0 16px",
         margin: "0 auto",
         alignContent: "center",
+        zIndex: 1,
       }}
     >
       {/* Use FeedClient, giving it the fetched initial posts */}
