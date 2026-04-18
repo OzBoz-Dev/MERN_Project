@@ -12,7 +12,7 @@ type Props = {
   postId?: string;
   commentId?: string;
   likes: number;
-  initiallyLiked: boolean; // whether the user already liked this comment/post
+  likedBy: string[]
 };
 
 // Likes a post by id
@@ -59,22 +59,25 @@ export default function LikeButton({
   postId,
   commentId,
   likes,
-  initiallyLiked,
+  likedBy,
 }: Props) {
   const [likeCount, setLikeCount] = useState(likes);
-  const [clicked, toggle] = useToggle([false, true]);
+  const [clicked, setClicked] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Use initial like value
   useEffect(() => {
-    if (initiallyLiked) {
-      toggle(); // set initial state ONCE
+    const username = getCookie("username")
+    setIsLoggedIn(username != undefined);
+    if (username && likedBy.includes(username)) {
+      setClicked(true);
     }
-  }, [initiallyLiked]);
+  }, [likedBy]);
 
   return (
     <Flex direction={"column"} gap={3} align={"center"}>
       <Button
-        disabled={getCookie("username") == undefined} // disable when not logged in
+        disabled={!isLoggedIn} // disable when not logged in
         title={
           // tooltip
           getCookie("username") != undefined
@@ -89,7 +92,7 @@ export default function LikeButton({
         justify="center"
         color={designTokens.colors.buttonPrimary}
         onClick={async () => {
-          toggle();
+          setClicked(!clicked)
           // Immediate feedback client side
           setLikeCount((prev) => (clicked ? prev - 1 : prev + 1));
           if (postId) {

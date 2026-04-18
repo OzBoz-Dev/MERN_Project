@@ -59,11 +59,7 @@ export default function ProjectPageClient({ post, comments }: Props) {
           <LikeButton
             likes={post.likes.length}
             postId={post._id}
-            initiallyLiked={
-              getCookie("username") != undefined
-                ? post.likes.includes(getCookie("username")!)
-                : false
-            }
+            likedBy={post.likes}
           />
         </Group>
       </Stack>
