@@ -31,7 +31,10 @@ router.get('/:_id', async (req, res) => {
 // create conversation with empty message - you can add messages later with the /:_id/messages route
 router.post('/', auth, async (req, res) => {
     try {
-        const { member_usernames } = req.body
+        console.log(req.body);
+        console.log(req.user);
+        console.log(req);
+        const { member_usernames } = req.body;
 
         if (!member_usernames || !member_usernames.includes(req.user.username)) {
             return res.status(400).json({ error: 'member_usernames must include the creating user' })
@@ -40,20 +43,23 @@ router.post('/', auth, async (req, res) => {
         const conversation = await Conversation.create({ member_usernames });
         res.status(201).json(conversation);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message});
     }
 });
 
 // create messages in a conversation
 router.post('/:_id/messages', auth, async (req, res) => {
     try {
+        const io  = req.app.get('io');
         const conversation = await Conversation.findById(req.params._id);
+
         if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
+        /*
         if (!conversation.member_usernames.includes(req.user.username)) {
             return res.status(403).json({ error: 'Not a member of this conversation' });
         }
-
+        */
         const message = await Message.create({
             ...req.body,
             author_username: req.user.username,
@@ -61,6 +67,9 @@ router.post('/:_id/messages', auth, async (req, res) => {
 
         conversation.messages.push(message._id);
         await conversation.save();
+
+        // emit to published clients
+        io.to(conversation._id.toString()).emit("newMessage", message);
 
         res.status(201).json(message);
     } catch (err) {
