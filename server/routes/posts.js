@@ -11,7 +11,7 @@ const { sendCommentNotif } = require("../utils/mailer");
 //add a get by tag value
 
 //reads by username (from most recent to less recent)
-router.get("/:author_username", async (req, res) => {
+router.get("/by-user/:author_username", async (req, res) => {
   try {
     const { author_username } = req.params;
     const postsByUser = await Post.find({ author_username }).sort({
@@ -191,35 +191,35 @@ router.post("/", auth, async (req, res) => {
   try {
     const { array_tags, ...rest } = req.body;
 
-    let tags = [];
+    // let tags = [];
 
-    //checks if user added tags and finds them by name in the database
-    if (array_tags && array_tags.length > 0) {
-      //finds tags that already exist
-      const existingTags = await Tag.find({ value: { $in: array_tags } });
-      const existingValues = existingTags.map((tag) => tag.value);
+    // //checks if user added tags and finds them by name in the database
+    // if (array_tags && array_tags.length > 0) {
+    //   //finds tags that already exist
+    //   const existingTags = await Tag.find({ value: { $in: array_tags } });
+    //   const existingValues = existingTags.map((tag) => tag.value);
 
-      //checks if what the user typed does not exist
-      const newTagValues = array_tags.filter(
-        (value) => !existingValues.includes(value),
-      );
+    //   //checks if what the user typed does not exist
+    //   const newTagValues = array_tags.filter(
+    //     (value) => !existingValues.includes(value),
+    //   );
 
-      //if it's a new tag it gets added to the array and it gets created
-      const newTags = [];
-      for (const value of newTagValues) {
-        const tag = await Tag.create({ value });
-        newTags.push(tag);
-      }
+    //   //if it's a new tag it gets added to the array and it gets created
+    //   const newTags = [];
+    //   for (const value of newTagValues) {
+    //     const tag = await Tag.create({ value });
+    //     newTags.push(tag);
+    //   }
 
-      //Returns the value
-      tags = [...existingTags, ...newTags].map((tag) => tag.value); //adds the object id
-    }
+    //   //Returns the value
+    //   tags = [...existingTags, ...newTags].map((tag) => tag.value); //adds the object id
+    // }
 
     const post = await Post.create({
       ...rest,
       author_username: req.user.username,
       post_id: req.user._id,
-      array_tags: tags,
+      array_tags: array_tags,
     });
 
     res.status(201).json(post);
