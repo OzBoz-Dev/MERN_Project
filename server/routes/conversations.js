@@ -55,11 +55,11 @@ router.post('/:_id/messages', auth, async (req, res) => {
 
         if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
-        /*
+        
         if (!conversation.member_usernames.includes(req.user.username)) {
             return res.status(403).json({ error: 'Not a member of this conversation' });
         }
-        */
+        
         const message = await Message.create({
             ...req.body,
             author_username: req.user.username,
