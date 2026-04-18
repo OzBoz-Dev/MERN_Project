@@ -23,7 +23,7 @@ export default async function Feed() {
   );
   const postsData = await result.json();
   const initialPosts: Post[] = postsData.map((post: any) => ({
-    id: post._id,
+    _id: post._id,
     title: post.title,
     body: post.body,
     attachments: post.attachments,

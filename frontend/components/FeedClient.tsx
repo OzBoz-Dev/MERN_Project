@@ -61,7 +61,7 @@ export default function FeedClient({ initialPosts }: Props) {
         {items.map((item, index) => (
           <ProjectCard
             key={index}
-            id={item.id}
+            id={item._id}
             title={item.title}
             body={item.body}
             author={item.author_username}

@@ -13,6 +13,7 @@ import { Post } from "@/types/Post";
 import { notFound } from "next/navigation";
 import { getCookie } from "cookies-next/client";
 import Link from "next/link";
+import { PostComment } from "@/types/PostComment";
 
 type Props = {
   post: Post | null;
@@ -57,7 +58,7 @@ export default function ProjectPageClient({ post, comments }: Props) {
           <MessageButton />
           <LikeButton
             likes={post.likes.length}
-            postId={post.id}
+            postId={post._id}
             initiallyLiked={
               getCookie("username") != undefined
                 ? post.likes.includes(getCookie("username")!)
@@ -67,7 +68,7 @@ export default function ProjectPageClient({ post, comments }: Props) {
         </Group>
       </Stack>
       <Divider mt="lg" mb="xl" w={"100%"} />
-      <CommentsSection postId={post.id} initialComments={comments} />
+      <CommentsSection postId={post._id} initialComments={comments} />
     </Container>
   );
 }
