@@ -3,10 +3,25 @@ import { ObjectId } from "bson";
 import { Post } from "@/types/Post";
 import ProjectPageClient from "@/components/ProjectPageClient";
 import { PostComment } from "@/types/PostComment";
+import { Metadata } from "next";
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({ params } : PageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const postJson = await fetchPostById(id);
+    return { 
+      title: postJson.title,
+      description: `Read ${postJson.author_username}'s post on ChipIn!`
+    };
+  } 
+  catch {
+    return { title: "Post not found" };
+  }
+}
 
 // Fetch post by id
 async function fetchPostById(id: string) {

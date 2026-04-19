@@ -45,7 +45,7 @@ describe('FeedClient - Search Functionality', () => {
 
   const initialPosts: Post[] = [
     {
-      id: '0',
+      _id: '0',
       title: 'Initial Post',
       body: 'Some initial content',
       attachments: '',

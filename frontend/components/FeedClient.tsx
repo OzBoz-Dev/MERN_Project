@@ -6,6 +6,8 @@ import ProjectCard from "./ProjectCard";
 import { Post } from "@/types/Post";
 import SearchBar from "./SearchBar";
 import { API_ENTRYPOINT } from "@/constants/constants";
+import { Loader } from "@mantine/core";
+import { ObjectId } from "bson";
 
 type FeedProps = {
   dataLength: number;
@@ -35,7 +37,11 @@ export default function FeedClient({ initialPosts }: Props) {
 
   // Make handleResults stable
   const handleResults = useCallback((posts: Post[]) => {
-    setItems(posts);
+    const normalized = posts.map((post: any) => ({
+      ...post,
+      datePosted: new ObjectId(post._id).getTimestamp(),
+    }));
+    setItems(normalized);
   }, []);
   // Builds off of initialPosts
   const fetchMoreData = useCallback(() => {
@@ -55,7 +61,7 @@ export default function FeedClient({ initialPosts }: Props) {
         dataLength={items.length}
         next={fetchMoreData}
         hasMore={hasMore}
-        loader={<h4>None left to load</h4>}
+        loader={<></>}
         endMessage={<h4>Ended</h4>}
       >
         {items.map((item, index) => (
