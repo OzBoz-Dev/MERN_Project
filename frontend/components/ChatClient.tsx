@@ -4,50 +4,58 @@
 import ChatMessage, { Message } from "@/components/ChatMessage";
 import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
 import { Button, ScrollArea } from "@mantine/core";
+import { getCookie } from "cookies-next/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
+import ChatInput from "@/components/ChatInput";
 
 const socket = io(API_SERVER_ENTRYPOINT);
 
 export default function ChatClient() {
     const { id } = useParams();
-  const [messages, setMessages] = useState<Message[]>([]);
+    const userId = getCookie("username");
 
-  useEffect(() => {
-    async function fetchConversation() {
-      const res = await fetch(API_SERVER_ENTRYPOINT + '/conversations/' + id + '/');
-      const data = await res.json();
-      setMessages(data.messages || []);
-    }
-    if (id) fetchConversation();
-  }, [id]);
+    const [messages, setMessages] = useState<Message[]>([]);
 
-  // connect to client
-  useEffect(() => {
-    if(!id) return;
-    socket.emit("joinConversation", id);
+    useEffect(() => {
+        async function fetchConversation() {
+        const res = await fetch(API_SERVER_ENTRYPOINT + '/conversations/' + id + '/');
+        const data = await res.json();
+        setMessages(data.messages || []);
+        }
+        if (id) fetchConversation();
+    }, [id]);
 
-    socket.on("newMessage", (message) => {
-        setMessages((prev) => [...prev, message]);
-    });
+    // connect to client
+    useEffect(() => {
+        if(!id) return;
+        socket.emit("joinConversation", id);
 
-    // clean up
-    return () => {
-        socket.off("newMessage");
-    };
-  }, [id]);
-  
-  return (
-    <ScrollArea style={{ flex: 1, height: "100%"}}>
-      {messages.map((msg) => (
-        <ChatMessage
-          key={msg._id}
-          author_id={msg.author_id}
-          content={msg.content}
-          isSelf={false}
-        />
-      ))}
-    </ScrollArea>
-  );
+        socket.on("newMessage", (message) => {
+            setMessages((prev) => [...prev, message]);
+        });
+
+        // clean up
+        return () => {
+            socket.off("newMessage");
+        };
+    }, [id]);
+
+    return (
+        <div>
+            <ScrollArea style={{ flex: 1, height: "100%"}}>
+            {messages.map((msg) => (
+                <ChatMessage
+                key={msg._id}
+                author_username={msg.author_username}
+                createdAt={msg.createdAt}
+                content={msg.content}
+                isSelf={userId === msg.author_username}
+                />
+            ))}
+            </ScrollArea>
+            <ChatInput id = { id }/>
+        </div>
+    );
 }
