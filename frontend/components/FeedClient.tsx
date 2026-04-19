@@ -28,9 +28,10 @@ const defaultProps: FeedProps = {
 
 type Props = {
   initialPosts: Post[];
+  disableSearch?: boolean;
 };
 
-export default function FeedClient({ initialPosts }: Props) {
+export default function FeedClient({ initialPosts, disableSearch }: Props) {
 
   const [items, setItems] = useState<Post[]>(initialPosts || []);
   const [hasMore, setHasMore] = useState(true);
@@ -56,7 +57,7 @@ export default function FeedClient({ initialPosts }: Props) {
   }, [initialPosts]);
   return (
     <>
-      <SearchBar onResults={handleResults} />
+      {!disableSearch && <SearchBar onResults={handleResults} />}
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}
