@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:chip_in/widgets/tag_container.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:provider/provider.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
@@ -74,7 +75,10 @@ class _ProjectCardState extends State<ProjectCard> {
               children: [
                 Text(
                   widget.post.title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
                 const SizedBox(height: 5,),
                 RichText(
@@ -149,7 +153,7 @@ class _ProjectCardState extends State<ProjectCard> {
                         },
                         label: Text(
                           "Read Full Post",
-                          style: TextStyle(
+                          style: GoogleFonts.montserrat(
                             fontWeight: FontWeight.bold
                           ),
                         ),
