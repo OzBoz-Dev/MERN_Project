@@ -1,4 +1,5 @@
 import 'package:chip_in/models/post.dart';
+import 'package:chip_in/pages/projects/create_project_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
@@ -93,30 +94,78 @@ class _FeedPageState extends State<FeedPage> {
                     ),
                   );
                 }
-                return AnimatedGridBackground(
-                  backgroundColor: const Color(0xFFFDF8EA),
-                  child: ListView.builder(
-                    itemCount: feedPosts.length,
-                    itemBuilder: (context, index) {
-                      if(index == feedPosts.length - 1) {
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                              child: ProjectCard(post: feedPosts[index]),
+                return Stack(
+                  children: [
+                    AnimatedGridBackground(
+                      backgroundColor: const Color(0xFFFDF8EA),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.only(bottom: kToolbarHeight + 20,),
+                        itemCount: feedPosts.length,
+                        itemBuilder: (context, index) {
+                          if(index == feedPosts.length - 1) {
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                  child: ProjectCard(post: feedPosts[index]),
+                                ),
+                                const SizedBox(height: 8,),
+                                Text("You've reached the end!"),
+                                const SizedBox(height: 12,),
+                              ],
+                            );
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                            child: ProjectCard(post: feedPosts[index])
+                          );
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: SafeArea(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 12,
+                                color: Colors.black12,
+                                offset: Offset(0, -2),
+                              )
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Center(
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => CreateProjectPage(),
+                                      )
+                                    );
+                                  },
+                                  icon: const Icon(TablerIcons.pencil),
+                                  label: Text(
+                                    "Create Project",
+                                    style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 8,),
-                            Text("You've reached the end!"),
-                            const SizedBox(height: 12,),
-                          ],
-                        );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                        child: ProjectCard(post: feedPosts[index])
-                      );
-                    },
-                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }
             },
