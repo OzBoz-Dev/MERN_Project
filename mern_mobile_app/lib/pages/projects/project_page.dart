@@ -66,7 +66,10 @@ class _ProjectPageState extends State<ProjectPage> {
         children: [
           Text(
             widget.post.title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: GoogleFonts.montserrat(
+              fontSize: 22,
+              fontWeight: FontWeight.bold
+            ),
           ),
           const SizedBox(height: 5,),
           RichText(
