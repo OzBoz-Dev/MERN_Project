@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ProjectCard from "./ProjectCard";
 import { Post } from "@/types/Post";
 import SearchBar from "./SearchBar";
 import { API_ENTRYPOINT } from "@/constants/constants";
-import { Loader } from "@mantine/core";
+import { Loader, Transition } from "@mantine/core";
 import { ObjectId } from "bson";
 
 type FeedProps = {
@@ -35,10 +35,29 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
 
   const [items, setItems] = useState<Post[]>(initialPosts || []);
   const [hasMore, setHasMore] = useState(true);
+  const [exitingIds, setExitingIds] = useState<Set<string>>(new Set());
+  const [mountedIds, setMountedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    items.forEach((item, index) => {
+      setTimeout(() => {
+        setMountedIds(prev => new Set(prev).add(item._id));
+      }, index * 100); // 100ms delay between each card appearance
+    });
+  }, []);
 
   // Handle unlike when on the "My Bag" page
   const handleUnlike = useCallback((postId: string) => {
-    setItems(prev => prev.filter(item => item._id !== postId));
+    setExitingIds(prev => new Set(prev).add(postId));
+    setTimeout(() => {
+      setItems(prev => prev.filter(item => item._id !== postId));
+      setExitingIds(prev => {
+        const next = new Set(prev);
+        next.delete(postId);
+        return next;
+      });
+    }, 500); // match transition duration
+    // setItems(prev => prev.filter(item => item._id !== postId));
   }, []);
 
   // Make handleResults stable
@@ -48,6 +67,9 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
       datePosted: new ObjectId(post._id).getTimestamp(),
     }));
     setItems(normalized);
+    setTimeout(() => {
+      setMountedIds(new Set(normalized.map(p => p._id)));
+    }, 10);
   }, []);
   // Builds off of initialPosts
   const fetchMoreData = useCallback(() => {
@@ -70,8 +92,16 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
         loader={<></>}
         endMessage={<h4>Ended</h4>}
       >
-        {items.map((item, index) => (
-          <ProjectCard
+        {items.map((item) => (
+        <Transition
+          key={item._id}
+          mounted={mountedIds.has(item._id) && !exitingIds.has(item._id)}
+          transition="pop"
+          duration={500}
+          timingFunction="ease"
+        >
+          {(styles) => (<ProjectCard
+            style={styles}
             key={item._id}
             id={item._id}
             title={item.title}
@@ -82,6 +112,8 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
             datePosted={item.datePosted}
             onUnlike={disableSearch ? handleUnlike : undefined} // On bag page, remove when unliked
           />
+          )}
+        </Transition>
         ))}
       </InfiniteScroll>
     </>

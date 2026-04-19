@@ -19,6 +19,7 @@ type Props = {
   tags: string[];
   datePosted: Date;
   onUnlike?: (id: string) => void;
+  style?: React.CSSProperties;
 };
   
 export default function ProjectCard({
@@ -29,7 +30,8 @@ export default function ProjectCard({
   likes,
   tags,
   datePosted,
-  onUnlike
+  onUnlike,
+  style
 }: Props) {
   const plainBody = body
     .replace(/<[^>]*>/g, " ")   // remove HTML tags
@@ -49,7 +51,8 @@ export default function ProjectCard({
         boxShadow: designTokens.colors.cardShadow,
         background: designTokens.colors.glassyBackground,
         backdropFilter: "blur(7px)",
-        position: "relative"
+        position: "relative",
+        ...style
       }}
     >
       <div
