@@ -2,19 +2,19 @@ import { SetStateAction, useState } from 'react';
 import { DatePicker } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 
-export default function DatePostedBox() {
-  const [value, setValue] = useState<[string | null, string | null]>([null, null]);
+type Props = {
+  value: [string | null, string | null];
+  onChange: (value: [string | null, string | null]) => void;
+};
 
-  const updateValue = (newValue: SetStateAction<[string | null, string | null]>) => {
-    console.log("new value: ", newValue);
-    setValue(newValue);
-  }
+export default function DatePostedBox({value, onChange}: Props) {
+
   return (
     <div>
       <DatePicker 
       type="range" 
       value={value} 
-      onChange={setValue}
+      onChange={onChange}
     />  
     </div>
   );

@@ -18,6 +18,7 @@ export default function SearchBar({ onResults }: SearchBarProp) {
     const searchIcon = <IconSearch size={16} />;
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
+    const [dateRange, setDateRange] = useState<[string | null, string | null]>([null, null]);
 
     const mapPost = (post: any): Post => ({
         _id: post._id,
@@ -31,11 +32,16 @@ export default function SearchBar({ onResults }: SearchBarProp) {
     });
 
     useEffect(() => {
-        if(searchText.trim() || tags.length > 0) {
+        const [startDate, endDate] = dateRange;
+
+        if(searchText.trim() || tags.length > 0 || startDate || endDate) {
             const param = new URLSearchParams();
             param.append("q", searchText);
 
             tags.forEach(tag => param.append("tags", tag));
+            if (startDate) param.append("startDate", new Date(startDate).setHours(0,0,0,0).toString());
+            if (endDate) param.append("endDate", new Date(endDate).setHours(23,59,59,999).toString());
+            console.log(param.toString());
 
             fetch(API_ENTRYPOINT + '/posts/search?' + param.toString())
             .then(res => res.json())
@@ -69,7 +75,7 @@ export default function SearchBar({ onResults }: SearchBarProp) {
                 .catch(() => onResults([]));
             }
         }
-    }, [searchText, tags, onResults]);
+    }, [searchText, tags, dateRange, onResults]);
 
 return (
     <div style={{width: "100%"}}>
@@ -100,6 +106,7 @@ return (
                 setInputText("");
                 setTags([]);
                 setSearchText("");
+                setDateRange([null, null]);
             }}
             >
                 Clear Search
@@ -115,7 +122,7 @@ return (
         
         <Collapse in={showAdvanced}>
             <div style={{ marginTop: "12px" }}>
-                <AdvancedSettings tags={tags} setTags={setTags}/>
+                <AdvancedSettings tags={tags} setTags={setTags} dateRange={dateRange} setDateRange={setDateRange}/>
             </div>
         </Collapse>
     </div>

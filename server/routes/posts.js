@@ -5,6 +5,7 @@ const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const Tag = require("../models/Tag");
 const User = require("../models/User");
+const ObjectId = require("bson");
 
 const { sendCommentNotif } = require("../utils/mailer");
 
@@ -65,8 +66,9 @@ router.get("/search", async (req, res) => {
     console.log("received search request")
     const query = (req.query.q || "").trim();
     const tags = req.query.tags ? [].concat(req.query.tags) : [];
+    const { startDate, endDate } = req.query;
 
-    if (!query && tags.length === 0) return res.json([]);
+    if (!query && tags.length === 0 && !startDate && !endDate) return res.json([]);
 
     // find the posts that match the query
     const search = {
@@ -83,8 +85,24 @@ router.get("/search", async (req, res) => {
   if(tags.length > 0) {
     search.$and.push({array_tags : {$all: tags}});
   }
+
+  console.log(startDate);
+  console.log(endDate);
+
+  // check the date
+  if (startDate || endDate) {
+    const idFilter = {};
+    if (startDate) idFilter.$gte = new mongoose.Types.ObjectId(
+      Math.floor(Number(startDate) / 1000).toString(16).padStart(8, '0') + '0000000000000000'
+    );
+    if (endDate) idFilter.$lte = new mongoose.Types.ObjectId(
+      Math.floor(Number(endDate) / 1000).toString(16).padStart(8, '0') + 'ffffffffffffffff'
+    );
+    search.$and.push({ _id: idFilter });
+  }
+
   // finally grab the posts
-  const posts = await Post.find(search);
+  const posts = await Post.find(search).sort({_id: -1});
 
   res.json(posts);
   } catch(err) {
