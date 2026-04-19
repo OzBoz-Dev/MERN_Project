@@ -61,6 +61,36 @@ class ContentService {
   }
 
   // COMMENTS
+  // Post a comment
+  Future<Comment> postComment(String token, String postId, String commentBody,) async {
+    final response = await http.post(
+      Uri.parse("$_baseUrl/comments/"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+      body: jsonEncode({
+        "body": commentBody,
+        "post_id_belong": postId,
+        "likes": List<String>.empty() // no likes initially
+      })
+    );
+    final data = jsonDecode(response.body);
+    if(response.statusCode != 201) {
+      throw Exception(data['error']);
+    }
+    else {
+      return Comment(
+        id: data['_id'],
+        authorUsername: data['author_username'],
+        body: data['body'],
+        likes: (data['likes'] as List).map((usernameLiked) => usernameLiked as String).toList().toSet(),
+        postIdBelong: data['post_id_belong'],
+        datePosted: ObjectId.fromHexString(data['_id']).timestamp
+      );
+    }
+  }
+
   // Fetch comments by post id
   Future<List<Comment>> getCommentsByPostId(String postId) async {
     final response = await http.get(
@@ -83,7 +113,7 @@ class ContentService {
           postIdBelong: comment['post_id_belong'],
           datePosted: ObjectId.fromHexString(comment['_id']).timestamp
         )
-      ).toList();
+      ).toList().reversed.toList(); // Reversed to bring newest comments to the top
       return comments;
     }
   }

@@ -10,7 +10,8 @@ import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class CommentCard extends StatefulWidget {
   final Comment comment;
-  const CommentCard({super.key, required this.comment});
+  final bool? isHighlighted;
+  const CommentCard({super.key, required this.comment, this.isHighlighted});
 
   @override
   State<CommentCard> createState() => _CommentCardState();
