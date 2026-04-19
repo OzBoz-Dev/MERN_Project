@@ -320,7 +320,7 @@ class _ProjectPageState extends State<ProjectPage> {
                       ),
                     ),
                     const SizedBox(height: 12,),
-                    ListView.builder(
+                    ListView.separated(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: comments.length,
@@ -329,7 +329,8 @@ class _ProjectPageState extends State<ProjectPage> {
                           comment: comments[index],
                           isHighlighted: comments[index].id == _highlightedCommentId,
                         );
-                      }
+                      },
+                      separatorBuilder: (context, index) => const SizedBox(height: 12,),
                     ),
                   ],
                 );
