@@ -340,11 +340,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                         deletionInProgress = false;
                                                       });
                                                       if(mounted) {
-                                                         ScaffoldMessenger.of(context).showSnackBar(
+                                                        // Close dialog
+                                                        Navigator.of(context).pop();
+                                                        ScaffoldMessenger.of(context).showSnackBar(
                                                           SnackBar(
                                                             backgroundColor: Colors.red,
                                                             content: Text(
-                                                              e.toString(),
+                                                              e.toString().replaceFirst("Exception: ", ""),
                                                               style: TextStyle(
                                                                 color: Colors.white
                                                               ),
