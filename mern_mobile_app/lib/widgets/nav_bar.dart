@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:chip_in/pages/feed/feed_page.dart';
 import 'package:chip_in/pages/messages/messages_page.dart';
-import 'package:chip_in/pages/my-projects/my_projects_page.dart';
+import 'package:chip_in/pages/my-bag/my_bag_page.dart';
 import 'package:chip_in/pages/profile/profile_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/providers/navigation_provider.dart';
@@ -22,7 +22,7 @@ class _NavBarState extends State<NavBar> {
 
   final List<String> _appBarTitles = [
     'Feed',
-    'My Projects',
+    'My Bag',
     'Messages'
   ];
 
@@ -31,7 +31,7 @@ class _NavBarState extends State<NavBar> {
     super.initState();
     _pages = [
       FeedPage(),
-      MyProjectsPage(),
+      MyBagPage(),
       MessagesPage()
     ];
 
@@ -87,9 +87,15 @@ class _NavBarState extends State<NavBar> {
             label: "Feed"
           ),
           const NavigationDestination(
-            icon: Icon(TablerIcons.code, color: Color(0xFFFFA500),),
-            selectedIcon: Icon(TablerIcons.code, color: Colors.white,),
-            label: "My Projects"
+            icon: ImageIcon(
+              AssetImage("assets/bag.png"),
+              color: Color(0xFFFFA500),
+            ),
+            selectedIcon: ImageIcon(
+              AssetImage("assets/bag.png"),
+              color: Colors.white,
+            ),
+            label: "My Bag"
           ),
           const NavigationDestination(
             icon: Icon(TablerIcons.message, color: Color(0xFFFFA500),),
