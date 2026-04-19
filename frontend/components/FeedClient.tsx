@@ -9,6 +9,7 @@ import { API_ENTRYPOINT } from "@/constants/constants";
 import { Divider, Loader, Transition } from "@mantine/core";
 import { ObjectId } from "bson";
 import { getCookie } from "cookies-next/client";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 const PAGE_SIZE = 20;
 
@@ -34,11 +35,10 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
     window.scrollTo(0, 0);
 
     initialPosts.forEach((item, index) => {
-    setTimeout(() => {
-      setMountedIds(prev => new Set(prev).add(item._id));
-    }, index * 50);
-  });
-
+      setTimeout(() => {
+        setMountedIds(prev => new Set(prev).add(item._id));
+      }, index * 50);
+    });
   }, []);
 
   // Handle unlike when on the "My Bag" page
@@ -61,14 +61,38 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
       ...post,
       datePosted: new ObjectId(post._id).getTimestamp(),
     }));
-    setItems(normalized);
-    setHasMore(false); // No inf scroll when searching
-    setMountedIds(new Set()); // Reset so animation re-triggers
+    setMountedIds(new Set()); // Unmount current stuff
 
+    // Wait and then re animate
     setTimeout(() => {
-      setMountedIds(new Set(normalized.map(p => p._id)));
-    }, 10);
+      setItems(normalized);
+      setHasMore(false); // No inf scroll when searching
+      normalized.forEach((item, index) => {
+        setTimeout(() => {
+          setMountedIds(prev => new Set(prev).add(item._id));
+        }, 100 + index * 50);
+      });
+    }, 500);
   }, []);
+
+  // Search cleared
+  const handleClear = useCallback(() => {
+    isSearching.current = false;
+    
+    // Re-animate
+    setMountedIds(new Set());
+
+    // Wait and then re animate
+    setTimeout(() => {
+      setItems(initialPosts);
+      setHasMore(true);
+      initialPosts.forEach((item, index) => {
+        setTimeout(() => {
+          setMountedIds(prev => new Set(prev).add(item._id));
+        }, 100 + index * 50);
+      });
+    }, 500);
+  }, [initialPosts]);
 
   // Infinite scroll behavior
   const fetchMoreData = useCallback(async () => {
@@ -123,13 +147,13 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
 
   return (
     <>
-      {!disableSearch && <SearchBar onResults={handleResults} />}
+      {!disableSearch && <SearchBar onResults={handleResults} onClear={handleClear}/>}
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}
         hasMore={hasMore}
         loader={<Loader/>}
-        // scrollThreshold={0.7}
+        scrollThreshold={0.9}
       >
         {items.map((item) => (
         <Transition
@@ -155,6 +179,7 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
         </Transition>
         ))}
       </InfiniteScroll>
+      <ScrollToTopButton/>
     </>
   );
 }

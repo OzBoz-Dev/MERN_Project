@@ -9,9 +9,10 @@ import { getCookie } from "cookies-next/client";
 
 
 type SearchBarProp = {
-    onResults: (posts: Post[]) => void
+    onResults: (posts: Post[]) => void;
+    onClear: () => void;
 }
-export default function SearchBar({ onResults }: SearchBarProp) {
+export default function SearchBar({ onResults, onClear }: SearchBarProp) {
 
     const [inputText, setInputText] = useState("");
     const [searchText, setSearchText] = useState("");
@@ -87,6 +88,7 @@ return (
                 setTags([]);
                 setSearchText("");
                 setDateRange([null, null]);
+                onClear();
             }}
             >
                 Clear Search
