@@ -8,19 +8,28 @@ import { ObjectId } from "bson";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
 
+// Stores liked posts
+
 // Metadata
 export const metadata: Metadata = {
-  title: "Home",
+  title: "My Bag",
 };
 
-
-
-export default async function Feed() {
+export default async function MyBag() {
   // Fetch posts here via endpoint
   const cookieStore = await cookies();
-  const currentUsername = cookieStore.get('username')?.value;
-  const result = await fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}?limit=20&offset=0`, {cache: "no-store"}
+  const token = cookieStore.get('token')?.value;
+  const result = await 
+    fetch(API_SERVER_ENTRYPOINT + `/my-projects/liked`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      cache: "no-store"
+    }
   );
+
   const postsData = await result.json();
   const initialPosts: Post[] = postsData.map((post: any) => ({
     _id: post._id,
@@ -48,7 +57,7 @@ export default async function Feed() {
       }}
     >
       {/* Use FeedClient, giving it the fetched initial posts */}
-      <FeedClient initialPosts={initialPosts} disableSearch={false}/>
+      <FeedClient initialPosts={initialPosts} disableSearch={true}/>
       <Flex justify={"flex-end"}>
         <CreateProjectButton />
       </Flex>

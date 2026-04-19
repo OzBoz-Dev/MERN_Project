@@ -5,6 +5,7 @@ const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const Tag = require("../models/Tag");
 const User = require("../models/User");
+const ObjectId = require("bson");
 
 const { sendCommentNotif } = require("../utils/mailer");
 
@@ -59,6 +60,55 @@ router.post("/likes/:_id", auth, async (req, res) => {
   }
 });
 
+// get post by title, body and tags
+router.get("/search", async (req, res) => {
+  try {
+    console.log("received search request")
+    const query = (req.query.q || "").trim();
+    const tags = req.query.tags ? [].concat(req.query.tags) : [];
+    const { startDate, endDate } = req.query;
+
+    if (!query && tags.length === 0 && !startDate && !endDate) return res.json([]);
+
+    // find the posts that match the query
+    const search = {
+      $and: [
+        {
+          $or: [
+            {title: {$regex: query, $options: "i"}},
+            {body: {$regex: query, $options: "i"}}
+          ]
+        }
+      ]
+    }
+  // check the tags
+  if(tags.length > 0) {
+    search.$and.push({array_tags : {$all: tags}});
+  }
+
+  console.log(startDate);
+  console.log(endDate);
+
+  // check the date
+  if (startDate || endDate) {
+    const idFilter = {};
+    if (startDate) idFilter.$gte = new mongoose.Types.ObjectId(
+      Math.floor(Number(startDate) / 1000).toString(16).padStart(8, '0') + '0000000000000000'
+    );
+    if (endDate) idFilter.$lte = new mongoose.Types.ObjectId(
+      Math.floor(Number(endDate) / 1000).toString(16).padStart(8, '0') + 'ffffffffffffffff'
+    );
+    search.$and.push({ _id: idFilter });
+  }
+
+  // finally grab the posts
+  const posts = await Post.find(search).sort({_id: -1});
+
+  res.json(posts);
+  } catch(err) {
+    res.status(500).json({error: err.message});
+  }
+})
 // get likes count for a post
 router.get("/likes/:_id", async (req, res) => {
   try {
@@ -88,7 +138,7 @@ router.get("/title", async (req, res) => {
 //reads by post id
 router.get("/post_id", async (req, res) => {
   try {
-    const posts = await Post.find({ post_id });
+    const posts = await Post.find({ _id });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -155,6 +205,9 @@ router.get("/for-you/:username", async (req, res) => {
   try {
     console.log(req.params.username);
     const user = await User.findOne({ username: req.params.username });
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+    console.log(limit + ":" + offset)
 
     const tagValues = user ? user.tags : [];
 
@@ -180,7 +233,7 @@ router.get("/for-you/:username", async (req, res) => {
       return res.status(404).json({ message: "No posts found under this tag" });
     }
     
-    res.json(sorted);
+    res.json(sorted.slice(offset, offset+limit));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -218,7 +271,6 @@ router.post("/", auth, async (req, res) => {
     const post = await Post.create({
       ...rest,
       author_username: req.user.username,
-      post_id: req.user._id,
       array_tags: array_tags,
     });
 

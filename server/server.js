@@ -1,9 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { Server } = require('socket.io');
+const http = require('http');
+const socketIo = require('socket.io');
+
 require("dotenv").config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {cors: { origin: "*" } });
 
 // Middleware
 app.use(cors());
@@ -30,6 +36,17 @@ app.use("/posts", postRouter);
 app.use("/auth/recovery", recoveryRouter);
 app.use("/my-projects", myProjectsRouter);
 
+app.set("io", io);
+
+// connection route 
+io.on('connection', (socket) => {
+  // join a conversation
+  socket.on('joinConversation', (conversationId) => {
+    socket.join(conversationId);
+  });
+})
+
+
 // Test route
 app.get("/", async (req, res) => {
   try {
@@ -53,8 +70,11 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected!");
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}!`);
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}!`);
+    })
     });
   })
   .catch((err) => console.log(err));

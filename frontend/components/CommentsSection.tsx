@@ -16,6 +16,7 @@ import { getCookie } from "cookies-next/client";
 import { ObjectId } from "bson";
 import { API_ENTRYPOINT } from "@/constants/constants";
 import { designTokens } from "@/app/GlobalTheme";
+import { PostComment } from "@/types/PostComment";
 
 type Props = {
   postId: string;

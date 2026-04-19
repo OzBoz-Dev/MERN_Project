@@ -4,6 +4,7 @@ import styles from "./NavTabs.module.css";
 import { Avatar, Box, Flex, Tabs, Text, Tooltip } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconCode, IconHome, IconMessage } from "@tabler/icons-react";
+import { IconBaguette } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import UserAvatar from "./UserAvatar";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { designTokens, theme } from "@/app/GlobalTheme";
 import { getCookie } from "cookies-next/client";
+import { BagIcon } from "./BagIcon";
 
 export function NavTabs() {
   const pathname = usePathname(); // Pathname of the current page
@@ -44,8 +46,8 @@ export function NavTabs() {
 
   // Tab items w/ name, icon, and path for easy editing
   const tabItems = [
-    { name: "Feed",        icon: IconHome,    path: "/feed"        },
-    { name: "My Projects", icon: IconCode,    path: "/my-projects" },
+    { name: "Home",        icon: IconHome,    path: "/feed"        },
+    { name: "My Bag", icon: BagIcon,    path: "/my-bag" },
     { name: "Messages",    icon: IconMessage, path: "/messages"    },
   ];
 

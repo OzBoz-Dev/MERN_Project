@@ -1,7 +1,7 @@
 "use client";
 
 import { designTokens } from "@/app/GlobalTheme";
-import { Container, Stack, Group, Title, Divider, Text } from "@mantine/core";
+import { Container, Stack, Group, Title, Divider, Text, Paper } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
 import TimeAgo from "react-timeago";
 import BookmarkButton from "./BookmarkButton";
@@ -13,6 +13,7 @@ import { Post } from "@/types/Post";
 import { notFound } from "next/navigation";
 import { getCookie } from "cookies-next/client";
 import Link from "next/link";
+import { PostComment } from "@/types/PostComment";
 
 type Props = {
   post: Post | null;
@@ -23,20 +24,18 @@ export default function ProjectPageClient({ post, comments }: Props) {
   return post == null ? (
     notFound()
   ) : (
-    <Container
-      size="md"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        paddingTop: "32px",
-      }}
-    >
+    <div className="animated-grid">
+      <Paper
+        withBorder
+        p="xl"
+        radius="md"
+        className="glass-card"
+        shadow="md"
+        style={{ backgroundColor: designTokens.colors.glassyBackground }}
+      >
       <Stack w="100%" gap="md">
         <Group justify="space-between" align="center">
           <Title order={1}>{post.title}</Title>
-          <BookmarkButton />
         </Group>
 
         <Text size="sm" c={designTokens.colors.textMuted}>
@@ -57,17 +56,14 @@ export default function ProjectPageClient({ post, comments }: Props) {
           <MessageButton />
           <LikeButton
             likes={post.likes.length}
-            postId={post.id}
-            initiallyLiked={
-              getCookie("username") != undefined
-                ? post.likes.includes(getCookie("username")!)
-                : false
-            }
+            postId={post._id}
+            likedBy={post.likes}
           />
         </Group>
       </Stack>
       <Divider mt="lg" mb="xl" w={"100%"} />
-      <CommentsSection postId={post.id} initialComments={comments} />
-    </Container>
+      <CommentsSection postId={post._id} initialComments={comments} />
+      </Paper>
+    </div>
   );
 }

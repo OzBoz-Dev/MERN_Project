@@ -24,7 +24,7 @@ jest.mock('react-infinite-scroll-component', () => {
 
 describe('FeedClient', () => {
   const mockPost: Post = {
-    id: '1',
+    _id: '1',
     title: 'Example Post',
     body: 'This is an example post body',
     attachments: '',

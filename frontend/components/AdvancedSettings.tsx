@@ -8,9 +8,11 @@ import TagComboBox from "./TagComboBox";
 type AdvancedSettingsProp = {
     tags: string[];
     setTags: (tags: string[]) => void;
+    dateRange: [string | null, string | null];
+    setDateRange: (range: [string | null, string | null]) => void;
 };
 
-export default function AdvancedSettings({tags, setTags}: AdvancedSettingsProp) {
+export default function AdvancedSettings({tags, setTags, dateRange, setDateRange}: AdvancedSettingsProp) {
     return (
         <div
             style={{
@@ -65,7 +67,7 @@ export default function AdvancedSettings({tags, setTags}: AdvancedSettingsProp) 
                     <h2>
                         Date Posted
                     </h2>
-                    <DatePostedBox/>
+                    <DatePostedBox value={dateRange} onChange={setDateRange}/>
                 </div>
 
             </div>

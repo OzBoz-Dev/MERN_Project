@@ -1,5 +1,11 @@
 import PostEditor from "@/components/PostEditor";
 import { Stack, Text, Divider } from "@mantine/core";
+import { Metadata } from "next";
+
+// Metadata
+export const metadata: Metadata = {
+  title: "Create Project",
+};
 
 export default function CreateProjectPage() {
     return (

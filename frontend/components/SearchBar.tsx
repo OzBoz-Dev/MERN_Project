@@ -3,78 +3,60 @@ import { ActionIcon, Button, Collapse, TextInput } from "@mantine/core";
 import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
-import { API_ENTRYPOINT } from "@/constants/constants";
+import { API_ENTRYPOINT, API_SERVER_ENTRYPOINT } from "@/constants/constants";
 import { Post } from "@/types/Post";
-import { title } from "process";
-import { ObjectId } from "bson";
+import { getCookie } from "cookies-next/client";
 
 
 type SearchBarProp = {
-    onResults: (posts: Post[]) => void
+    onResults: (posts: Post[]) => void;
+    onClear: () => void;
 }
-
-export default function SearchBar({ onResults }: SearchBarProp) {
+export default function SearchBar({ onResults, onClear }: SearchBarProp) {
 
     const [inputText, setInputText] = useState("");
     const [searchText, setSearchText] = useState("");
-    const [byTitle, setByTitle] = useState<any>(null);
-    const [byBody, setByBody] = useState<any>(null);
     const searchIcon = <IconSearch size={16} />;
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
+    const [dateRange, setDateRange] = useState<[string | null, string | null]>([null, null]);
 
-useEffect(() => {
-    if (searchText.trim()) {
-        // api request
-        Promise.all([
-            fetch(API_ENTRYPOINT + '/posts/title?q=' + encodeURIComponent(searchText)),
-            fetch(API_ENTRYPOINT + '/posts/body?q=' + encodeURIComponent(searchText)),
-        ]).then(([titleRes, bodyRes]) => {
-            return Promise.all([titleRes.json(), bodyRes.json()]);
-        }).then(([titleData, bodyData]) => {
-            const titlePosts = (Array.isArray(titleData) ? titleData : []).map(post => ({
-                id: post._id,
-                title: post.title,
-                body: post.body,
-                author: post.author_username || 'Unknown',
-                likes: Array.isArray(post.likes) ? post.likes : [],
-                array_tags: Array.isArray(post.tags) ? post.tags : [],
-                attachments: post.attachments || '',
-                author_username: post.author_username || 'Unknown',
-                datePosted: new ObjectId(post._id).getTimestamp(),
-            }));
-
-            const bodyPosts = (Array.isArray(bodyData) ? bodyData : []).map(post => ({
-                id: post._id,
-                title: post.title,
-                body: post.body,
-                author: post.author_username || 'Unknown',
-                likes: Array.isArray(post.likes) ? post.likes : [],
-                array_tags: Array.isArray(post.tags) ? post.tags : [],
-                attachments: post.attachments || '',
-                author_username: post.author_username || 'Unknown',
-                datePosted: new ObjectId(post._id).getTimestamp(),
-            }));
-
-            // include tags that are also in the search
-            const mergedPosts = [...titlePosts, ...bodyPosts];
-
-            const filteredPosts = tags.length === 0
-            ? mergedPosts :
-            mergedPosts.filter(post =>
-                Array.isArray(post.array_tags) && 
-                tags.every(tag => post.array_tags.includes(tag))
-            )
-
-            onResults(filteredPosts);
-
-
-    }).catch((error) => {
-        console.error("search error", error);
-        onResults([]);
+    const mapPost = (post: any): Post => ({
+        _id: post._id,
+        title: post.title,
+        body: post.body,
+        attachments: post.attachments,
+        likes: post.likes,
+        array_tags: post.array_tags,
+        author_username: post.author_username,
+        datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
     });
-    }
-}, [searchText, tags, onResults]);
+
+    useEffect(() => {
+        const [startDate, endDate] = dateRange;
+
+        if(searchText.trim() || tags.length > 0 || startDate || endDate) {
+            const param = new URLSearchParams();
+            param.append("q", searchText);
+
+            tags.forEach(tag => param.append("tags", tag));
+            if (startDate) param.append("startDate", new Date(startDate).setHours(0,0,0,0).toString());
+            if (endDate) param.append("endDate", new Date(endDate).setHours(23,59,59,999).toString());
+            console.log(param.toString());
+
+            fetch(API_ENTRYPOINT + '/posts/search?' + param.toString())
+            .then(res => res.json())
+            .then(posts => {
+                const transformed = posts.map(mapPost);
+                onResults(transformed);
+            })
+            .catch((error) => {
+                console.log("search error found: ", error);
+                onResults([]);
+            });
+        }
+        else return; // Don't do anything if the search params are empty
+    }, [searchText, tags, dateRange, onResults]);
 
 return (
     <div style={{width: "100%"}}>
@@ -92,7 +74,25 @@ return (
                     setSearchText(e.currentTarget.value.trim());
                 }
             }}
+            styles={{
+                input: {
+                    backgroundColor:'#FEFBF2'
+                }
+            }}
             />
+            <Button
+            name="Clear Search"
+            variant="outline"
+            onClick={() => {
+                setInputText("");
+                setTags([]);
+                setSearchText("");
+                setDateRange([null, null]);
+                onClear();
+            }}
+            >
+                Clear Search
+            </Button>
             <ActionIcon
                 variant="light"
                 size={"lg"}
@@ -104,7 +104,7 @@ return (
         
         <Collapse in={showAdvanced}>
             <div style={{ marginTop: "12px" }}>
-                <AdvancedSettings tags={tags} setTags={setTags}/>
+                <AdvancedSettings tags={tags} setTags={setTags} dateRange={dateRange} setDateRange={setDateRange}/>
             </div>
         </Collapse>
     </div>

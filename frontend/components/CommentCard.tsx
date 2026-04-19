@@ -5,6 +5,7 @@ import { designTokens } from "@/app/GlobalTheme";
 import { formatText } from "@/lib/formatText";
 import LikeButton from "./LikeButton";
 import { getCookie } from "cookies-next/client";
+import Link from "next/link";
 
 type Props = {
   author: string;
@@ -40,7 +41,7 @@ export default function CommentCard({
         textAlign: "left",
       }}
     >
-      <Text fw={700}>{author}</Text>
+      <Text fw={700}><Link href={`/profile/${author}`}  style={{color:'black'}}>{author}</Link></Text>
       <Text size="xs" c={designTokens.colors.textMuted} mb="sm">
         {formattedDate}
       </Text>
@@ -52,11 +53,7 @@ export default function CommentCard({
         <LikeButton
           commentId={commentId}
           likes={likes.length}
-          initiallyLiked={
-            getCookie("username") != undefined
-              ? likes.includes(getCookie("username")!)
-              : false
-          }
+          likedBy={likes}
         />
       </Group>
     </Card>
