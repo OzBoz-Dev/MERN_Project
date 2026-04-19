@@ -132,6 +132,7 @@ export default function Auth() {
         const data = await apiLogin(email, password);
         // Store token
         setCookie("token", data.token);
+        setCookie("userId",  data.user.id);
         setCookie("username", data.user.username);
         setCookie("firstName", data.user.firstName);
         setCookie("lastName", data.user.lastName);
