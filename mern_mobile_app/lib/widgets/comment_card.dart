@@ -5,6 +5,7 @@ import 'package:chip_in/services/content_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
@@ -25,6 +26,48 @@ class _CommentCardState extends State<CommentCard> {
 
   // For clicking on usernames
   late TapGestureRecognizer _tapRecognizer;
+
+  List<TextSpan> parseCommentText(String text) {
+    final spans = <TextSpan>[];
+
+    final regex = RegExp(r'(\*\*.*?\*\*|\*.*?\*)');
+    int currentIndex = 0;
+
+    for (final match in regex.allMatches(text)) {
+      // normal text before match
+      if (match.start > currentIndex) {
+        spans.add(TextSpan(
+          text: text.substring(currentIndex, match.start),
+        ));
+      }
+
+      final matchedText = match.group(0)!;
+
+      // bold **text**
+      if (matchedText.startsWith('**')) {
+        spans.add(TextSpan(
+          text: matchedText.replaceAll('**', ''),
+          style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
+        ));
+      }
+      // italic *text*
+      else if (matchedText.startsWith('*')) {
+        spans.add(TextSpan(
+          text: matchedText.replaceAll('*', ''),
+          style: GoogleFonts.montserrat(fontStyle: FontStyle.italic),
+        ));
+      }
+
+      currentIndex = match.end;
+    }
+
+    // remaining text
+    if (currentIndex < text.length) {
+      spans.add(TextSpan(text: text.substring(currentIndex)));
+    }
+
+    return spans;
+  }
   
 
   @override
@@ -94,8 +137,14 @@ class _CommentCardState extends State<CommentCard> {
                   ),
                 ),
                 const SizedBox(height: 5,),
-                Text(
-                  widget.comment.body
+                RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                    children: parseCommentText(widget.comment.body),
+                  ),
                 ),
                 const SizedBox(height: 12,),
                 Align(
