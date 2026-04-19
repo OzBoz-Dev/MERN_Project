@@ -36,6 +36,11 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
   const [items, setItems] = useState<Post[]>(initialPosts || []);
   const [hasMore, setHasMore] = useState(true);
 
+  // Handle unlike when on the "My Bag" page
+  const handleUnlike = useCallback((postId: string) => {
+    setItems(prev => prev.filter(item => item._id !== postId));
+  }, []);
+
   // Make handleResults stable
   const handleResults = useCallback((posts: Post[]) => {
     const normalized = posts.map((post: any) => ({
@@ -67,7 +72,7 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
       >
         {items.map((item, index) => (
           <ProjectCard
-            key={index}
+            key={item._id}
             id={item._id}
             title={item.title}
             body={item.body}
@@ -75,6 +80,7 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
             tags={item.array_tags}
             likes={item.likes}
             datePosted={item.datePosted}
+            onUnlike={disableSearch ? handleUnlike : undefined} // On bag page, remove when unliked
           />
         ))}
       </InfiniteScroll>

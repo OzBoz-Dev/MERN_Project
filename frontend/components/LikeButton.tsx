@@ -12,7 +12,8 @@ type Props = {
   postId?: string;
   commentId?: string;
   likes: number;
-  likedBy: string[]
+  likedBy: string[];
+  onUnlike?: (id: string) => void;
 };
 
 // Likes a post by id
@@ -60,6 +61,7 @@ export default function LikeButton({
   commentId,
   likes,
   likedBy,
+  onUnlike
 }: Props) {
   const [likeCount, setLikeCount] = useState(likes);
   const [clicked, setClicked] = useState(false);
@@ -97,6 +99,7 @@ export default function LikeButton({
           setLikeCount((prev) => (clicked ? prev - 1 : prev + 1));
           if (postId) {
             try {
+              if (clicked) onUnlike?.(postId);
               await likePostById(postId);
             } catch (e) {
               console.error(e);

@@ -18,6 +18,7 @@ type Props = {
   likes: string[];
   tags: string[];
   datePosted: Date;
+  onUnlike?: (id: string) => void;
 };
   
 export default function ProjectCard({
@@ -28,6 +29,7 @@ export default function ProjectCard({
   likes,
   tags,
   datePosted,
+  onUnlike
 }: Props) {
   const plainBody = body
     .replace(/<[^>]*>/g, " ")   // remove HTML tags
@@ -62,6 +64,7 @@ export default function ProjectCard({
           likes={likes.length}
           postId={id}
           likedBy={likes}
+          onUnlike={onUnlike}
         />
       </div>
 
