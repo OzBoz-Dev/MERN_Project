@@ -5,8 +5,6 @@ import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
 import { API_ENTRYPOINT, API_SERVER_ENTRYPOINT } from "@/constants/constants";
 import { Post } from "@/types/Post";
-import { title } from "process";
-import { ObjectId } from "bson";
 import { getCookie } from "cookies-next/client";
 
 
@@ -17,11 +15,20 @@ export default function SearchBar({ onResults }: SearchBarProp) {
 
     const [inputText, setInputText] = useState("");
     const [searchText, setSearchText] = useState("");
-    const [byTitle, setByTitle] = useState<any>(null);
-    const [byBody, setByBody] = useState<any>(null);
     const searchIcon = <IconSearch size={16} />;
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
+
+    const mapPost = (post: any): Post => ({
+        _id: post._id,
+        title: post.title,
+        body: post.body,
+        attachments: post.attachments,
+        likes: post.likes,
+        array_tags: post.array_tags,
+        author_username: post.author_username,
+        datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
+    });
 
     useEffect(() => {
         if(searchText.trim() || tags.length > 0) {
@@ -33,16 +40,7 @@ export default function SearchBar({ onResults }: SearchBarProp) {
             fetch(API_ENTRYPOINT + '/posts/search?' + param.toString())
             .then(res => res.json())
             .then(posts => {
-                const transformed = posts.map((post: any) => ({
-                    _id: post._id,
-                    title: post.title,
-                    body: post.body,
-                    attachments: post.attachments,
-                    likes: post.likes,
-                    array_tags: post.array_tags,
-                    author_username: post.author_username,
-                    datePosted: new ObjectId(post._id).getTimestamp(),
-                }));
+                const transformed = posts.map(mapPost);
                 onResults(transformed);
             })
             .catch((error) => {
@@ -58,16 +56,7 @@ export default function SearchBar({ onResults }: SearchBarProp) {
                 fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}`, {cache: "no-store"})
                 .then(res => res.json())
                 .then(posts => {
-                    const transformed = posts.map((post: any) => ({
-                        _id: post._id,
-                        title: post.title,
-                        body: post.body,
-                        attachments: post.attachments,
-                        likes: post.likes,
-                        array_tags: post.array_tags,
-                        author_username: post.author_username,
-                        datePosted: new ObjectId(post._id).getTimestamp(),
-                    }));
+                    const transformed = posts.map(mapPost);
                     onResults(transformed);
                 })
                 .catch(() => onResults([]));

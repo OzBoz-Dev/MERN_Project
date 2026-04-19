@@ -36,9 +36,9 @@ describe('FeedClient - Search Functionality', () => {
     _id: '1',
     title: 'lol this is funny',
     body: 'This post contains lol in the body',
-    author: 'Jane Smith',
+    author_username: 'Jane Smith',
     likes: ['user1', 'user2'],
-    tags: ['humor', 'funny'],
+    array_tags: ['humor', 'funny'],
     attachments: '',
     datePosted: new Date('2026-04-11').toISOString(),
   };
@@ -63,16 +63,11 @@ describe('FeedClient - Search Functionality', () => {
   it('should search for "lol" and display matching post', async () => {
     const user = userEvent.setup();
 
-    // Mock the API responses for title and body search
+    // Mock the API response for unified search endpoint
     (global.fetch as jest.Mock).mockImplementation((url) => {
-      if (url.includes('/posts/title?q=lol')) {
+      if (url.includes('/posts/search?q=lol')) {
         return Promise.resolve({
           json: () => Promise.resolve([mockApiPost]),
-        });
-      }
-      if (url.includes('/posts/body?q=lol')) {
-        return Promise.resolve({
-          json: () => Promise.resolve([]),
         });
       }
       return Promise.reject(new Error('Unknown URL'));
@@ -103,10 +98,7 @@ describe('FeedClient - Search Functionality', () => {
 
     // Verify API was called correctly
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/posts/title?q=lol')
-    );
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/posts/body?q=lol')
+      expect.stringContaining('/posts/search?q=lol')
     );
   });
 });

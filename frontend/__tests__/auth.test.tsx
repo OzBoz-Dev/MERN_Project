@@ -95,6 +95,10 @@ jest.mock("@mantine/core", () => ({
   Box:       ({ children }: any) => <div>{children}</div>,
   Title:     ({ children }: any) => <h1>{children}</h1>,
   Paper:     ({ children }: any) => <div>{children}</div>,
+  Collapse:  ({ in: isOpen, children }: any) => (isOpen ? <div>{children}</div> : null),
+  Transition: ({ mounted, children }: any) => (
+    mounted ? <>{typeof children === "function" ? children({}) : children}</> : null
+  ),
   Button:    ({ children, onClick, disabled, loading }: any) => (
     <button onClick={onClick} disabled={disabled || loading}>{children}</button>
   ),
