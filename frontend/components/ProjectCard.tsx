@@ -9,6 +9,7 @@ import TimeAgoClient from "./TimeAgoClient";
 import { Flex, NavLink } from "@mantine/core";
 import { getCookie } from "cookies-next/client";
 import Link from "next/link";
+import { memo } from "react";
 
 type Props = {
   id: string;
@@ -22,7 +23,7 @@ type Props = {
   style?: React.CSSProperties;
 };
   
-export default function ProjectCard({
+function ProjectCard({
   id,
   title,
   body,
@@ -104,3 +105,5 @@ export default function ProjectCard({
     </div>
   );
 }
+
+export default memo(ProjectCard);

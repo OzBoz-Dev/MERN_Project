@@ -1,30 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ProjectCard from "./ProjectCard";
 import { Post } from "@/types/Post";
 import SearchBar from "./SearchBar";
 import { API_ENTRYPOINT } from "@/constants/constants";
-import { Loader, Transition } from "@mantine/core";
+import { Divider, Loader, Transition } from "@mantine/core";
 import { ObjectId } from "bson";
+import { getCookie } from "cookies-next/client";
 
-type FeedProps = {
-  dataLength: number;
-  hasMore: boolean;
-  loader?: object; // Something to show while loading
-  endMessage?: object; // When you reach the end
-};
-
-const defaultProps: FeedProps = {
-  dataLength: 20,
-  hasMore: true,
-  endMessage: (
-    <p style={{ textAlign: "center" }}>
-      <b>Yay! you have seen it all</b>
-    </p>
-  ),
-};
+const PAGE_SIZE = 20;
 
 type Props = {
   initialPosts: Post[];
@@ -33,17 +19,26 @@ type Props = {
 
 export default function FeedClient({ initialPosts, disableSearch }: Props) {
 
-  const [items, setItems] = useState<Post[]>(initialPosts || []);
-  const [hasMore, setHasMore] = useState(true);
+  const isFetchingRef = useRef(false); // Prevent concurrent/immediate fetches
+  const [items, setItems] = useState<Post[]>(initialPosts);
+  const [hasMore, setHasMore] = useState(!disableSearch);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set());
   const [mountedIds, setMountedIds] = useState<Set<string>>(new Set());
 
+  // Use a ref to track the current offset so fetchMoreData always sees the latest value
+  const offsetRef = useRef(20);
+  // Track whether we're in search mode (searching overrides initialPosts pagination)
+  const isSearching = useRef(false);
+
   useEffect(() => {
-    items.forEach((item, index) => {
-      setTimeout(() => {
-        setMountedIds(prev => new Set(prev).add(item._id));
-      }, index * 100); // 100ms delay between each card appearance
-    });
+    window.scrollTo(0, 0);
+
+    initialPosts.forEach((item, index) => {
+    setTimeout(() => {
+      setMountedIds(prev => new Set(prev).add(item._id));
+    }, index * 50);
+  });
+
   }, []);
 
   // Handle unlike when on the "My Bag" page
@@ -57,31 +52,75 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
         return next;
       });
     }, 500); // match transition duration
-    // setItems(prev => prev.filter(item => item._id !== postId));
   }, []);
 
   // Make handleResults stable
   const handleResults = useCallback((posts: Post[]) => {
+    isSearching.current = true;
     const normalized = posts.map((post: any) => ({
       ...post,
       datePosted: new ObjectId(post._id).getTimestamp(),
     }));
     setItems(normalized);
+    setHasMore(false); // No inf scroll when searching
+    setMountedIds(new Set()); // Reset so animation re-triggers
+
     setTimeout(() => {
       setMountedIds(new Set(normalized.map(p => p._id)));
     }, 10);
   }, []);
-  // Builds off of initialPosts
-  const fetchMoreData = useCallback(() => {
-    if (!initialPosts || initialPosts.length === 0) return;
-    // Would need to fetch more items from api
-    // Example: await fetch('api/posts?page=...')
-    // put the new items in the existing list
-    setItems((prev) => [
-      ...prev,
-      ...initialPosts.slice(items.length, items.length + defaultProps.dataLength),
-    ]);
-  }, [initialPosts]);
+
+  // Infinite scroll behavior
+  const fetchMoreData = useCallback(async () => {
+    if (isSearching.current) return;
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
+    const currentUsername = getCookie('username');
+    console.log("current username: " + currentUsername)
+    if (!currentUsername) {
+      isFetchingRef.current = false;
+      return;
+    }
+    
+    const currentOffset = offsetRef.current;
+
+    try {
+      // Grab the next N posts
+      const res = await fetch(
+        `${API_ENTRYPOINT}/posts/for-you/${currentUsername}?limit=${PAGE_SIZE}&offset=${currentOffset}`
+      )
+      const postsData = await res.json();
+      const nextPosts: Post[] = postsData.map((post: any) => ({
+        ...post,
+        datePosted: new ObjectId(post._id).getTimestamp(),
+      }));
+
+    if (nextPosts.length === 0) {
+      setHasMore(false);
+      return;
+    }
+
+    setItems((prev) => [...prev, ...nextPosts]);
+    setMountedIds(prev => {
+      const next = new Set(prev);
+      nextPosts.forEach(p => next.add(p._id));
+      return next;
+    });
+    offsetRef.current = currentOffset + nextPosts.length;
+
+    if (nextPosts.length < PAGE_SIZE) {
+      setHasMore(false); // Received a partial page, so we're at the end
+    }
+  }
+  catch (err) {
+    console.error("Failed to fetch more posts:", err);
+  }
+  finally {
+    isFetchingRef.current = false;
+  }
+}, []);
+
   return (
     <>
       {!disableSearch && <SearchBar onResults={handleResults} />}
@@ -89,8 +128,8 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
         dataLength={items.length}
         next={fetchMoreData}
         hasMore={hasMore}
-        loader={<></>}
-        endMessage={<h4>Ended</h4>}
+        loader={<Loader/>}
+        // scrollThreshold={0.7}
       >
         {items.map((item) => (
         <Transition

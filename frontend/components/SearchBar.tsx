@@ -54,27 +54,7 @@ export default function SearchBar({ onResults }: SearchBarProp) {
                 onResults([]);
             });
         }
-        else {
-            // use the for you page backend algo
-            const currentUsername = getCookie("username");
-
-            if(currentUsername) {
-                fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}`, {cache: "no-store"})
-                .then(res => res.json())
-                .then(posts => {
-                    const transformed = posts.map(mapPost);
-                    onResults(transformed);
-                })
-                .catch(() => onResults([]));
-            }
-            else {
-                // fetch the initial posts (get the recent posts)
-                fetch(API_SERVER_ENTRYPOINT + '/posts/', {cache: "no-store"})
-                .then(res => res.json())
-                .then(posts => onResults(posts))
-                .catch(() => onResults([]));
-            }
-        }
+        else return; // Don't do anything if the search params are empty
     }, [searchText, tags, dateRange, onResults]);
 
 return (

@@ -19,7 +19,7 @@ export default async function Feed() {
   // Fetch posts here via endpoint
   const cookieStore = await cookies();
   const currentUsername = cookieStore.get('username')?.value;
-  const result = await fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}`, {cache: "no-store"}
+  const result = await fetch(API_SERVER_ENTRYPOINT + `/posts/for-you/${currentUsername}?limit=20&offset=0`, {cache: "no-store"}
   );
   const postsData = await result.json();
   const initialPosts: Post[] = postsData.map((post: any) => ({

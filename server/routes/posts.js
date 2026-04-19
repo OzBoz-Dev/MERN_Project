@@ -205,6 +205,9 @@ router.get("/for-you/:username", async (req, res) => {
   try {
     console.log(req.params.username);
     const user = await User.findOne({ username: req.params.username });
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+    console.log(limit + ":" + offset)
 
     const tagValues = user ? user.tags : [];
 
@@ -230,7 +233,7 @@ router.get("/for-you/:username", async (req, res) => {
       return res.status(404).json({ message: "No posts found under this tag" });
     }
     
-    res.json(sorted);
+    res.json(sorted.slice(offset, offset+limit));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
