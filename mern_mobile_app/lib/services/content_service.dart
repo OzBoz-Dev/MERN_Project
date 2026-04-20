@@ -13,9 +13,9 @@ class ContentService {
 
   // POSTS
   // Get feed posts - matches user tags to posts
-  Future<List<Post>> getFeedPosts(String username) async {
+  Future<List<Post>> getFeedPosts(String username, int limit, int offset) async {
     final response = await http.get(
-      Uri.parse("$_baseUrl/posts/for-you/$username"),
+      Uri.parse("$_baseUrl/posts/for-you/$username?limit=$limit&offset=$offset"),
       headers: {
         "Content-Type": "application/json"
       }
@@ -58,6 +58,29 @@ class ContentService {
     if(response.statusCode == 404 || response.statusCode == 500) {
       throw Exception(data['error']);
     }
+  }
+
+  // Create a new post
+  Future<String> createPost(String token, String title, String body, List<String> arrayTags) async {
+    final response = await http.post(
+      Uri.parse("$_baseUrl/posts/"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode({
+        "title": title,
+        "body": body,
+        "attachments": "",
+        "likes": List<String>.empty(),
+        "array_tags": arrayTags,
+      }),
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode != 201) {
+      throw Exception(data['error'] ?? data['message'] ?? "Failed to create post");
+    }
+    return data['_id'] as String;
   }
 
   // COMMENTS
