@@ -70,9 +70,6 @@ export default function EditConversationModal({
         <Stack>
         <UserSearchComboBox color="#FFFFFF" selectedUsers={usernames} setUsers={setUsernames}/>
 
-        {/* Divider */}
-        <Divider my="md" />
-
         {/* Action Buttons */}
         <Group justify="space-between" gap="md">
           <Button variant="outline" onClick={onClose}>
@@ -80,6 +77,9 @@ export default function EditConversationModal({
           </Button>
           <Button type="submit" variant="filled" color="orange">
             Update Conversation
+          </Button>
+          <Button type="submit" variant="filled" color="red">
+            Delete Conversation
           </Button>
         </Group>
         </Stack>

@@ -67,11 +67,8 @@ export default function NewConversationModal({
       centered
     >
       <form onSubmit={handleSubmit} style={{ display: "contents" }} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault();}}>
-        <Stack>
+        <Stack mih={100} justify="space-between">
         <UserSearchComboBox color="#FFFFFF" selectedUsers={usernames} setUsers={setUsernames}/>
-
-        {/* Divider */}
-        <Divider my="md" />
 
         {/* Action Buttons */}
         <Group justify="space-between" gap="md">

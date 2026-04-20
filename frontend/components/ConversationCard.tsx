@@ -1,8 +1,8 @@
 "use client";
 
 import { designTokens } from "@/app/GlobalTheme";
-import { Button, Card, Text, Group, Flex } from "@mantine/core";
-import { IconMessage, IconUserCircle } from "@tabler/icons-react";
+import { Button, Card, Text, Group, Flex, Tooltip } from "@mantine/core";
+import { IconMessage, IconPencilCog, IconUserCircle } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import TimeAgoClient from "./TimeAgoClient";
 import { getCookie } from "cookies-next/client";
@@ -36,13 +36,26 @@ export default function ConversationCard({
         textAlign: "left",
       }}
     >
-      <Flex direction="row" gap={5} align={"center"} mb={5}>
-        <IconUserCircle color="red" />
-        <Text fw={700} size="xl">
-          {members.length == 2
-            ? notMe
-            : `${notMe} & ${members.length - 1} more`}
-        </Text>
+      <Flex direction="row" gap={5} mb={5} align="center" style={{ width: '100%' }}>
+        <Group gap='sm'>
+          <IconUserCircle color="red" />
+          <Text fw={700} size="xl">
+            {members.length == 2
+              ? notMe
+              : `${notMe} & ${members.length - 1} more`}
+          </Text>
+        </Group>
+        <Group justify="flex-end" style={{ marginLeft: 'auto' }}>
+          <Tooltip label="Edit Conversation">
+          <Button
+            radius='md'
+            variant="outline"
+            // onClick={}
+            >
+            <IconPencilCog/>
+          </Button>
+          </Tooltip>
+        </Group>
       </Flex>
       <Flex direction="column" gap={2}>
         <Text size="sm" c={designTokens.colors.textMuted}>
