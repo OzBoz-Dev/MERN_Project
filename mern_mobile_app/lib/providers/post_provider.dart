@@ -34,7 +34,7 @@ class PostProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fetchedPosts = await _contentService.getFeedPosts(username);
+      final fetchedPosts = await _contentService.getFeedPosts(username, 10, 0);
 
       _posts.clear();
 
