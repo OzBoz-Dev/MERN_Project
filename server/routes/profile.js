@@ -41,6 +41,21 @@ router.get("/:username", async(req, res) => {
     }
 });
 
+// Partial search user by username
+router.get('/search/:username', async (req, res) => {
+    try {
+        const { username } = req.params;
+        console.log(username);
+        const users = await User.find({
+              username: { $regex: username, $options: "i" },
+        }).select("username firstName lastName");
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 router.put("/:username", async(req, res) => {
   try {
         const { username } = req.params;
@@ -129,20 +144,9 @@ router.delete("/:username", auth, async(req, res) => {
         await Comment.deleteMany({ author_username: username });
         await Message.deleteMany({ author_username: username });
         
-        await User.findByIdAndUpdate(user._id, {
-            $set: {
-                username: `DELETED_USER_${user._id}`,
-                email: `DELETED_EMAIL_${user._id}`,
-                firstName: 'DELETED',
-                lastName: 'USER',
-                bio: '',
-                profilePicture: '',
-                tags: [],
-                verified: false
-            }
-        });
+        await User.findByIdAndDelete(user._id);
 
-        res.json({ message: 'Account deactivated successfully' });
+        res.json({ message: 'Account deleted successfully, bye bye!' });
 
     } catch (err) {
         console.error('Fetch profile error:', err)

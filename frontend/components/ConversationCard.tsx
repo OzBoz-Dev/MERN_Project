@@ -4,12 +4,14 @@ import { designTokens } from "@/app/GlobalTheme";
 import { Button, Card, Text, Group, Flex } from "@mantine/core";
 import { IconMessage, IconUserCircle } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import TimeAgoClient from "./TimeAgoClient";
+import { getCookie } from "cookies-next/client";
 
 type Props = {
   id: string;
   members: string[];
   lastMessage: string;
-  lastMessageDate: string;
+  lastMessageDate: Date;
 };
 
 export default function ConversationCard({
@@ -19,6 +21,9 @@ export default function ConversationCard({
   lastMessageDate,
 }: Props) {
   const router = useRouter();
+  const myUser = getCookie("username");
+  const notMe = members.find(user => user !== myUser)
+
   return (
     <Card
       style={{
@@ -27,15 +32,16 @@ export default function ConversationCard({
         padding: designTokens.spacing.cardPadding,
         boxShadow: designTokens.colors.cardShadow,
         background: designTokens.colors.glassyBackground,
+        backdropFilter: "blur(7px)",
         textAlign: "left",
       }}
     >
       <Flex direction="row" gap={5} align={"center"} mb={5}>
-        <IconUserCircle color="blue" />
+        <IconUserCircle color="red" />
         <Text fw={700} size="xl">
-          {members.length == 1
-            ? members[0]
-            : `${members[0]} & ${members.length - 1} more`}
+          {members.length == 2
+            ? notMe
+            : `${notMe} & ${members.length - 1} more`}
         </Text>
       </Flex>
       <Flex direction="column" gap={2}>
@@ -43,7 +49,7 @@ export default function ConversationCard({
           {lastMessage}
         </Text>
         <Text size="xs" c={designTokens.colors.textMuted}>
-          {lastMessageDate}
+          <TimeAgoClient date={lastMessageDate}/>
         </Text>
         <Group justify="flex-end">
           <Button
