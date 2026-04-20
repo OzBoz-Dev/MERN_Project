@@ -25,6 +25,7 @@ export default function ConversationTriggers() {
     const newConvo = searchParams.get('newConvo');
     const username = searchParams.get('username');
     const editConvo = searchParams.get('editConvo');
+    const leaveConvo = searchParams.get('leaveConvo');
 
     setTimeout(() => {
     if (newConvo === 'true'){
@@ -37,8 +38,41 @@ export default function ConversationTriggers() {
       setIsEditing(true);
       router.replace('/messages');
     }
+    if (leaveConvo) {
+      handleLeaveConvo(leaveConvo);
+      router.replace('/messages');
+    }
     }, 100)
   }, [searchParams]);
+
+  const handleLeaveConvo = async (convoId: string) => {
+    const token = getCookie('token');
+
+    try {
+      // Leave the conversation
+      const res = await fetch(`${API_ENTRYPOINT}/conversations/leave/${convoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        setErrorMessage(err.error);
+        setFail(true);
+        return;
+      }
+
+      setSuccess(true);
+      router.refresh();
+
+    } catch (err) {
+      setErrorMessage('Failed to leave conversation: ' + err);
+      setFail(true);
+    }
+  };
 
   const handleCreateConvo = async (data: any) => {
     const token = getCookie('token');

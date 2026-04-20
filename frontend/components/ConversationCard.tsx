@@ -2,7 +2,7 @@
 
 import { designTokens } from "@/app/GlobalTheme";
 import { Button, Card, Text, Group, Flex, Tooltip } from "@mantine/core";
-import { IconMessage, IconPencilCog, IconUserCircle } from "@tabler/icons-react";
+import { IconDoorExit, IconMessage, IconPencilCog, IconUserCircle } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import TimeAgoClient from "./TimeAgoClient";
 import { getCookie } from "cookies-next/client";
@@ -49,6 +49,17 @@ export default function ConversationCard({
           </Text>
         </Group>
         <Group justify="flex-end" style={{ marginLeft: 'auto' }}>
+          <Tooltip label={isOwner ? "Can't leave your own conversation" : "Leave Conversation"}>
+          <Button
+            radius='md'
+            variant="outline"
+            color="red"
+            onClick={() => router.push(`/messages?leaveConvo=${id}`)}
+            disabled={isOwner}
+            >
+            <IconDoorExit/>
+          </Button>
+          </Tooltip>
           <Tooltip label={isOwner ? "Edit Conversation" : "You don't own this conversation"}>
           <Button
             radius='md'
