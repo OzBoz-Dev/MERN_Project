@@ -3,7 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
-const auth = require('../middleware/auth')
+const auth = require('../middleware/auth');
+const User = require("../models/User");
 
 // to get all conversations
 router.get('/', async (req, res) => {
@@ -38,6 +39,14 @@ router.post('/', auth, async (req, res) => {
 
         if (!member_usernames || !member_usernames.includes(req.user.username)) {
             return res.status(400).json({ error: 'member_usernames must include the creating user' })
+        }
+
+        for (const username of member_usernames) {
+            const user = await User.findOne({ username }).collation({ locale: 'en', strength: 2 });
+            if (!user) {
+                return res.status(404).json({ error: `User not found: ${username}` });
+            }
+            member_usernames[member_usernames.indexOf(username)] = user.username;
         }
 
         const conversation = await Conversation.create({ member_usernames });
