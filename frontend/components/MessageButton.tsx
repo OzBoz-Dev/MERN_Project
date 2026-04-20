@@ -17,6 +17,7 @@ export default function MessageButton({author_username}: Props) {
   return(
     <Tooltip label="Send Message">
     <Button
+    variant="outline"
     size='sm'
     radius='md'
     justify='center'

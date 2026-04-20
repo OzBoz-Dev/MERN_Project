@@ -1,8 +1,9 @@
 import ConversationCard from "@/components/ConversationCard";
+import ConversationList from "@/components/ConversationList";
 import NewConversationModal from "@/components/NewConversationModal";
 import NewConversationTrigger from "@/components/NewConversationTrigger";
 import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
-import { Affix, Button, Container, Stack, Tooltip } from "@mantine/core";
+import { Affix, Button, Container, Stack, Tooltip, Transition } from "@mantine/core";
 import { IconMessage2Plus, IconPlus } from "@tabler/icons-react";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -38,15 +39,7 @@ export default async function MessagesPage() {
     <Container style={{ maxWidth: "800px", margin: "0 auto", padding: "16px" }}>
       <h1>Messages</h1>
       <Stack>
-      {conversations.map((message: any) => (
-        <ConversationCard 
-          key={message._id} 
-          id={message._id} 
-          members={message.member_usernames} 
-          lastMessage={message.messages[message.messages.length-1].author_username 
-            + " · " + message.messages[message.messages.length-1].content} 
-          lastMessageDate={new Date(message.messages[message.messages.length-1].createdAt)}/>
-      ))}
+      <ConversationList conversations={conversations}/>
       </Stack>
     </Container>
     <NewConversationTrigger/>
