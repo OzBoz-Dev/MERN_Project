@@ -196,7 +196,7 @@ export default function Auth() {
     <Paper
       withBorder
       p="xl"
-      w="40vw"
+      w='min(550px, 90vw)'
       radius="md"
       className="glass-card"
       shadow="md"
@@ -342,6 +342,7 @@ export default function Auth() {
       radius="md"
       className="glass-card"
       shadow="md"
+      w='min(550px, 90vw)'
       style={{ backgroundColor: designTokens.colors.glassyBackground }}
     >
       <Stack align='center'>
@@ -393,6 +394,7 @@ export default function Auth() {
     <Paper
       withBorder
       p="xl"
+      w='min(550px, 90vw)'
       radius="md"
       className="glass-card"
       shadow="md"
@@ -478,11 +480,9 @@ export default function Auth() {
 return (
   <main>
     <div className="animated-grid">
-      <Container size="md" p="xl">
         <Stack align="center" gap="xl">
-          
           {/* Logo Transition */}
-          <Box>
+          <Box mt='xl'>
             <Image
               src="/ChipIn.png"
               alt="ChipIn logo"
@@ -496,8 +496,9 @@ return (
             style={{ 
               display: 'grid', 
               gridTemplateColumns: '1fr', 
-              alignItems: 'start', 
-              width: '40vw'
+              alignItems: 'start',
+              gridTemplateRows: '1fr',
+              minHeight: '450px'
             }}
           >
             {/* Auth Card */}
@@ -540,7 +541,6 @@ return (
             </Transition>
           </Box>
         </Stack>
-      </Container>
     </div>
   </main>
 );

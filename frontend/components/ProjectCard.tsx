@@ -100,7 +100,7 @@ function ProjectCard({
       <p style={{ margin: "0 0 12px", color: "#555" }}>{preview}</p>
       <Flex justify={"flex-end"} align={"flex-start"} gap={"16px"}>
         <ReadFullPostButton id={id} />
-        <MessageButton />
+        <MessageButton author_username={author}/>
       </Flex>
     </div>
   );

@@ -54,7 +54,7 @@ export function NavTabs() {
   // Determine the current active tab
   // If pathname matches with a tabItem's "path", then this is the active tab
   const activeTab =
-    tabItems.find((item) => item.path === pathname)?.name || null;
+    tabItems.find((item) => pathname.includes(item.path))?.name || null;
 
   // Create a Tab for each tabItem
   const tabs = tabItems.map((tabItem) => {

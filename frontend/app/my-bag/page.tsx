@@ -57,7 +57,7 @@ export default async function MyBag() {
       }}
     >
       {/* Use FeedClient, giving it the fetched initial posts */}
-      <FeedClient initialPosts={initialPosts} disableSearch={true}/>
+      <FeedClient initialPosts={initialPosts} disableSearch={true} displayUser={null} bagMode={true}/>
       <Flex justify={"flex-end"}>
         <CreateProjectButton />
       </Flex>

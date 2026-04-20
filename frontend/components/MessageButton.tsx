@@ -1,30 +1,30 @@
 "use client";
 
 import { designTokens } from "@/app/GlobalTheme";
-import { Button } from "@mantine/core";
+import { Button, Tooltip } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { IconSend, IconSendFilled } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
-export default function MessageButton() {
+interface Props{
+  author_username: string
+}
+
+export default function MessageButton({author_username}: Props) {
   const [clicked, toggle] = useToggle([false, true])
+  const router = useRouter();
+
   return(
+    <Tooltip label="Send Message">
     <Button
-    size='md'
+    variant="outline"
+    size='sm'
     radius='md'
-    style={{width: 200, height: 36, padding: 0}}
     justify='center'
-    color={designTokens.colors.buttonSecondary} onClick={() => toggle()}>
-      {clicked === false ? (
-        <>
-        <IconSend style = {{verticalAlign: 'middle', marginRight: 6}}/>
-        Message
-        </>
-      ) : (
-      <>
-        <IconSendFilled style = {{verticalAlign: 'middle', marginRight: 6}}/>
-        Messaged
-      </>
-    )}
+    color={designTokens.colors.buttonSecondary} 
+    onClick={() => router.push(`/messages?newConvo=true&username=${encodeURIComponent(author_username)}`)}>
+        <IconSend/>
     </Button>
+    </Tooltip>
   );
 }

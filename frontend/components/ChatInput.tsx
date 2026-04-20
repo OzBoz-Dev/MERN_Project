@@ -2,6 +2,7 @@
 
 import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
 import { Button, TextInput } from "@mantine/core";
+import { IconSendFilled } from "@tabler/icons-react";
 import { getCookie } from "cookies-next/client";
 import { ParamValue } from "next/dist/server/request/params";
 import { useState } from "react";
@@ -55,9 +56,14 @@ export default function ChatInput({ id }: Prop) {
             placeholder="Send a message!"
             value={msg}
             onChange={(e) => setMsg(e.currentTarget.value)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter"){
+                    sendMessage(msg)
+                }
+            }}
             />
             <Button onClick={() => sendMessage(msg)}>
-                Send
+                <IconSendFilled/>
             </Button>
         </div>
     );

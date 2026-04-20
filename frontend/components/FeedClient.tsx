@@ -16,9 +16,11 @@ const PAGE_SIZE = 20;
 type Props = {
   initialPosts: Post[];
   disableSearch?: boolean;
+  bagMode?: boolean;
+  displayUser: string|null;
 };
 
-export default function FeedClient({ initialPosts, disableSearch }: Props) {
+export default function FeedClient({ initialPosts, disableSearch, bagMode, displayUser }: Props) {
 
   const isFetchingRef = useRef(false); // Prevent concurrent/immediate fetches
   const [items, setItems] = useState<Post[]>(initialPosts);
@@ -29,7 +31,7 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
   const searchOffsetRef = useRef(0);
 
   // Use a ref to track the current offset so fetchMoreData always sees the latest value
-  const offsetRef = useRef(PAGE_SIZE);
+  const offsetRef = useRef(initialPosts.length);
   // Track whether we're in search mode (searching overrides initialPosts pagination)
   const isSearching = useRef(false);
 
@@ -52,18 +54,23 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
     return `${API_ENTRYPOINT}/posts/search?${params.toString()}`;
   }
 
-  if (disableSearch) {
+  if (bagMode) {
     // My Bag mode
     const token = getCookie('token');
     if (!token) return null;
     return `${API_ENTRYPOINT}/my-projects/liked?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
   }
 
+  // Recent Posts Mode
+  if (displayUser){
+    return `${API_ENTRYPOINT}/posts/by-user/${displayUser}?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
+  }
+
   // Feed mode
   const username = getCookie('username');
   if (!username) return null;
   return `${API_ENTRYPOINT}/posts/for-you/${username}?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
-}, [disableSearch]);
+}, [disableSearch, displayUser]);
 
 const buildHeaders = useCallback((): HeadersInit => {
   if (disableSearch) {
@@ -194,7 +201,7 @@ const advanceOffset = useCallback((count: number) => {
         dataLength={items.length}
         next={fetchMoreData}
         hasMore={hasMore}
-        loader={<Loader/>}
+        loader={<Loader type="dots"/>}
         scrollThreshold={0.9}
       >
         {items.map((item) => (
