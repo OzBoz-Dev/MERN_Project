@@ -12,6 +12,7 @@ type Props = {
   members: string[];
   lastMessage: string;
   lastMessageDate: Date;
+  owner: string
 };
 
 export default function ConversationCard({
@@ -19,10 +20,12 @@ export default function ConversationCard({
   members,
   lastMessage,
   lastMessageDate,
+  owner,
 }: Props) {
   const router = useRouter();
   const myUser = getCookie("username");
   const notMe = members.find(user => user !== myUser)
+  const isOwner = owner===myUser;
 
   return (
     <Card
@@ -46,11 +49,12 @@ export default function ConversationCard({
           </Text>
         </Group>
         <Group justify="flex-end" style={{ marginLeft: 'auto' }}>
-          <Tooltip label="Edit Conversation">
+          <Tooltip label={isOwner ? "Edit Conversation" : "You don't own this conversation"}>
           <Button
             radius='md'
             variant="outline"
-            // onClick={}
+            onClick={() => router.push(`/messages?editConvo=${id}`)}
+            disabled={!isOwner}
             >
             <IconPencilCog/>
           </Button>

@@ -35,6 +35,7 @@ export default function ConversationList({ conversations }: { conversations: any
                         message.messages[message.messages.length - 1].author_username)
                   + " · " + message.messages[message.messages.length - 1].content}
                 lastMessageDate={new Date(message.messages[message.messages.length - 1].createdAt)}
+                owner={message.owner_username}
               />
             </div>
           )}
