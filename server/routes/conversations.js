@@ -45,6 +45,10 @@ router.post('/', auth, async (req, res) => {
             return res.status(400).json({ error: 'member_usernames must include the creating user' })
         }
 
+        if (member_usernames.length < 2){
+            return res.status(400).json({ error: 'conversations must have at least 2 members' })
+        }
+
         for (const username of member_usernames) {
             const user = await User.findOne({ username }).collation({ locale: 'en', strength: 2 });
             if (!user) {

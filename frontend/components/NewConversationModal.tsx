@@ -1,46 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
-  TextInput,
-  Textarea,
-  Text,
   Group,
   Button,
-  Box,
   Divider,
   Stack,
 } from "@mantine/core";
-import ProjectTag from "@/components/ProjectTag";
-import TagComboBox from "@/components/TagComboBox";
 import { designTokens } from "@/app/GlobalTheme";
 import { UserSearchComboBox } from "./UserSearchComboBox";
 
 export default function NewConversationModal({
   isOpen,
   onClose,
-  onSave
+  onSave,
+  prefillUser
 }: {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
+  prefillUser: string
 }) {
-  const [usernames, setUsernames] = useState<string[]>([]);
+  const [usernames, setUsernames] = useState<string[]>(
+    prefillUser ? [prefillUser]: []);
   
+  useEffect(() => {
+  if (isOpen) {
+    setUsernames(prefillUser ? [prefillUser] : []);
+  }
+}, [isOpen, prefillUser]);
+
   // Handle form submission
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
     const updatedData = {
-      usernames: usernames
+      member_usernames: usernames
     };
 
     console.log(usernames);
 
     await onSave(updatedData);
-
-    onClose();
   };
 
   return (
