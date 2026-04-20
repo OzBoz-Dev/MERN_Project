@@ -9,10 +9,9 @@ import { getCookie } from "cookies-next/client";
 
 
 type SearchBarProp = {
-    onResults: (posts: Post[]) => void;
-    onClear: () => void;
+    onSearch: (params: URLSearchParams | null) => void; // null means cleared
 }
-export default function SearchBar({ onResults, onClear }: SearchBarProp) {
+export default function SearchBar({ onSearch }: SearchBarProp) {
 
     const [inputText, setInputText] = useState("");
     const [searchText, setSearchText] = useState("");
@@ -42,21 +41,11 @@ export default function SearchBar({ onResults, onClear }: SearchBarProp) {
             tags.forEach(tag => param.append("tags", tag));
             if (startDate) param.append("startDate", new Date(startDate).setHours(0,0,0,0).toString());
             if (endDate) param.append("endDate", new Date(endDate).setHours(23,59,59,999).toString());
-            console.log(param.toString());
-
-            fetch(API_ENTRYPOINT + '/posts/search?' + param.toString())
-            .then(res => res.json())
-            .then(posts => {
-                const transformed = posts.map(mapPost);
-                onResults(transformed);
-            })
-            .catch((error) => {
-                console.log("search error found: ", error);
-                onResults([]);
-            });
+            
+            onSearch(param); // Pass the params up so FeedClient fetches
         }
         else return; // Don't do anything if the search params are empty
-    }, [searchText, tags, dateRange, onResults]);
+    }, [searchText, tags, dateRange]);
 
 return (
     <div style={{width: "100%"}}>
@@ -88,7 +77,7 @@ return (
                 setTags([]);
                 setSearchText("");
                 setDateRange([null, null]);
-                onClear();
+                onSearch(null); // Clear the search
             }}
             >
                 Clear Search
