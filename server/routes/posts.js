@@ -65,6 +65,8 @@ router.get("/search", async (req, res) => {
   try {
     console.log("received search request")
     const query = (req.query.q || "").trim();
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
     const tags = req.query.tags ? [].concat(req.query.tags) : [];
     const { startDate, endDate } = req.query;
 
@@ -86,9 +88,6 @@ router.get("/search", async (req, res) => {
     search.$and.push({array_tags : {$all: tags}});
   }
 
-  console.log(startDate);
-  console.log(endDate);
-
   // check the date
   if (startDate || endDate) {
     const idFilter = {};
@@ -102,7 +101,7 @@ router.get("/search", async (req, res) => {
   }
 
   // finally grab the posts
-  const posts = await Post.find(search).sort({_id: -1});
+  const posts = await Post.find(search).sort({_id: -1}).skip(offset || 0).limit(limit || 20);
 
   res.json(posts);
   } catch(err) {
@@ -203,11 +202,9 @@ router.get("/tag/:value", async (req, res) => {
 //get for a user
 router.get("/for-you/:username", async (req, res) => {
   try {
-    console.log(req.params.username);
     const user = await User.findOne({ username: req.params.username });
     const limit = parseInt(req.query.limit);
     const offset = parseInt(req.query.offset);
-    console.log(limit + ":" + offset)
 
     const tagValues = user ? user.tags : [];
 
@@ -228,9 +225,9 @@ router.get("/for-you/:username", async (req, res) => {
     )
     .map(({ post }) => post);
 
-    // if no posts are found with the given tags, return a 404
+    // if no posts are found with the given tags, return an empty array
     if (!posts || posts.length == 0) {
-      return res.status(404).json({ message: "No posts found under this tag" });
+      return res.status(200).json([]);
     }
     
     res.json(sorted.slice(offset, offset+limit));

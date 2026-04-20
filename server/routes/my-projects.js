@@ -6,8 +6,11 @@ const auth = require("../middleware/auth");
 
 // returns posts that the user has liked
 router.get("/liked", auth, async (req, res) => {
+  const limit = parseInt(req.query.limit);
+  const offset = parseInt(req.query.offset);
+
   try {
-    const liked = await Post.find({ likes: req.user.username }).sort({ createdAt: -1 }).lean();
+    const liked = await Post.find({ likes: req.user.username }).sort({ createdAt: -1 }).skip(offset || 0).limit(limit || 20).lean();
 
     res.json(liked);
 

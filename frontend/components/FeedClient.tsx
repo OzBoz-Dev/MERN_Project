@@ -22,12 +22,14 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
 
   const isFetchingRef = useRef(false); // Prevent concurrent/immediate fetches
   const [items, setItems] = useState<Post[]>(initialPosts);
-  const [hasMore, setHasMore] = useState(!disableSearch);
+  const [hasMore, setHasMore] = useState(true);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set());
   const [mountedIds, setMountedIds] = useState<Set<string>>(new Set());
+  const searchParamsRef = useRef<URLSearchParams | null>(null);
+  const searchOffsetRef = useRef(0);
 
   // Use a ref to track the current offset so fetchMoreData always sees the latest value
-  const offsetRef = useRef(20);
+  const offsetRef = useRef(PAGE_SIZE);
   // Track whether we're in search mode (searching overrides initialPosts pagination)
   const isSearching = useRef(false);
 
@@ -40,6 +42,44 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
       }, index * 50);
     });
   }, []);
+
+  const buildFetchUrl = useCallback((): string | null => {
+  if (isSearching.current && searchParamsRef.current) {
+    // Search mode
+    const params = new URLSearchParams(searchParamsRef.current);
+    params.set("limit", String(PAGE_SIZE));
+    params.set("offset", String(searchOffsetRef.current));
+    return `${API_ENTRYPOINT}/posts/search?${params.toString()}`;
+  }
+
+  if (disableSearch) {
+    // My Bag mode
+    const token = getCookie('token');
+    if (!token) return null;
+    return `${API_ENTRYPOINT}/my-projects/liked?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
+  }
+
+  // Feed mode
+  const username = getCookie('username');
+  if (!username) return null;
+  return `${API_ENTRYPOINT}/posts/for-you/${username}?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
+}, [disableSearch]);
+
+const buildHeaders = useCallback((): HeadersInit => {
+  if (disableSearch) {
+    const token = getCookie('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+  return {};
+}, [disableSearch]);
+
+const advanceOffset = useCallback((count: number) => {
+  if (isSearching.current) {
+    searchOffsetRef.current += count;
+  } else {
+    offsetRef.current += count;
+  }
+}, []);
 
   // Handle unlike when on the "My Bag" page
   const handleUnlike = useCallback((postId: string) => {
@@ -54,65 +94,67 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
     }, 500); // match transition duration
   }, []);
 
-  // Make handleResults stable
-  const handleResults = useCallback((posts: Post[]) => {
-    isSearching.current = true;
-    const normalized = posts.map((post: any) => ({
+  const handleSearch = useCallback((params: URLSearchParams | null) => {
+    // Clear search
+    if (params === null) {
+      searchParamsRef.current = null;
+      isSearching.current = false;
+      setMountedIds(new Set());
+
+      setTimeout(() => {
+        setItems(initialPosts);
+        setHasMore(true);
+        offsetRef.current = PAGE_SIZE;
+        searchOffsetRef.current = 0;
+        initialPosts.forEach((item, index) => {
+          setTimeout(() => {
+            setMountedIds(prev => new Set(prev).add(item._id));
+          }, 100 + index * 50);
+        });
+      }, 500);
+      return;
+    }
+
+  // New search: reset and fetch first page
+  isSearching.current = true;
+  searchParamsRef.current = params;
+  searchOffsetRef.current = 0;
+  setMountedIds(new Set()); // Fade out old stuff
+
+  setTimeout(async () => {
+    params.set("limit", String(PAGE_SIZE));
+    params.set("offset", "0");
+
+    const res = await fetch(`${API_ENTRYPOINT}/posts/search?${params.toString()}`);
+    const posts = await res.json();
+    const normalized: Post[] = posts.map((post: any) => ({
       ...post,
       datePosted: new ObjectId(post._id).getTimestamp(),
     }));
-    setMountedIds(new Set()); // Unmount current stuff
 
-    // Wait and then re animate
-    setTimeout(() => {
-      setItems(normalized);
-      setHasMore(false); // No inf scroll when searching
-      normalized.forEach((item, index) => {
-        setTimeout(() => {
-          setMountedIds(prev => new Set(prev).add(item._id));
-        }, 100 + index * 50);
-      });
-    }, 500);
-  }, []);
+    setItems(normalized);
+    setHasMore(normalized.length === PAGE_SIZE);
+    searchOffsetRef.current = normalized.length;
 
-  // Search cleared
-  const handleClear = useCallback(() => {
-    isSearching.current = false;
-    
-    // Re-animate
-    setMountedIds(new Set());
-
-    // Wait and then re animate
-    setTimeout(() => {
-      setItems(initialPosts);
-      setHasMore(true);
-      initialPosts.forEach((item, index) => {
-        setTimeout(() => {
-          setMountedIds(prev => new Set(prev).add(item._id));
-        }, 100 + index * 50);
-      });
-    }, 500);
+    normalized.forEach((item, index) => {
+      setTimeout(() => {
+        setMountedIds(prev => new Set(prev).add(item._id));
+      }, 100 + index * 50);
+    });
+  }, 500);
   }, [initialPosts]);
 
   // Infinite scroll behavior
   const fetchMoreData = useCallback(async () => {
-    if (isSearching.current) return;
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
 
-    const currentUsername = getCookie('username');
-    console.log("current username: " + currentUsername)
-    if (!currentUsername) {
-      isFetchingRef.current = false;
-      return;
-    }
-    
-    const currentOffset = offsetRef.current;
-
     try {
-      // Grab the next N posts
+      const url = buildFetchUrl();
+      if (!url) { setHasMore(false); return; }
+
       const res = await fetch(
-        `${API_ENTRYPOINT}/posts/for-you/${currentUsername}?limit=${PAGE_SIZE}&offset=${currentOffset}`
+        url, {headers: buildHeaders()}
       )
       const postsData = await res.json();
       const nextPosts: Post[] = postsData.map((post: any) => ({
@@ -131,7 +173,7 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
       nextPosts.forEach(p => next.add(p._id));
       return next;
     });
-    offsetRef.current = currentOffset + nextPosts.length;
+    advanceOffset(nextPosts.length);
 
     if (nextPosts.length < PAGE_SIZE) {
       setHasMore(false); // Received a partial page, so we're at the end
@@ -143,11 +185,11 @@ export default function FeedClient({ initialPosts, disableSearch }: Props) {
   finally {
     isFetchingRef.current = false;
   }
-}, []);
+}, [buildFetchUrl, advanceOffset]);
 
   return (
     <>
-      {!disableSearch && <SearchBar onResults={handleResults} onClear={handleClear}/>}
+      {!disableSearch && <SearchBar onSearch={handleSearch}/>}
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}

@@ -20,7 +20,7 @@ export default async function MyBag() {
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
   const result = await 
-    fetch(API_SERVER_ENTRYPOINT + `/my-projects/liked`, {
+    fetch(API_SERVER_ENTRYPOINT + `/my-projects/liked?limit=20&offset=0`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
