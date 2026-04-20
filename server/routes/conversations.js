@@ -6,10 +6,13 @@ const Message = require('../models/Message');
 const auth = require('../middleware/auth');
 const User = require("../models/User");
 
-// to get all conversations
-router.get('/', async (req, res) => {
+// Get all conversations for the user
+router.get('/', auth, async (req, res) => {
+    const  username = req.user.username;
     try {
-        const conversations = await Conversation.find().populate('messages');
+        const conversations = await Conversation.find({ 
+            member_usernames: username 
+        }).populate('messages');
         res.json(conversations);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -36,8 +39,9 @@ router.post('/', auth, async (req, res) => {
         console.log(req.user);
         console.log(req);
         const { member_usernames } = req.body;
+        const owner_username = req.user.username;
 
-        if (!member_usernames || !member_usernames.includes(req.user.username)) {
+        if (!member_usernames || !member_usernames.includes(owner_username)) {
             return res.status(400).json({ error: 'member_usernames must include the creating user' })
         }
 
@@ -49,7 +53,7 @@ router.post('/', auth, async (req, res) => {
             member_usernames[member_usernames.indexOf(username)] = user.username;
         }
 
-        const conversation = await Conversation.create({ member_usernames });
+        const conversation = await Conversation.create({ member_usernames, owner_username });
         res.status(201).json(conversation);
     } catch (err) {
         res.status(500).json({ error: err.message});
@@ -92,8 +96,8 @@ router.put('/:_id', auth, async (req, res) => {
         const conversation = await Conversation.findById(req.params._id);
         if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
-        if (!conversation.member_usernames.includes(req.user.username)) {
-            return res.status(403).json({ error: 'Not a member of this conversation' });
+        if (conversation.owner_username != req.user.username) {
+            return res.status(403).json({ error: 'Not the owner of this conversation' });
         }
 
         const allowedUpdates = ['member_usernames'];
@@ -116,8 +120,8 @@ router.delete('/:_id', auth, async (req, res) => {
         const conversation = await Conversation.findById(req.params._id);
         if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
-        if (!conversation.member_usernames.includes(req.user.username)) {
-            return res.status(403).json({ error: 'Not a member of this conversation' });
+        if (conversation.owner_username != req.user.username) {
+            return res.status(403).json({ error: 'Not the owner of this conversation' });
         }
 
         await conversation.deleteOne();
