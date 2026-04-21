@@ -12,6 +12,7 @@ export default function ScrollToTopButton() {
       <Transition transition="slide-up" mounted={scroll.y > 0}>
         {(transitionStyles) => (
           <Button
+            aria-label="Scroll to top"
             leftSection={<IconArrowUp size={16} />}
             style={transitionStyles}
             onClick={() => scrollTo({ y: 0 })}

@@ -2,6 +2,15 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FeedClient from '../components/FeedClient';
 import { Post } from '@/types/Post';
+import { MantineProvider } from '@mantine/core';
+
+jest.mock('bson', () => ({
+  ObjectId: class MockObjectId {
+    getTimestamp() {
+      return new Date('2026-01-01T00:00:00.000Z');
+    }
+  },
+}));
 
 // Mock the child components
 jest.mock('../components/ProjectCard', () => {
@@ -34,11 +43,15 @@ describe('FeedClient', () => {
     datePosted: new Date('2026-04-11'),
   };
 
-  it('should render an example post from initialPosts', () => {
-    render(<FeedClient initialPosts={[mockPost]} />);
+  it('should render an example post from initialPosts', async () => {
+    render(
+      <MantineProvider>
+        <FeedClient initialPosts={[mockPost]} />
+      </MantineProvider>
+    );
 
     // Assert the post is rendered
-    expect(screen.getByTestId('post-card-Example Post')).toBeInTheDocument();
-    expect(screen.getByText(/Example Post by John Doe/)).toBeInTheDocument();
+    expect(await screen.findByTestId('post-card-Example Post')).toBeInTheDocument();
+    expect(await screen.findByText(/Example Post by John Doe/)).toBeInTheDocument();
   });
 });

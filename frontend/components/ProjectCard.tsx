@@ -1,13 +1,11 @@
 import { designTokens } from "@/app/GlobalTheme";
-import BookmarkButton from "./BookmarkButton";
 import { IconUser } from "@tabler/icons-react";
 import TagHolder from "./TagHolder";
 import MessageButton from "./MessageButton";
 import LikeButton from "./LikeButton";
 import ReadFullPostButton from "./ReadFullPostButton";
 import TimeAgoClient from "./TimeAgoClient";
-import { Flex, NavLink } from "@mantine/core";
-import { getCookie } from "cookies-next/client";
+import { Flex } from "@mantine/core";
 import Link from "next/link";
 import { memo } from "react";
 

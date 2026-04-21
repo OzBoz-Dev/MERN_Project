@@ -277,7 +277,7 @@ export default function ProfilePage() {
                 <Text fw={600}>Recent Posts</Text>
               </Accordion.Control>
                 <Accordion.Panel>
-                  <FeedClient initialPosts={[]} disableSearch={true} displayUser={profileData?.username} bagMode={false}/>
+                  <FeedClient disableSearch={true} displayUser={profileData?.username} bagMode={false}/>
                 </Accordion.Panel>
             </Accordion.Item>
           </Accordion>

@@ -107,6 +107,7 @@ export default function CommentsSection({ postId, initialComments }: Props) {
       </Text>
       {!writing ? (
         <Button
+          aria-label="Post Comment"
           size="lg"
           fullWidth
           onClick={() => setWriting(true)}
@@ -125,6 +126,7 @@ export default function CommentsSection({ postId, initialComments }: Props) {
           />
           <Group justify="flex-end">
             <Button
+              aria-label="Cancel"
               variant="subtle"
               c={"red"}
               onClick={() => {
@@ -136,6 +138,7 @@ export default function CommentsSection({ postId, initialComments }: Props) {
               Cancel
             </Button>
             <Button
+              aria-label="Post Comment"
               onClick={async () => {
                 if (!draft.trim()) return;
                 let createdComment: PostComment;

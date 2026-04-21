@@ -72,10 +72,11 @@ export default function DeleteAccountModal({
         />
 
         <Group mt="md" justify="flex-end">
-          <Button variant="subtle" color="gray" onClick={onClose}>
+          <Button aria-label="Cancel" variant="subtle" color="gray" onClick={onClose}>
             Cancel
           </Button>
           <Button
+            aria-label="Delete Account"
             variant="filled"
             color="red"
             loading={loading}
