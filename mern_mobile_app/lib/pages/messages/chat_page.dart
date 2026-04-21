@@ -1,6 +1,5 @@
-import 'package:chip_in/models/conversation.dart';
-import 'package:chip_in/models/message.dart';
 import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/widgets/chat_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -8,11 +7,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
-  final Conversation conversation;
+  final String conversationId;
 
   const ChatPage({
     super.key,
-    required this.conversation
+    required this.conversationId
   });
 
   @override
@@ -23,21 +22,39 @@ class _ChatPageState extends State<ChatPage> {
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
 
-  late List<Message> _messages;
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _messages = widget.conversation.messages;
+    final provider = context.read<ConversationProvider>();
+    provider.setActiveConversation(widget.conversationId);
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.read<AuthProvider>();
+    final conversationProvider = context.watch<ConversationProvider>();
+    final conversation = conversationProvider.getConversationById(widget.conversationId);
+    final messages = (conversation?.messages ?? []).reversed.toList();
+
     final currentUsername = authProvider.username!;
-    final others = widget.conversation.memberUsernames
+    List<String> others = ["None"];
+    if(conversation != null) {
+      others = conversation.memberUsernames
         .where((u) => u != currentUsername)
         .toList();
+    }
+
     final headerTitle = others.isEmpty ? "You" : others.join(", ");
     return Scaffold(
       appBar: AppBar(
@@ -68,11 +85,12 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ListView.builder(
+              reverse: true,
               controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
+              itemCount: messages.length,
               itemBuilder: (context, index) {
-                final msg = _messages[index];
+                final msg = messages[index];
                 final isSelf = msg.authorUsername == currentUsername;
                 return ChatBubble(message: msg, isSelf: isSelf);
               },
@@ -119,7 +137,18 @@ class _ChatPageState extends State<ChatPage> {
                     style: IconButton.styleFrom(
                       backgroundColor: const Color(0xFFFFA500)
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final text = _inputController.text.trim();
+                      if (text.isEmpty) return;
+
+                      _inputController.clear();
+
+                      await context
+                          .read<ConversationProvider>()
+                          .sendMessage(widget.conversationId, text);
+
+                      _scrollToBottom();
+                    },
                     icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
                   )
                 ],

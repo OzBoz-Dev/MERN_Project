@@ -70,7 +70,7 @@ class _MessagesPageState extends State<MessagesPage> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => ChatPage(
-                            conversation: convo,
+                            conversationId: convo.id,
                           ),
                         ),
                       );
