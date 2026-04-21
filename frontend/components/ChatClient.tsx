@@ -33,8 +33,9 @@ export default function ChatClient() {
         socketRef.current = io(API_ENTRYPOINT);
         const socket = socketRef.current;
 
-
-        socket.emit("joinConversation", id);
+        socket.on("connect", () => {
+            socket.emit("joinConversation", id); 
+        });
 
         socket.on("newMessage", (message) => {
             setMessages((prev) => [...prev, message]);
@@ -43,6 +44,7 @@ export default function ChatClient() {
         // clean up
         return () => {
             socket.off("newMessage");
+            socket.off("connect");
             socket.disconnect();
         };
     }, [id]);
