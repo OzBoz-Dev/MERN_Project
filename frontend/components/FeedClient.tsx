@@ -13,7 +13,7 @@ import ScrollToTopButton from "./ScrollToTopButton";
 
 const PAGE_SIZE = 20;
 
-type Props = {
+export type Props = {
   initialPosts: Post[];
   disableSearch?: boolean;
 };

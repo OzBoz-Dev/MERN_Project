@@ -17,7 +17,8 @@ export default function ChatMessage({author_username, createdAt, content, isSelf
         <div style={{ display: "flex", justifyContent: isSelf ? "flex-end" : "flex-start" }}>
             <div
                 style={{
-                borderLeft: `8px solid ${isSelf ? designTokens.colors.cardBorderSelf : designTokens.colors.cardBorderOther}`,
+                borderLeft: `8px solid ${isSelf ? designTokens.colors.cardBorder : undefined}`,
+                borderRight: `8px solid ${!isSelf ? designTokens.colors.cardBackground : undefined}`,
                 borderRadius: designTokens.borderRadius.card,
                 padding: designTokens.spacing.cardPadding,
                 margin: "16px 0",
@@ -26,7 +27,7 @@ export default function ChatMessage({author_username, createdAt, content, isSelf
                 backdropFilter: "blur(7px)",
                 minWidth: "50%",
                 maxWidth: "70%",
-                backgroundColor:designTokens.colors.cardBackground
+                backgroundColor: `${isSelf ? designTokens.colors.cardBackground : designTokens.colors.cardBackgroundOther}`
                 }}
             >
                 <div
