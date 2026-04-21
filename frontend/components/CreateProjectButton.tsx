@@ -16,6 +16,8 @@ export default function CreateProjectButton() {
       style={{
         padding: 0,
         position: "fixed",
+        height: 50,
+        width: 50,
         bottom: 20,
         right: 20,
         zIndex: 1000,

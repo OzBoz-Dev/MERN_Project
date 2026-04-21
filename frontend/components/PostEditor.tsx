@@ -12,6 +12,7 @@ import {
   Modal,
   Center,
   Loader,
+  Transition,
 } from "@mantine/core";
 import { RichTextEditor, Link } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
@@ -19,7 +20,7 @@ import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useState } from "react";
-import { IconRocket } from "@tabler/icons-react";
+import { IconEdit, IconRocket } from "@tabler/icons-react";
 import { API_ENTRYPOINT } from "@/constants/constants";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next/client";
@@ -102,6 +103,7 @@ export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
   const [success, setSuccess] = useState(false);
   const [createdPostId, setCreatedPostId] = useState<string | null>(originalPost?._id ?? null);
   const [tags, setTags] = useState<string[]>(originalPost?.array_tags ?? []);
+  const [mounted, setMounted] = useState(false);
 
   const router = useRouter();
 
@@ -131,6 +133,7 @@ export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
     if (editor && originalPost?.body) {
       editor.commands.setContent(originalPost.body);
     }
+    setMounted(true);
   }, [editor, originalPost?.body]);
   
   // Title character limit counter
@@ -175,6 +178,9 @@ export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
           </Button>
         </Center>
       </Modal>
+      <Transition mounted={mounted} transition='fade-down' duration={500}>
+        {(styles) => (
+          <div style={styles}>
       <Card
         style={{
           borderLeft: `8px solid ${designTokens.colors.cardBorder}`,
@@ -355,7 +361,7 @@ export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
             style={{
               height: 45,
             }}
-            leftSection={<IconRocket />}
+            leftSection={edit ? <IconEdit/> : <IconRocket />}
             disabled={
               title.length == 0 ||
               editor?.storage.characterCount.characters() == 0
@@ -365,7 +371,6 @@ export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
               const author_username = getCookie("username") ?? "Anonymous";
 
               setLoading(true);
-              setSuccess(true); // Show loading modal
 
               let postId: string;
               try {
@@ -373,10 +378,6 @@ export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
                   // Edit mode
                   const updated = await editProject(title, body, tags, originalPost._id);
                   setCreatedPostId(updated._id);
-                  
-                  if(setEdit !== undefined) {
-                    setEdit(false);
-                  }
                 }
                 else {
                   // Create mode
@@ -385,16 +386,29 @@ export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
                 }
 
                 setLoading(false);
-                setSuccess(true); // Show success modal
+                setMounted(false);
+                setTimeout(() => {
+                if(setEdit !== undefined) {
+                    setEdit(false);
+                }
+                  setSuccess(true);
+                }, 500)
               } catch (e) {
                 console.error(e);
+                setLoading(false);
+              }
+              if (edit) {
+                router.refresh();
               }
             }}
           >
-            Post Project
+            {edit ? "Edit Project" : "Post Project"}
           </Button>
         </Stack>
       </Card>
+      </div>
+      )}
+      </Transition>
     </>
   );
 }

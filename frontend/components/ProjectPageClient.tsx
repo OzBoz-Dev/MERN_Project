@@ -1,7 +1,7 @@
 "use client";
 
 import { designTokens } from "@/app/GlobalTheme";
-import { Stack, Group, Title, Divider, Text, Paper } from "@mantine/core";
+import { Stack, Group, Title, Divider, Text, Paper, Transition } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
 import TimeAgo from "react-timeago";
 import CommentsSection from "./CommentsSection";
@@ -12,7 +12,7 @@ import { Post } from "@/types/Post";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { PostComment } from "@/types/PostComment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditButton from "./EditButton";
 import PostEditor from "./PostEditor";
 import { getCookie } from "cookies-next/client";
@@ -24,11 +24,20 @@ type Props = {
 
 export default function ProjectPageClient({ post, comments }: Props) {
   const [edit, setEdit] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  });
+
   return post == null ? (
     notFound()
   ) : (
     edit ? <PostEditor originalPost={post} edit={edit} setEdit={setEdit}/> :
     <div className="animated-grid">
+      <Transition mounted={mounted} transition='pop' duration={500}>
+        {(styles) => (
+          <div style={styles}>
       <Paper
         withBorder
         p="xl"
@@ -69,6 +78,9 @@ export default function ProjectPageClient({ post, comments }: Props) {
       <Divider mt="lg" mb="xl" w={"100%"} />
       <CommentsSection postId={post._id} initialComments={comments} />
       </Paper>
+      </div>
+        )}
+      </Transition>
     </div>
   );
 }
