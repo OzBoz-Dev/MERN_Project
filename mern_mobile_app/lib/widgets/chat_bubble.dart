@@ -11,11 +11,11 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isSelf ? Colors.white : const Color(0xFFFFA500);
-    final textColor = isSelf ? const Color(0xFFFFA500) : Colors.white;
+    final bgColor = isSelf ? const Color(0xFFFFA500) : Colors.white;
+    final textColor = isSelf ? Colors.white :const Color(0xFFFFA500);
     final timeColor = isSelf
-        ? const Color(0xFFFFA500).withAlpha(50)
-        : Colors.white.withAlpha(50);
+        ? Colors.white.withAlpha(200)
+        : const Color(0xFFFFA500).withAlpha(200);
     final authorLabel = isSelf ? "You" : message.authorUsername;
     final timeText = DateFormat('h:mm a').format(message.createdAt);
 
@@ -49,9 +49,6 @@ class ChatBubble extends StatelessWidget {
                 bottomLeft: Radius.circular(isSelf ? 16 : 4),
                 bottomRight: Radius.circular(isSelf ? 4 : 16),
               ),
-              border: isSelf
-                  ? Border.all(color: const Color(0xFFFFA500), width: 1)
-                  : null,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withAlpha(50),
