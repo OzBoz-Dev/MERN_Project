@@ -16,32 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MyBag() {
-  // Fetch posts here via endpoint
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
-  const result = await 
-    fetch(API_SERVER_ENTRYPOINT + `/my-projects/liked?limit=20&offset=0`, {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      cache: "no-store"
-    }
-  );
-
-  const postsData = await result.json();
-  const initialPosts: Post[] = postsData.map((post: any) => ({
-    _id: post._id,
-    title: post.title,
-    body: post.body,
-    attachments: post.attachments,
-    likes: post.likes,
-    array_tags: post.array_tags,
-    author_username: post.author_username,
-    datePosted: new ObjectId(post._id).getTimestamp(),
-  }));
-
+  
   return (
     <div className="static-grid-blurry">
     <Flex
@@ -57,7 +32,7 @@ export default async function MyBag() {
       }}
     >
       {/* Use FeedClient, giving it the fetched initial posts */}
-      <FeedClient initialPosts={initialPosts} disableSearch={true} displayUser={null} bagMode={true}/>
+      <FeedClient disableSearch={true} displayUser={null} bagMode={true}/>
       <Flex justify={"flex-end"}>
         <CreateProjectButton />
       </Flex>

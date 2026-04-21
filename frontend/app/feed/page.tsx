@@ -32,7 +32,7 @@ export default async function Feed() {
       }}
     >
       {/* Use FeedClient, giving it the fetched initial posts */}
-      <FeedClient initialPosts={[]} disableSearch={false} displayUser={null} bagMode={false}/>
+      <FeedClient disableSearch={false} displayUser={null} bagMode={false}/>
       <Flex justify={"flex-end"}>
         <CreateProjectButton />
       </Flex>

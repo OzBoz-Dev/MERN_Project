@@ -14,17 +14,16 @@ import ScrollToTopButton from "./ScrollToTopButton";
 const PAGE_SIZE = 20;
 
 type Props = {
-  initialPosts: Post[];
   disableSearch?: boolean;
   bagMode?: boolean;
   displayUser: string|null;
 };
 
-export default function FeedClient({ initialPosts, disableSearch, bagMode, displayUser }: Props) {
+export default function FeedClient({ disableSearch, bagMode, displayUser }: Props) {
 
   const isFetchingRef = useRef(false); // Prevent concurrent/immediate fetches
-  const [items, setItems] = useState<Post[]>(initialPosts);
-  const [hasMore, setHasMore] = useState(initialPosts.length === PAGE_SIZE);
+  const [items, setItems] = useState<Post[]>([]);
+  const [hasMore, setHasMore] = useState(false);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set());
   const [mountedIds, setMountedIds] = useState<Set<string>>(new Set());
   const [visible, setVisible] = useState(false);
@@ -32,22 +31,18 @@ export default function FeedClient({ initialPosts, disableSearch, bagMode, displ
   const searchOffsetRef = useRef(0);
 
   // Use a ref to track the current offset so fetchMoreData always sees the latest value
-  const offsetRef = useRef(initialPosts.length);
+  const offsetRef = useRef(0);
   // Track whether we're in search mode (searching overrides initialPosts pagination)
   const isSearching = useRef(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetchMoreData();
-    setVisible(true);
-    initialPosts.forEach((item, index) => {
-      setTimeout(() => {
-        setMountedIds(prev => new Set(prev).add(item._id));
-      }, 100 + index * 50);
-    });
+    fetchFirstPage();
   }, []);
 
-  const buildFetchUrl = useCallback((): string | null => {
+  const buildFetchUrl = useCallback((offsetOverride? : number): string | null => {
+  const offset = offsetOverride ?? offsetRef.current;
+    
   if (isSearching.current && searchParamsRef.current) {
     // Search mode
     const params = new URLSearchParams(searchParamsRef.current);
@@ -60,18 +55,18 @@ export default function FeedClient({ initialPosts, disableSearch, bagMode, displ
     // My Bag mode
     const token = getCookie('token');
     if (!token) return null;
-    return `${API_ENTRYPOINT}/my-projects/liked?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
+    return `${API_ENTRYPOINT}/my-projects/liked?limit=${PAGE_SIZE}&offset=${offset}`;
   }
 
   // Recent Posts Mode
   if (displayUser){
-    return `${API_ENTRYPOINT}/posts/by-user/${displayUser}?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
+    return `${API_ENTRYPOINT}/posts/by-user/${displayUser}?limit=${PAGE_SIZE}&offset=${offset}`;
   }
 
   // Feed mode
   const username = getCookie('username');
   if (!username) return null;
-  return `${API_ENTRYPOINT}/posts/for-you/${username}?limit=${PAGE_SIZE}&offset=${offsetRef.current}`;
+  return `${API_ENTRYPOINT}/posts/for-you/${username}?limit=${PAGE_SIZE}&offset=${offset}`;
 }, [disableSearch, displayUser]);
 
 const buildHeaders = useCallback((): HeadersInit => {
@@ -103,26 +98,46 @@ const advanceOffset = useCallback((count: number) => {
     }, 500); // match transition duration
   }, []);
 
-  const handleSearch = useCallback((params: URLSearchParams | null) => {
-    // Clear search
-    if (params === null) {
-      searchParamsRef.current = null;
-      isSearching.current = false;
-      setMountedIds(new Set());
+    const fetchFirstPage = useCallback(async () => {
+    const url = buildFetchUrl(0); // explicitly pass offset 0
+    if (!url) return;
 
+    // Fetch only the first page
+    const res = await fetch(url, { headers: buildHeaders() });
+    const postsData = await res.json();
+    const posts: Post[] = postsData.map((post: any) => ({
+      ...post,
+      datePosted: new ObjectId(post._id).getTimestamp(),
+    }));
+
+    setItems(posts);
+    offsetRef.current = posts.length;
+    setHasMore(posts.length === PAGE_SIZE);
+
+    // Staggered animation for first page
+    posts.forEach((post, index) => {
       setTimeout(() => {
-        setItems(initialPosts);
-        setHasMore(true);
-        offsetRef.current = PAGE_SIZE;
-        searchOffsetRef.current = 0;
-        initialPosts.forEach((item, index) => {
-          setTimeout(() => {
-            setMountedIds(prev => new Set(prev).add(item._id));
-          }, 100 + index * 50);
-        });
-      }, 500);
-      return;
-    }
+        setMountedIds(prev => new Set(prev).add(post._id));
+      }, 100 + index * 50);
+    });
+  },[buildFetchUrl, buildHeaders]);
+
+  const handleSearch = useCallback((params: URLSearchParams | null) => {
+  // Clear search
+  if (params === null) {
+    searchParamsRef.current = null;
+    isSearching.current = false;
+    setMountedIds(new Set());
+
+    setTimeout(() => {
+      setItems([]);
+      setHasMore(false);
+      offsetRef.current = PAGE_SIZE;
+      searchOffsetRef.current = 0;
+      fetchFirstPage();
+    }, 500);
+    return;
+  }
 
   // New search: reset and fetch first page
   isSearching.current = true;
@@ -151,7 +166,7 @@ const advanceOffset = useCallback((count: number) => {
       }, 100 + index * 50);
     });
   }, 500);
-  }, [initialPosts]);
+  }, []);
 
   // Infinite scroll behavior
   const fetchMoreData = useCallback(async () => {
@@ -177,10 +192,10 @@ const advanceOffset = useCallback((count: number) => {
     }
 
     setItems((prev) => [...prev, ...nextPosts]);
-    nextPosts.forEach((post, index) => {
-      setTimeout(() => {
-        setMountedIds(prev => new Set(prev).add(post._id));
-      }, 100 + index * 50);
+    setMountedIds(prev => {
+      const next = new Set(prev);
+      nextPosts.forEach(p => next.add(p._id));
+      return next;
     });
     advanceOffset(nextPosts.length);
 
