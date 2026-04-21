@@ -3,7 +3,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class SocketService {
   io.Socket? _socket;
-  final String _baseUrl = dotenv.env['API_ENTRYPOINT'] ?? '';
+  final String _baseUrl = dotenv.env['API_ENTRYPOINT']?.replaceAll("/api", "") ?? '';
 
   void connect(String token) {
     _socket = io.io(
