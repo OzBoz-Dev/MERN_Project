@@ -1,6 +1,7 @@
 import 'package:chip_in/providers/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:chip_in/pages/login/login_page.dart';
 import 'package:chip_in/pages/signup/signup_page.dart';
@@ -56,6 +57,9 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        FlutterQuillLocalizations.delegate,
+      ],
       theme: lightTheme,
       home: Consumer<AuthProvider>(
         builder: (context, auth, _) {
