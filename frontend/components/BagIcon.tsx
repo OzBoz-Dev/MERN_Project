@@ -7,7 +7,7 @@ export function BagIcon({ size=18, style, ...others }: BagIconProps) {
   return (
     <img
      src="/chips-bag.png"
-     alt="My Bag"
+     alt="Your feed - personalized"
      style={{
        width: size,
        height: size,

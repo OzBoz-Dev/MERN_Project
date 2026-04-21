@@ -62,7 +62,7 @@ export default function ChatInput({ id }: Prop) {
                 }
             }}
             />
-            <Button onClick={() => sendMessage(msg)}>
+            <Button aria-label="Send Message" onClick={() => sendMessage(msg)}>
                 <IconSendFilled/>
             </Button>
         </div>

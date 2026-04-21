@@ -123,6 +123,7 @@ export default function PostEditor() {
         <Center style={{ flexDirection: "column", gap: 10 }}>
           <Text size="xl">Project Posted!</Text>
           <Button
+            aria-label="View Your New Post"
             mt={15}
             fullWidth
             // Show the new post on the dynamic route
@@ -310,6 +311,7 @@ export default function PostEditor() {
             )}
           </div>
           <Button
+            aria-label="Post Project"
             mt={10}
             style={{
               height: 45,

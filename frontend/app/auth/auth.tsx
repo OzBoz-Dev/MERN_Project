@@ -462,6 +462,7 @@ export default function Auth() {
             Reset Password
           </Button>
           <Button
+            aria-label="Return to Log In"
             variant="subtle"
             color="orange"
             fullWidth
@@ -491,7 +492,7 @@ return (
               src="/ChipIn.png"
               alt="ChipIn logo"
               width={396}
-              height={125}
+              height={126}
             />
           </Box>
 

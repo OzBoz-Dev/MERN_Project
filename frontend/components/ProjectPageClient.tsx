@@ -1,17 +1,15 @@
 "use client";
 
 import { designTokens } from "@/app/GlobalTheme";
-import { Container, Stack, Group, Title, Divider, Text, Paper } from "@mantine/core";
+import { Stack, Group, Title, Divider, Text, Paper } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
 import TimeAgo from "react-timeago";
-import BookmarkButton from "./BookmarkButton";
 import CommentsSection from "./CommentsSection";
 import LikeButton from "./LikeButton";
 import MessageButton from "./MessageButton";
 import TagHolder from "./TagHolder";
 import { Post } from "@/types/Post";
 import { notFound } from "next/navigation";
-import { getCookie } from "cookies-next/client";
 import Link from "next/link";
 import { PostComment } from "@/types/PostComment";
 

@@ -169,6 +169,7 @@ export default function ConversationTriggers() {
       <Affix position={{ bottom: 20, right: 20 }}>
         <Tooltip label="New Conversation">
           <Button
+            aria-label="New Conversation"
             radius="xl"
             size="lg"
             color="orange"

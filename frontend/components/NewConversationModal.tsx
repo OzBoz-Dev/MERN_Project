@@ -72,10 +72,10 @@ export default function NewConversationModal({
 
         {/* Action Buttons */}
         <Group justify="space-between" gap="md">
-          <Button variant="outline" onClick={onClose}>
+          <Button aria-label="Cancel" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" variant="filled" color="orange">
+          <Button aria-label="Create Conversation" type="submit" variant="filled" color="orange">
             Create Conversation
           </Button>
         </Group>

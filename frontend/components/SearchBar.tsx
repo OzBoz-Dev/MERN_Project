@@ -1,5 +1,5 @@
 "use client";
-import { ActionIcon, Button, Collapse, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Collapse, TextInput, Tooltip } from "@mantine/core";
 import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
@@ -70,6 +70,7 @@ return (
             }}
             />
             <Button
+            aria-label="Clear Search"
             name="Clear Search"
             variant="outline"
             onClick={() => {
@@ -82,13 +83,16 @@ return (
             >
                 Clear Search
             </Button>
+            <Tooltip label="Advanced Search">
             <ActionIcon
+                aria-label="Advanced Search"
                 variant="light"
                 size={"lg"}
                 onClick={() => setShowAdvanced((prev) => !prev)}
             >
                 <IconAdjustments />
             </ActionIcon>
+            </Tooltip>
         </div>
         
         <Collapse in={showAdvanced}>

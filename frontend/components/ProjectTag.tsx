@@ -11,6 +11,7 @@ type ProjectTagProp = {
 export default function ProjectTag({tag, isRemovable, onRemove}: ProjectTagProp) {
   return (
     <Button 
+    aria-label={tag}
     variant="light"
     size='s'
       style={{

@@ -121,14 +121,14 @@ export default function EditConversationModal({
             setUsers={setUsernames}
           />
           <Group justify="space-between" gap="md">
-            <Button variant="outline" onClick={onClose}>
+            <Button aria-label="Cancel" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Group>
-              <Button type="submit" variant="filled" color="orange">
+              <Button aria-label="Update" type="submit" variant="filled" color="orange">
                 Update
               </Button>
-              <Button variant="filled" color="red" onClick={handleDelete}>
+              <Button aria-label="Delete" variant="filled" color="red" onClick={handleDelete}>
                 Delete
               </Button>
             </Group>

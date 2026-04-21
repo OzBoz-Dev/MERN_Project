@@ -10,6 +10,7 @@ export default function CreateProjectButton() {
 
   return (
     <Button
+      aria-label="Create Post"
       size="lg"
       radius="md"
       style={{
