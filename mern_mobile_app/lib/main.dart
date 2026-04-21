@@ -1,3 +1,4 @@
+import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/providers/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,12 +39,16 @@ void main() async {
     postProvider.loadFeed(authProvider.username!);
   }
 
+  // Conversation Provider takes auth provider
+  final conversationProvider = ConversationProvider(authProvider: authProvider);
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider.value(value: authProvider),
-        ChangeNotifierProvider.value(value: postProvider,),
+        ChangeNotifierProvider.value(value: postProvider),
+        ChangeNotifierProvider.value(value: conversationProvider),
       ],
       child: MainApp(),
     )
