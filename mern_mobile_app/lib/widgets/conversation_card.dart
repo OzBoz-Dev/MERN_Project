@@ -62,7 +62,7 @@ class ConversationCard extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        conversation.memberUsernames.isNotEmpty
+                        conversation.memberUsernames.length > 2
                           ? TablerIcons.users_group
                           : TablerIcons.user,
                         color: Color(0xFFFFA500),
