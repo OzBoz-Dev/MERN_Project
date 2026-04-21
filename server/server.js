@@ -41,8 +41,14 @@ app.set("io", io);
 // connection route 
 io.on('connection', (socket) => {
   // join a conversation
+  console.log("SOCKET CONNECTED:", socket.id);
+  
   socket.on('joinConversation', (conversationId) => {
     socket.join(conversationId);
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.log("SOCKET DISCONNECTED:", reason);
   });
 })
 

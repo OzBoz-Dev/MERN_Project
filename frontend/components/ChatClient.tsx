@@ -34,7 +34,7 @@ export default function ChatClient() {
         const socket = socketRef.current;
 
         socket.on("connect", () => {
-            socket.emit("joinConversation", id); 
+            socket.emit("joinConversation", String(id)); 
         });
 
         socket.on("newMessage", (message) => {
