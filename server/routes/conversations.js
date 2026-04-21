@@ -12,7 +12,7 @@ router.get('/', auth, async (req, res) => {
     try {
         const conversations = await Conversation.find({ 
             member_usernames: username 
-        }).populate('messages');
+        }).sort({ updatedAt: -1 }).populate('messages');
         res.json(conversations);
     } catch (err) {
         res.status(500).json({ error: err.message });
