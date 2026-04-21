@@ -1,6 +1,6 @@
 "use client";
 
-import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
+import { API_ENTRYPOINT } from "@/constants/constants";
 import { Button, TextInput } from "@mantine/core";
 import { IconSendFilled } from "@tabler/icons-react";
 import { getCookie } from "cookies-next/client";
@@ -18,7 +18,7 @@ export default function ChatInput({ id }: Prop) {
 
         const token = getCookie("token");
 
-        const result = await fetch(API_SERVER_ENTRYPOINT + '/conversations/' + id + '/messages', {
+        const result = await fetch(API_ENTRYPOINT + '/conversations/' + id + '/messages', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
