@@ -118,7 +118,7 @@ ThemeData lightTheme = ThemeData(
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Color(0xFFFFA500),
     selectionHandleColor: Color(0xFFFFA500),
-    selectionColor: Colors.grey[400],
+    selectionColor: Colors.grey.withAlpha(50),
   )
 );
 
