@@ -78,6 +78,13 @@ mongoose
 
       app.set("io", io);
 
+      io.engine.on("connection_error", (err) => {
+        console.log("--- ENGINE.IO ERROR ---");
+        console.log("Code:", err.code);     // e.g. 1 (internal error), 2 (bad request), etc.
+        console.log("Message:", err.message); 
+        console.log("Context:", err.context); 
+      });
+
       // connection route 
       io.on('connection', (socket) => {
         // join a conversation
