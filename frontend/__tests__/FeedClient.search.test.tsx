@@ -5,6 +5,14 @@ import { MantineProvider } from '@mantine/core';
 import FeedClient from '../components/FeedClient';
 import { Post } from '@/types/Post';
 
+jest.mock('bson', () => ({
+  ObjectId: class MockObjectId {
+    getTimestamp() {
+      return new Date('2026-01-01T00:00:00.000Z');
+    }
+  },
+}));
+
 // Mock fetch globally
 global.fetch = jest.fn();
 

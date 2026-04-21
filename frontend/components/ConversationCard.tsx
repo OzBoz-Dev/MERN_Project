@@ -51,6 +51,7 @@ export default function ConversationCard({
         <Group justify="flex-end" style={{ marginLeft: 'auto' }}>
           <Tooltip label={isOwner ? "Can't leave your own conversation" : "Leave Conversation"}>
           <Button
+            aria-label="Leave Conversation"
             radius='md'
             variant="outline"
             color="red"
@@ -62,6 +63,7 @@ export default function ConversationCard({
           </Tooltip>
           <Tooltip label={isOwner ? "Edit Conversation" : "You don't own this conversation"}>
           <Button
+            aria-label="Edit Conversation"
             radius='md'
             variant="outline"
             onClick={() => router.push(`/messages?editConvo=${id}`)}
@@ -81,6 +83,7 @@ export default function ConversationCard({
         </Text>
         <Group justify="flex-end">
           <Button
+            aria-label="Message"
             size="sm"
             leftSection={<IconMessage />}
             onClick={() => router.push(`/messages/${id}`)}

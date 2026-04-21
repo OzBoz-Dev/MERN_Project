@@ -61,16 +61,17 @@ export function NavTabs() {
     const Icon = tabItem.icon;
     const tab = (
       <Tabs.Tab
+        aria-label={isCompact ? tabItem.name : undefined}
         key={tabItem.name}
         value={tabItem.name}
         onClick={() => router.push(tabItem.path)}
         // On compact screens, remove leftSection and use the icon as the only child
-        leftSection={!isCompact ? <Icon size={iconSize} /> : undefined}
+        leftSection={!isCompact ? <Icon size={iconSize} aria-hidden="true"/> : undefined}
         // Tighten padding on small screens so tabs don't overflow
         style={isCompact ? { padding: '8px 10px' } : undefined}
       >
         {isCompact
-          ? <Icon size={iconSize} />   // icon only
+          ? <Icon size={iconSize} aria-hidden="true" />   // icon only
           : tabItem.name               // icon (leftSection) + text
         }
       </Tabs.Tab>
@@ -106,6 +107,7 @@ export function NavTabs() {
             width={isTiny ? 90 : 150}
             height={isTiny ? 30 : 50}
             style={{ objectFit: 'contain' }}
+            fetchPriority="high"
           />
         </Link>
 

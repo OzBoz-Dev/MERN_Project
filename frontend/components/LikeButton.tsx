@@ -79,6 +79,7 @@ export default function LikeButton({
   return (
     <Flex direction={"column"} gap={3} align={"center"}>
       <Button
+        aria-label="Like"
         disabled={!isLoggedIn} // disable when not logged in
         title={
           // tooltip

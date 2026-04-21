@@ -1,5 +1,5 @@
 "use client";
-import { ActionIcon, Button, Collapse, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Collapse, TextInput, Tooltip } from "@mantine/core";
 import { IconAdjustments, IconSearch } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import AdvancedSettings from "./AdvancedSettings";
@@ -19,22 +19,13 @@ export default function SearchBar({ onSearch }: SearchBarProp) {
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
     const [dateRange, setDateRange] = useState<[string | null, string | null]>([null, null]);
-
-    const mapPost = (post: any): Post => ({
-        _id: post._id,
-        title: post.title,
-        body: post.body,
-        attachments: post.attachments,
-        likes: post.likes,
-        array_tags: post.array_tags,
-        author_username: post.author_username,
-        datePosted: post.datePosted ? new Date(post.datePosted) : new Date(),
-    });
+    const [hasSearched, setHasSearched] = useState(false);
 
     useEffect(() => {
         const [startDate, endDate] = dateRange;
 
         if(searchText.trim() || tags.length > 0 || startDate || endDate) {
+            setHasSearched(true);
             const param = new URLSearchParams();
             param.append("q", searchText);
 
@@ -44,7 +35,10 @@ export default function SearchBar({ onSearch }: SearchBarProp) {
             
             onSearch(param); // Pass the params up so FeedClient fetches
         }
-        else return; // Don't do anything if the search params are empty
+        else if (hasSearched){ // Reset to feed view
+            onSearch(null);
+            setHasSearched(false);
+        }
     }, [searchText, tags, dateRange]);
 
 return (
@@ -70,6 +64,7 @@ return (
             }}
             />
             <Button
+            aria-label="Clear Search"
             name="Clear Search"
             variant="outline"
             onClick={() => {
@@ -77,18 +72,20 @@ return (
                 setTags([]);
                 setSearchText("");
                 setDateRange([null, null]);
-                onSearch(null); // Clear the search
             }}
             >
                 Clear Search
             </Button>
+            <Tooltip label="Advanced Search">
             <ActionIcon
+                aria-label="Advanced Search"
                 variant="light"
                 size={"lg"}
                 onClick={() => setShowAdvanced((prev) => !prev)}
             >
                 <IconAdjustments />
             </ActionIcon>
+            </Tooltip>
         </div>
         
         <Collapse in={showAdvanced}>

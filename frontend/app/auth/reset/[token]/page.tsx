@@ -98,6 +98,7 @@ return (
           onValidChange={setPasswordValid}
         />
         <Button
+          aria-label="Reset Password"
           variant="filled"
           color="orange"
           fullWidth
@@ -108,6 +109,7 @@ return (
           Reset Password
         </Button>
           <Button
+            aria-label="Return to Log In"
             variant="subtle"
             color="orange"
             fullWidth
