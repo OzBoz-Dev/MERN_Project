@@ -325,14 +325,13 @@ router.put("/:_id", auth, async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    /* will fix later
-    if (!post.post_id || post.post_id.toString() !== req.user._id.toString()) {
+    if (post.author_username !== req.user.username) {
       return res.status(403).json({
         message: "User not authorized to update post",
       });
-    }*/
+    }
 
-    const allowedUpdates = ["title", "body", "likes", "array_tags"];
+    const allowedUpdates = ["title", "body", "array_tags"];
 
     allowedUpdates.forEach((field) => {
       if (req.body[field] != undefined) {

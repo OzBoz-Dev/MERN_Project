@@ -12,6 +12,10 @@ import { Post } from "@/types/Post";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { PostComment } from "@/types/PostComment";
+import { useState } from "react";
+import EditButton from "./EditButton";
+import PostEditor from "./PostEditor";
+import { getCookie } from "cookies-next/client";
 
 type Props = {
   post: Post | null;
@@ -19,9 +23,11 @@ type Props = {
 };
 
 export default function ProjectPageClient({ post, comments }: Props) {
+  const [edit, setEdit] = useState(false);
   return post == null ? (
     notFound()
   ) : (
+    edit ? <PostEditor originalPost={post} edit={edit} setEdit={setEdit}/> :
     <div className="animated-grid">
       <Paper
         withBorder
@@ -57,6 +63,7 @@ export default function ProjectPageClient({ post, comments }: Props) {
             postId={post._id}
             likedBy={post.likes}
           />
+          {getCookie("username") === post.author_username && <EditButton edit={edit} setEdit={setEdit}/>}
         </Group>
       </Stack>
       <Divider mt="lg" mb="xl" w={"100%"} />

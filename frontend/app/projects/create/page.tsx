@@ -14,7 +14,7 @@ export default function CreateProjectPage() {
                 Create a Project
             </Text>
             <Divider my={"md"} />
-            <PostEditor />
+            <PostEditor originalPost={undefined}/>
         </Stack>
     );
 }

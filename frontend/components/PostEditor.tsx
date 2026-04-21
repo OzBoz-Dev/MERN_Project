@@ -18,7 +18,7 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconRocket } from "@tabler/icons-react";
 import { API_ENTRYPOINT } from "@/constants/constants";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,7 @@ import { getCookie } from "cookies-next/client";
 import TagBox from "./TagBox";
 import TagComboBox from "./TagComboBox";
 import ProjectTag from "./ProjectTag";
+import { Post } from "@/types/Post";
 
 const content = "";
 const TITLE_LIMIT = 50;
@@ -62,13 +63,45 @@ async function postProject(
   const postId: string = data._id;
   return postId;
 }
+async function editProject(
+  title: string,
+  body: string,
+  array_tags: string[],
+  postId: string
+) {
+  const response = await fetch(API_ENTRYPOINT + "/posts/" + postId, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getCookie("token")}`,
+    },
+    body: JSON.stringify({
+      title,
+      body,
+      attachments: "",
+      array_tags, // put in tags from post
+    }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    const error: string = data.error;
+    throw new Error(`Error occurred when creating a post: ${error}`);
+  }
+  return data;
+}
 
-export default function PostEditor() {
+type Prop = {
+  originalPost?: Post,
+  edit?: boolean,
+  setEdit?: (value: boolean) => void
+}
+
+export default function PostEditor({ originalPost, edit, setEdit }: Prop) {
   // States for loading and post creation success
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [createdPostId, setCreatedPostId] = useState<string | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
+  const [createdPostId, setCreatedPostId] = useState<string | null>(originalPost?._id ?? null);
+  const [tags, setTags] = useState<string[]>(originalPost?.array_tags ?? []);
 
   const router = useRouter();
 
@@ -94,8 +127,14 @@ export default function PostEditor() {
     content,
   });
 
+  useEffect(() => {
+    if (editor && originalPost?.body) {
+      editor.commands.setContent(originalPost.body);
+    }
+  }, [editor, originalPost?.body]);
+  
   // Title character limit counter
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(originalPost?.title ?? "");
 
   return (
     <>
@@ -121,7 +160,7 @@ export default function PostEditor() {
         centered
       >
         <Center style={{ flexDirection: "column", gap: 10 }}>
-          <Text size="xl">Project Posted!</Text>
+          <Text size="xl">{edit ? "Project Edited!" : "Project Posted!"}</Text>
           <Button
             aria-label="View Your New Post"
             mt={15}
@@ -330,8 +369,21 @@ export default function PostEditor() {
 
               let postId: string;
               try {
-                postId = await postProject(title, body, author_username, tags);
-                setCreatedPostId(postId);
+                if(edit && originalPost?._id) {
+                  // Edit mode
+                  const updated = await editProject(title, body, tags, originalPost._id);
+                  setCreatedPostId(updated._id);
+                  
+                  if(setEdit !== undefined) {
+                    setEdit(false);
+                  }
+                }
+                else {
+                  // Create mode
+                  postId = await postProject(title, body, author_username, tags);
+                  setCreatedPostId(postId);
+                }
+
                 setLoading(false);
                 setSuccess(true); // Show success modal
               } catch (e) {

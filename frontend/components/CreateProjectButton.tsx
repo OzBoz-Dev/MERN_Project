@@ -24,9 +24,7 @@ export default function CreateProjectButton() {
       color={designTokens.colors.buttonPrimary}
       onClick={() => router.push("/projects/create")}
     >
-        <Container px={12}>
-            <IconPencil style={{ verticalAlign: "center" }} />
-        </Container>
+      <IconPencil style={{ verticalAlign: "center" }} />
     </Button>
   );
 }
