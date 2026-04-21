@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 ThemeData lightTheme = ThemeData(
-  primarySwatch: Colors.orange, // mantine primaryColor
+   useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: const Color(0xFFFFA500),
+      brightness: Brightness.light,
+    ),
   primaryColor: Color(0xFFFFA500),
   scaffoldBackgroundColor: Color(0xFFFDF8EA),
   textTheme: GoogleFonts.montserratTextTheme().apply(
