@@ -4,6 +4,7 @@ import 'package:chip_in/widgets/chat_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
@@ -21,6 +22,43 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
+
+  String _formatMessageDate(DateTime date) {
+    final now = DateTime.now();
+
+    final today = DateTime(now.year, now.month, now.day);
+    final msgDay = DateTime(date.year, date.month, date.day);
+
+    final diff = today.difference(msgDay).inDays;
+
+    if (diff == 0) return "Today";
+    if (diff == 1) return "Yesterday";
+
+    return DateFormat('MMM d, yyyy').format(date);
+  }
+
+  List<dynamic> _buildMessageList(List messages) {
+    List<dynamic> items = [];
+
+    DateTime? lastDate;
+
+    for (final msg in messages) {
+      final msgDate = DateTime(
+        msg.createdAt.year,
+        msg.createdAt.month,
+        msg.createdAt.day,
+      );
+
+      if (lastDate == null || msgDate != lastDate) {
+        items.add(msgDate);
+        lastDate = msgDate;
+      }
+
+      items.add(msg);
+    }
+
+    return items;
+  }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -45,7 +83,8 @@ class _ChatPageState extends State<ChatPage> {
     final authProvider = context.read<AuthProvider>();
     final conversationProvider = context.watch<ConversationProvider>();
     final conversation = conversationProvider.getConversationById(widget.conversationId);
-    final messages = (conversation?.messages ?? []).reversed.toList();
+    final messages = conversation?.messages ?? [];
+    final items = _buildMessageList(messages).reversed.toList();
 
     final currentUsername = authProvider.username!;
     List<String> others = ["None"];
@@ -88,11 +127,28 @@ class _ChatPageState extends State<ChatPage> {
               reverse: true,
               controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: messages.length,
+              itemCount: items.length,
               itemBuilder: (context, index) {
-                final msg = messages[index];
-                final isSelf = msg.authorUsername == currentUsername;
-                return ChatBubble(message: msg, isSelf: isSelf);
+                final item = items[index];
+                if (item is DateTime) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(child: Divider()),
+                        const SizedBox(width: 12,),
+                        Text(_formatMessageDate(item)),
+                        const SizedBox(width: 12,),
+                        Expanded(child: Divider())
+                      ],
+                    ),
+                  );
+                }
+                else {
+                  final isSelf = item.authorUsername == currentUsername;
+                  return ChatBubble(message: item, isSelf: isSelf);
+                }
               },
             )
           ),
