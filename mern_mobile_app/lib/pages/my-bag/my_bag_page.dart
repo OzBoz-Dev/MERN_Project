@@ -1,3 +1,4 @@
+import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:flutter/material.dart';
 
 class MyBagPage extends StatelessWidget {
@@ -5,8 +6,11 @@ class MyBagPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("My Bag Page"),
+    return AnimatedGridBackground(
+      backgroundColor: const Color(0xFFFDF8EA),
+      child: Center(
+        child: Text("My Bag"),
+      ),
     );
   }
 }

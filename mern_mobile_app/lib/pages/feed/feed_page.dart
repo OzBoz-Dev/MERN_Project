@@ -17,6 +17,30 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
+
+  final ScrollController _scrollController = ScrollController();
+
+  void _onScroll() {
+    final postProvider = context.read<PostProvider>();
+    final authProvider = context.read<AuthProvider>();
+
+    if (!_scrollController.hasClients) return;
+
+    final thresholdReached =
+        _scrollController.position.pixels >
+        _scrollController.position.maxScrollExtent - 300;
+
+    if (thresholdReached && postProvider.hasMore && !postProvider.isLoading) {
+      postProvider.loadMore(authProvider.username!);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
@@ -39,7 +63,10 @@ class _FeedPageState extends State<FeedPage> {
         else {
           return Consumer<PostProvider>(
             builder: (context, projectsProvider, child) {
-              if(projectsProvider.isLoading) {
+              // Get feed posts first to check the length
+              List<Post> feedPosts = projectsProvider.posts;
+
+              if(projectsProvider.isLoading && feedPosts.isEmpty) {
                 return AnimatedGridBackground(
                   backgroundColor: const Color(0xFFFDF8EA),
                   child: Column(
@@ -65,8 +92,6 @@ class _FeedPageState extends State<FeedPage> {
                 );
               }
               else {
-                // List of posts
-                List<Post> feedPosts = projectsProvider.posts;
                 if(feedPosts.isEmpty) {
                   return AnimatedGridBackground(
                     backgroundColor: const Color(0xFFFDF8EA),
@@ -99,27 +124,43 @@ class _FeedPageState extends State<FeedPage> {
                     AnimatedGridBackground(
                       backgroundColor: const Color(0xFFFDF8EA),
                       child: ListView.builder(
+                        controller: _scrollController,
                         padding: const EdgeInsets.only(bottom: kToolbarHeight + 20,),
-                        itemCount: feedPosts.length,
+                        itemCount: feedPosts.length + 1,
                         itemBuilder: (context, index) {
-                          if(index == feedPosts.length - 1) {
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                  child: ProjectCard(post: feedPosts[index]),
+                          final posts = feedPosts;
+                          final provider = projectsProvider;
+
+                          final isLastItem = index == posts.length;
+
+                          if (isLastItem) {
+                            if (provider.hasMore) {
+                              return const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Center(child: CircularProgressIndicator(
+                                  color: Color(0xFFFFA500)
+                                )),
+                              );
+                            } else {
+                              return Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Center(
+                                  child: Text(
+                                    "You've reached the end!",
+                                    style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  )
                                 ),
-                                const SizedBox(height: 8,),
-                                Text("You've reached the end!"),
-                                const SizedBox(height: 12,),
-                              ],
-                            );
+                              );
+                            }
                           }
+
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                            child: ProjectCard(post: feedPosts[index])
+                            child: ProjectCard(post: posts[index]),
                           );
-                        },
+                        }
                       ),
                     ),
                     Positioned(
@@ -173,5 +214,12 @@ class _FeedPageState extends State<FeedPage> {
         }
       },
     ); 
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 }

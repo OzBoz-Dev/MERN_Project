@@ -17,6 +17,12 @@ class PostProvider extends ChangeNotifier {
   bool get hasLoaded => _hasLoaded;
   String? get error => _error;
 
+  // Pagination for feed
+  final int _limit = 10;
+  int _offset = 0;
+  bool _hasMore = true;
+  bool get hasMore => _hasMore;
+
   // Used for likes
   Post? getPostById(String postId) => _posts[postId];
 
@@ -28,19 +34,33 @@ class PostProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadFeed(String username) async {
+  Future<void> loadFeed(String username, {bool refresh = false}) async {
+    if (_isLoading) return;
+
+     if (refresh) {
+      _offset = 0;
+      _hasMore = true;
+      _posts.clear();
+    }
+
+    if (!_hasMore) return;
+
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final fetchedPosts = await _contentService.getFeedPosts(username, 10, 0);
+      final fetchedPosts = await _contentService.getFeedPosts(username, _limit, _offset);
 
-      _posts.clear();
+      if (fetchedPosts.length < _limit) {
+        _hasMore = false;
+      }
 
       for (final post in fetchedPosts) {
-        _posts[post.id] = post; // Populate the map of posts by post id
+        _posts[post.id] = post;
       }
+
+      _offset += fetchedPosts.length;
       _hasLoaded = true;
     } catch (e) {
       _error = e.toString();
@@ -48,6 +68,11 @@ class PostProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  // Convenience function
+  Future<void> loadMore(String username) async {
+    await loadFeed(username);
   }
 
   Future<void> toggleLike({
