@@ -106,6 +106,7 @@ export function NavTabs() {
             width={isTiny ? 90 : 150}
             height={isTiny ? 30 : 50}
             style={{ objectFit: 'contain' }}
+            fetchPriority="high"
           />
         </Link>
 

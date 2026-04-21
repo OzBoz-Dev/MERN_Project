@@ -53,7 +53,7 @@ export default function ProjectPageClient({ post, comments }: Props) {
         <Text c="#555" dangerouslySetInnerHTML={{ __html: post.body }} />
 
         <Group justify="flex-end" align="flex-start" gap="16px">
-          <MessageButton />
+          <MessageButton author_username={post.author_username}/>
           <LikeButton
             likes={post.likes.length}
             postId={post._id}

@@ -321,6 +321,7 @@ export default function Auth() {
         </div>
         <Box mt="md">
           <Button
+            aria-label={type === "Log In" ? "Sign In" : "Create Account"}
             variant="filled"
             color="orange"
             fullWidth
@@ -363,6 +364,7 @@ export default function Auth() {
       </Text>
       <Group justify="space-between">
         <Button
+          aria-label="Resend Email"
           variant="outline"
           color="orange"
           loading={resendLoading}
@@ -372,6 +374,7 @@ export default function Auth() {
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Email"}
         </Button>
         <Button
+          aria-label="Return to Log In"
           variant="outline"
           color="orange"
           onClick={() => {
@@ -448,6 +451,7 @@ export default function Auth() {
             onValidChange={setEmailValid}
         />
           <Button
+            aria-label="Reset Password"
             variant="filled"
             color="orange"
             fullWidth

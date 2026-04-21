@@ -24,9 +24,10 @@ export default function FeedClient({ initialPosts, disableSearch, bagMode, displ
 
   const isFetchingRef = useRef(false); // Prevent concurrent/immediate fetches
   const [items, setItems] = useState<Post[]>(initialPosts);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(initialPosts.length === PAGE_SIZE);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set());
   const [mountedIds, setMountedIds] = useState<Set<string>>(new Set());
+  const [visible, setVisible] = useState(false);
   const searchParamsRef = useRef<URLSearchParams | null>(null);
   const searchOffsetRef = useRef(0);
 
@@ -37,11 +38,12 @@ export default function FeedClient({ initialPosts, disableSearch, bagMode, displ
 
   useEffect(() => {
     window.scrollTo(0, 0);
-
+    fetchMoreData();
+    setVisible(true);
     initialPosts.forEach((item, index) => {
       setTimeout(() => {
         setMountedIds(prev => new Set(prev).add(item._id));
-      }, index * 50);
+      }, 100 + index * 50);
     });
   }, []);
 
@@ -175,10 +177,10 @@ const advanceOffset = useCallback((count: number) => {
     }
 
     setItems((prev) => [...prev, ...nextPosts]);
-    setMountedIds(prev => {
-      const next = new Set(prev);
-      nextPosts.forEach(p => next.add(p._id));
-      return next;
+    nextPosts.forEach((post, index) => {
+      setTimeout(() => {
+        setMountedIds(prev => new Set(prev).add(post._id));
+      }, 100 + index * 50);
     });
     advanceOffset(nextPosts.length);
 
@@ -201,7 +203,7 @@ const advanceOffset = useCallback((count: number) => {
         dataLength={items.length}
         next={fetchMoreData}
         hasMore={hasMore}
-        loader={<Loader type="dots"/>}
+        loader={visible ? <Loader type="dots"/> : <></>}
         scrollThreshold={0.9}
       >
         {items.map((item) => (
