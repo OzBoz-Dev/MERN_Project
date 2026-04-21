@@ -13,6 +13,7 @@ export default function ReadFullPostButton({ id }: Props) {
 
   return (
     <Button
+      aria-label="Read Full Post"
       variant="subtle"
       rightSection={<IconArrowRight size={16} />}
       onClick={() => router.push(`/projects/${id}`)}

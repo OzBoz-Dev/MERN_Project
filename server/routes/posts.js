@@ -13,11 +13,14 @@ const { sendCommentNotif } = require("../utils/mailer");
 
 //reads by username (from most recent to less recent)
 router.get("/by-user/:author_username", async (req, res) => {
+  const limit = parseInt(req.query.limit);
+  const offset = parseInt(req.query.offset);
+
   try {
     const { author_username } = req.params;
     const postsByUser = await Post.find({ author_username }).sort({
       createdAt: -1,
-    });
+    }).skip(offset || 0).limit(limit || 20);
     res.json(postsByUser);
   } catch (err) {
     res.status(500).json({ error: err.message });

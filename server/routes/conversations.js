@@ -96,12 +96,17 @@ router.post('/:_id/messages', auth, async (req, res) => {
 
 // edit a conversation (you can add and remove member_users)
 router.put('/:_id', auth, async (req, res) => {
+    const { member_usernames } = req.body;
     try {
         const conversation = await Conversation.findById(req.params._id);
         if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
 
         if (conversation.owner_username != req.user.username) {
             return res.status(403).json({ error: 'Not the owner of this conversation' });
+        }
+
+        if (!member_usernames || !member_usernames.includes(conversation.owner_username)) {
+            return res.status(400).json({ error: 'Members must include the owner' })
         }
 
         const allowedUpdates = ['member_usernames'];
@@ -113,6 +118,24 @@ router.put('/:_id', auth, async (req, res) => {
 
         await conversation.save();
         res.status(200).json(conversation);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// A single user leaves the convo
+router.put('/leave/:_id', auth, async (req, res) => {
+    try {
+        const conversation = await Conversation.findById(req.params._id);
+        if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
+
+        if (conversation.owner_username === req.user.username) {
+            return res.status(403).json({ error: 'Owner cannot leave without deleting first' });
+        }
+        await conversation.updateOne({
+            $pull: { member_usernames: req.user.username }
+        });
+        res.status(200).json({ message: 'Conversation deleted successfully.' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

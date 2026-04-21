@@ -2,7 +2,7 @@
 
 import { designTokens } from "@/app/GlobalTheme";
 import { Button, Card, Text, Group, Flex, Tooltip } from "@mantine/core";
-import { IconMessage, IconPencilCog, IconUserCircle } from "@tabler/icons-react";
+import { IconDoorExit, IconMessage, IconPencilCog, IconUserCircle } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import TimeAgoClient from "./TimeAgoClient";
 import { getCookie } from "cookies-next/client";
@@ -12,6 +12,7 @@ type Props = {
   members: string[];
   lastMessage: string;
   lastMessageDate: Date;
+  owner: string
 };
 
 export default function ConversationCard({
@@ -19,10 +20,12 @@ export default function ConversationCard({
   members,
   lastMessage,
   lastMessageDate,
+  owner,
 }: Props) {
   const router = useRouter();
   const myUser = getCookie("username");
   const notMe = members.find(user => user !== myUser)
+  const isOwner = owner===myUser;
 
   return (
     <Card
@@ -46,11 +49,25 @@ export default function ConversationCard({
           </Text>
         </Group>
         <Group justify="flex-end" style={{ marginLeft: 'auto' }}>
-          <Tooltip label="Edit Conversation">
+          <Tooltip label={isOwner ? "Can't leave your own conversation" : "Leave Conversation"}>
           <Button
+            aria-label="Leave Conversation"
             radius='md'
             variant="outline"
-            // onClick={}
+            color="red"
+            onClick={() => router.push(`/messages?leaveConvo=${id}`)}
+            disabled={isOwner}
+            >
+            <IconDoorExit/>
+          </Button>
+          </Tooltip>
+          <Tooltip label={isOwner ? "Edit Conversation" : "You don't own this conversation"}>
+          <Button
+            aria-label="Edit Conversation"
+            radius='md'
+            variant="outline"
+            onClick={() => router.push(`/messages?editConvo=${id}`)}
+            disabled={!isOwner}
             >
             <IconPencilCog/>
           </Button>
@@ -66,6 +83,7 @@ export default function ConversationCard({
         </Text>
         <Group justify="flex-end">
           <Button
+            aria-label="Message"
             size="sm"
             leftSection={<IconMessage />}
             onClick={() => router.push(`/messages/${id}`)}

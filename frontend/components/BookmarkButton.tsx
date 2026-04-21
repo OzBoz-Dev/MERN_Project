@@ -9,6 +9,7 @@ export default function BookmarkButton() {
   const [color, toggle] = useToggle([designTokens.colors.buttonTertiary, designTokens.colors.buttonTertiaryPress])
   return (
         <Button 
+        aria-label="Bookmark"
         size='sm'
         radius='md'
         style={{width: 36, height: 36, padding: 0}}

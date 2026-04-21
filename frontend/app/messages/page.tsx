@@ -1,12 +1,13 @@
 import ConversationCard from "@/components/ConversationCard";
 import ConversationList from "@/components/ConversationList";
 import NewConversationModal from "@/components/NewConversationModal";
-import NewConversationTrigger from "@/components/NewConversationTrigger";
+import NewConversationTrigger from "@/components/ConversationTriggers";
 import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
 import { Affix, Button, Container, Stack, Tooltip, Transition } from "@mantine/core";
 import { IconMessage2Plus, IconPlus } from "@tabler/icons-react";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
+import ConversationTriggers from "@/components/ConversationTriggers";
 
 // Metadata
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default async function MessagesPage() {
       <ConversationList conversations={conversations}/>
       </Stack>
     </Container>
-    <NewConversationTrigger/>
+    <ConversationTriggers/>
     </div>
   );
 }

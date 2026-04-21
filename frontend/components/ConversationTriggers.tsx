@@ -7,9 +7,12 @@ import { IconCheck, IconMessage2Plus, IconX } from "@tabler/icons-react";
 import { getCookie } from "cookies-next/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import EditConversationModal from "./EditConversationModal";
 
-export default function NewConversationTrigger() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ConversationTriggers() {
+  const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingConvoId, setEditingConvoId] = useState<string|null>(null)
   const [createdConvo, setCreatedConvo] = useState(null);
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
@@ -21,14 +24,55 @@ export default function NewConversationTrigger() {
   useEffect(() => {
     const newConvo = searchParams.get('newConvo');
     const username = searchParams.get('username');
+    const editConvo = searchParams.get('editConvo');
+    const leaveConvo = searchParams.get('leaveConvo');
+
     setTimeout(() => {
     if (newConvo === 'true'){
         if (username) setPrefillUser(username);
-        setIsOpen(true);
+        setIsCreating(true);
         router.replace('/messages');
+    }
+    if (editConvo) {
+      setEditingConvoId(editConvo);
+      setIsEditing(true);
+      router.replace('/messages');
+    }
+    if (leaveConvo) {
+      handleLeaveConvo(leaveConvo);
+      router.replace('/messages');
     }
     }, 100)
   }, [searchParams]);
+
+  const handleLeaveConvo = async (convoId: string) => {
+    const token = getCookie('token');
+
+    try {
+      // Leave the conversation
+      const res = await fetch(`${API_ENTRYPOINT}/conversations/leave/${convoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        setErrorMessage(err.error);
+        setFail(true);
+        return;
+      }
+
+      setSuccess(true);
+      router.refresh();
+
+    } catch (err) {
+      setErrorMessage('Failed to leave conversation: ' + err);
+      setFail(true);
+    }
+  };
 
   const handleCreateConvo = async (data: any) => {
     const token = getCookie('token');
@@ -57,7 +101,7 @@ export default function NewConversationTrigger() {
         const newConvo = await response.json();
         setCreatedConvo(newConvo);
         setSuccess(true);
-        setIsOpen(false);
+        setIsCreating(false);
 
         setTimeout(() => {
             router.push(`/messages/${newConvo._id}`);
@@ -73,20 +117,19 @@ export default function NewConversationTrigger() {
       {success && (
           <Alert
             icon={<IconCheck size={16} />}
-            title="Conversation created!"
+            title="Success!"
             color="green"
             withCloseButton
             onClose={() => setSuccess(false)}
             style={{ position: 'fixed', bottom: 80, right: 20, zIndex: 1000, width: 300 }}
           >
-            Redirecting you now...
           </Alert>
       )}
 
       {fail && (
         <Alert
           icon={<IconX size={16} />}
-          title="Failed to create conversation"
+          title="Operation Failed"
           color="red"
           withCloseButton
           onClose={() => setFail(false)}
@@ -97,22 +140,40 @@ export default function NewConversationTrigger() {
       )}
 
       <NewConversationModal
-        isOpen={isOpen}
+        isOpen={isCreating}
         onClose={() => {
-            setIsOpen(false);
+            setIsCreating(false);
             setPrefillUser("");
         }}
         onSave={handleCreateConvo}
         prefillUser={prefillUser}
       />
 
+      <EditConversationModal
+        isOpen={isEditing}
+        conversationId={editingConvoId}
+        onClose={() => {
+          setIsEditing(false);
+          setEditingConvoId(null);
+        }}
+        onFail={(message) => {
+          setErrorMessage(message);
+          setFail(true);
+        }}
+        onSuccess={() => {
+          setSuccess(true);
+          router.refresh();
+        }}
+      />
+
       <Affix position={{ bottom: 20, right: 20 }}>
         <Tooltip label="New Conversation">
           <Button
+            aria-label="New Conversation"
             radius="xl"
             size="lg"
             color="orange"
-            onClick={() => setIsOpen(true)}
+            onClick={() => setIsCreating(true)}
           >
             <IconMessage2Plus />
           </Button>

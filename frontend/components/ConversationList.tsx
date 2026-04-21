@@ -30,11 +30,19 @@ export default function ConversationList({ conversations }: { conversations: any
                 id={message._id}
                 members={message.member_usernames}
                 lastMessage={
-                    (message.messages[message.messages.length - 1].author_username === me ? 
-                        "You" : 
-                        message.messages[message.messages.length - 1].author_username)
-                  + " · " + message.messages[message.messages.length - 1].content}
-                lastMessageDate={new Date(message.messages[message.messages.length - 1].createdAt)}
+                  message.messages.length > 0
+                    ? (message.messages[message.messages.length - 1].author_username === me
+                      ? "You"
+                      : message.messages[message.messages.length - 1].author_username)
+                    + " · " + message.messages[message.messages.length - 1].content
+                  : "No messages yet"
+                }
+                lastMessageDate={
+                  message.messages.length > 0
+                    ? new Date(message.messages[message.messages.length - 1].createdAt)
+                    : new Date(message.createdAt)
+                }
+                owner={message.owner_username}
               />
             </div>
           )}

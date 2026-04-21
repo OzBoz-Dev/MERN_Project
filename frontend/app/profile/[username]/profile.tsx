@@ -16,6 +16,8 @@ import {
   Modal,
   TextInput,
   Alert,
+  Accordion,
+  Transition,
 } from "@mantine/core";
 import ProfileInfoCard from "@/app/profile/ProfileInfoCard";
 import EditProfileModal from "@/app/profile/EditProfileModal";
@@ -25,6 +27,7 @@ import { designTokens } from "../../GlobalTheme";
 import { notFound, useParams } from "next/navigation";
 import { API_ENTRYPOINT } from '@/constants/constants'
 import { deleteCookie, getCookie, setCookie } from "cookies-next/client";
+import FeedClient from "@/components/FeedClient";
 
 async function getProfile(username: any){
   const res = await fetch(API_ENTRYPOINT+'/profile/' + username, {
@@ -88,6 +91,7 @@ export default function ProfilePage() {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const { username } = useParams();
 
   // Fetch profile data on mount
@@ -111,6 +115,13 @@ export default function ProfilePage() {
     };
     fetchProfile();
   }, [username]);
+
+  // Animate card in
+  useEffect(() => {
+    if (!isLoading && profileData){
+      setMounted(true);
+    }
+  }, [isLoading, profileData]);
 
   // Handle profile save
   const handleSaveProfile = async (data: any) => {
@@ -204,49 +215,76 @@ export default function ProfilePage() {
 
   return (
     <div className="animated-grid" style={{display: 'flex'}}>
-      <Paper withBorder p="lg" w={700} radius="md" className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
-        <Flex direction="column" justify="flex-end" p="sm">
-          {isMe? (
-          <ProfileActions
-            onLogout={handleLogout}
-            onEditProfile={() => setIsEditing(true)}
-          />
-          ) : (
-            <></>
-          )}
-          <ProfileInfoCard
-            username = {profileData?.username}
-            firstName={profileData?.firstName}
-            lastName={profileData?.lastName}
-            bio={profileData?.bio}
-            profilePicture={profileData?.profilePicture}
-            tags={profileData?.tags}
-          />
-        </Flex>
+      <Transition mounted={mounted} transition='skew-up' duration={500}>
+        {(styles) => (
+        <div style={styles}>
+        <Paper withBorder w='min(700px, 90vw)' p="lg" radius="md" mb='md' className='glass-card' shadow="md" style={{backgroundColor: designTokens.colors.glassyBackground}}>
+          <Flex direction="column" justify="flex-end" p="sm">
+            {isMe? (
+            <ProfileActions
+              onLogout={handleLogout}
+              onEditProfile={() => setIsEditing(true)}
+            />
+            ) : (
+              <></>
+            )}
 
-      <EditProfileModal
-        isOpen={isEditing}
-        onClose={() => setIsEditing(false)}
-        onSave={handleSaveProfile}
-        initialData={profileData}
-        onOpenDelete={() => {
-          setIsEditing(false);
-          setDeleteModalOpen(true);
-        }}
-      />
-      <DeleteAccountModal
-          opened={deleteModalOpen}
-          onClose={handleDeleteClose}
-          onConfirm={handleDeleteConfirm}
-          loading={isDeleting}
-          passwordValue={deletePassword}
-          onPasswordChange={setDeletePassword}
-          error={deleteError}
-          onErrorClose={() => setDeleteError(null)}
-          success={deleteSuccess}
-          onSuccessClose={() => setDeleteSuccess(null)}
+                <ProfileInfoCard
+                  username = {profileData?.username}
+                  firstName={profileData?.firstName}
+                  lastName={profileData?.lastName}
+                  bio={profileData?.bio}
+                  profilePicture={profileData?.profilePicture}
+                  tags={profileData?.tags}
+                />
+          </Flex>
+
+        <EditProfileModal
+          isOpen={isEditing}
+          onClose={() => setIsEditing(false)}
+          onSave={handleSaveProfile}
+          initialData={profileData}
+          onOpenDelete={() => {
+            setIsEditing(false);
+            setDeleteModalOpen(true);
+          }}
         />
-      </Paper>
+        <DeleteAccountModal
+            opened={deleteModalOpen}
+            onClose={handleDeleteClose}
+            onConfirm={handleDeleteConfirm}
+            loading={isDeleting}
+            passwordValue={deletePassword}
+            onPasswordChange={setDeletePassword}
+            error={deleteError}
+            onErrorClose={() => setDeleteError(null)}
+            success={deleteSuccess}
+            onSuccessClose={() => setDeleteSuccess(null)}
+          />
+        </Paper>
+        <Paper withBorder w='min(700px, 90vw)' p="sm" radius="md" className='glass-card' shadow="md" style={{ backgroundColor: designTokens.colors.glassyBackground }}>
+          <Accordion 
+            transitionDuration={600}
+            styles={{
+              control: {
+                // borderRadius: 'md',
+                backgroundColor: 'transparent'
+              }
+            }}
+            defaultValue='Recent Posts'>
+            <Accordion.Item value="Posts Recent">
+              <Accordion.Control>
+                <Text fw={600}>Recent Posts</Text>
+              </Accordion.Control>
+                <Accordion.Panel>
+                  <FeedClient disableSearch={true} displayUser={profileData?.username} bagMode={false}/>
+                </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
+          </Paper>
+        </div>
+      )}
+      </Transition>
     </div>
   );
 }

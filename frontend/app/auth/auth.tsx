@@ -196,7 +196,7 @@ export default function Auth() {
     <Paper
       withBorder
       p="xl"
-      w="40vw"
+      w='min(550px, 90vw)'
       radius="md"
       className="glass-card"
       shadow="md"
@@ -321,6 +321,7 @@ export default function Auth() {
         </div>
         <Box mt="md">
           <Button
+            aria-label={type === "Log In" ? "Sign In" : "Create Account"}
             variant="filled"
             color="orange"
             fullWidth
@@ -342,6 +343,7 @@ export default function Auth() {
       radius="md"
       className="glass-card"
       shadow="md"
+      w='min(550px, 90vw)'
       style={{ backgroundColor: designTokens.colors.glassyBackground }}
     >
       <Stack align='center'>
@@ -362,6 +364,7 @@ export default function Auth() {
       </Text>
       <Group justify="space-between">
         <Button
+          aria-label="Resend Email"
           variant="outline"
           color="orange"
           loading={resendLoading}
@@ -371,6 +374,7 @@ export default function Auth() {
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Email"}
         </Button>
         <Button
+          aria-label="Return to Log In"
           variant="outline"
           color="orange"
           onClick={() => {
@@ -393,6 +397,7 @@ export default function Auth() {
     <Paper
       withBorder
       p="xl"
+      w='min(550px, 90vw)'
       radius="md"
       className="glass-card"
       shadow="md"
@@ -446,6 +451,7 @@ export default function Auth() {
             onValidChange={setEmailValid}
         />
           <Button
+            aria-label="Reset Password"
             variant="filled"
             color="orange"
             fullWidth
@@ -456,6 +462,7 @@ export default function Auth() {
             Reset Password
           </Button>
           <Button
+            aria-label="Return to Log In"
             variant="subtle"
             color="orange"
             fullWidth
@@ -478,16 +485,14 @@ export default function Auth() {
 return (
   <main>
     <div className="animated-grid">
-      <Container size="md" p="xl">
         <Stack align="center" gap="xl">
-          
           {/* Logo Transition */}
-          <Box>
+          <Box mt='xl'>
             <Image
               src="/ChipIn.png"
               alt="ChipIn logo"
               width={396}
-              height={125}
+              height={126}
             />
           </Box>
 
@@ -496,8 +501,9 @@ return (
             style={{ 
               display: 'grid', 
               gridTemplateColumns: '1fr', 
-              alignItems: 'start', 
-              width: '40vw'
+              alignItems: 'start',
+              gridTemplateRows: '1fr',
+              minHeight: '450px'
             }}
           >
             {/* Auth Card */}
@@ -540,7 +546,6 @@ return (
             </Transition>
           </Box>
         </Stack>
-      </Container>
     </div>
   </main>
 );

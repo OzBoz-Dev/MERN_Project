@@ -175,14 +175,14 @@ export default function EditProfileModal({
         {/* Action Buttons */}
         <Group justify="space-between" gap="md">
           <Button 
-            variant="filled" color="red" onClick={onOpenDelete}
+            aria-label="Delete Account" variant="filled" color="red" onClick={onOpenDelete}
           >
             Delete Account
           </Button>
-          <Button variant="outline" onClick={onClose}>
+          <Button aria-label="Cancel" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" variant="filled" color="orange">
+          <Button aria-label="Save Changes" type="submit" variant="filled" color="orange">
             Save Changes
           </Button>
         </Group>
