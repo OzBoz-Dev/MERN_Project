@@ -11,8 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { 
-    origin: ["https://mern.poosd.lol", "http://localhost:3000"],
-    credentials: true
+    origin: "*"
   }
 });
 
