@@ -10,15 +10,46 @@ require("dotenv").config();
 const app = express();
 const server = http.createServer(app);
 
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+const io = new Server(server, {
+        cors: { 
+          origin: ["https://mern.poosd.lol", "https://chipin.poosd.lol", "http://localhost:3000"],
+          credentials: true
+        },
+        transports: ["websocket"]
+});
+
+app.set("io", io);
+
 server.on('upgrade', (req, socket, head) => {
   console.log('--- LOW LEVEL UPGRADE ATTEMPT ---');
   console.log('Method:', req.method);
   console.log('Path:', req.url);
 });
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+io.engine.on("connection_error", (err) => {
+  console.log("--- ENGINE.IO ERROR ---");
+  console.log("Code:", err.code);     // e.g. 1 (internal error), 2 (bad request), etc.
+  console.log("Message:", err.message); 
+  console.log("Context:", err.context); 
+});
+
+// connection route 
+io.on('connection', (socket) => {
+  // join a conversation
+  console.log("SOCKET CONNECTED:", socket.id);
+
+  socket.on('joinConversation', (conversationId) => {
+    socket.join(String(conversationId));
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.log("SOCKET DISCONNECTED:", reason);
+  });
+})
 
 // Routers
 const commentsRouter = require("./routes/comments");
@@ -57,8 +88,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-let io;
-
 // MongoDB connection
 const PORT = 5000;
 console.log(process.env.MONGO_URI);
@@ -68,36 +97,8 @@ mongoose
     console.log("MongoDB connected!");
     server.listen(PORT, () => {
       console.log(`Server running on port ${PORT}!`);
-      io = new Server(server, {
-        cors: { 
-          origin: ["https://mern.poosd.lol", "https://chipin.poosd.lol", "http://localhost:3000"],
-          credentials: true
-        },
-        transports: ["websocket", "polling"]
-      });
 
-      app.set("io", io);
 
-      io.engine.on("connection_error", (err) => {
-        console.log("--- ENGINE.IO ERROR ---");
-        console.log("Code:", err.code);     // e.g. 1 (internal error), 2 (bad request), etc.
-        console.log("Message:", err.message); 
-        console.log("Context:", err.context); 
-      });
-
-      // connection route 
-      io.on('connection', (socket) => {
-        // join a conversation
-        console.log("SOCKET CONNECTED:", socket.id);
-
-        socket.on('joinConversation', (conversationId) => {
-          socket.join(conversationId);
-        });
-      
-        socket.on('disconnect', (reason) => {
-          console.log("SOCKET DISCONNECTED:", reason);
-        });
-      })
     });
   })
   .catch((err) => console.log(err));
