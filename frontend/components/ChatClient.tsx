@@ -30,9 +30,14 @@ export default function ChatClient() {
     useEffect(() => {
         if(!id) return;
         // Initialize socket inside the effect, client-side only
-        socketRef.current = io(API_ENTRYPOINT, {
+
+        const socketURL = API_ENTRYPOINT.replace('/api', '');
+
+        socketRef.current = io(socketURL, {
+            path: "/socket.io/",
             transports: ["websocket"],
-            withCredentials: true
+            withCredentials: true,
+            reconnection: true
         });
         const socket = socketRef.current;
 
