@@ -2,7 +2,7 @@
 // page where the messages actually happen
 
 import ChatMessage, { Message } from "@/components/ChatMessage";
-import { API_SERVER_ENTRYPOINT } from "@/constants/constants";
+import { API_ENTRYPOINT } from "@/constants/constants";
 import { Button, ScrollArea } from "@mantine/core";
 import { getCookie } from "cookies-next/client";
 import { useParams } from "next/navigation";
@@ -19,7 +19,7 @@ export default function ChatClient() {
 
     useEffect(() => {
         async function fetchConversation() {
-            const res = await fetch(API_SERVER_ENTRYPOINT + '/conversations/' + id + '/');
+            const res = await fetch(API_ENTRYPOINT + '/conversations/' + id + '/');
             const data = await res.json();
             setMessages(data.messages || []);
         }
@@ -30,7 +30,7 @@ export default function ChatClient() {
     useEffect(() => {
         if(!id) return;
         // Initialize socket inside the effect, client-side only
-        socketRef.current = io(API_SERVER_ENTRYPOINT);
+        socketRef.current = io(API_ENTRYPOINT);
         const socket = socketRef.current;
 
 
