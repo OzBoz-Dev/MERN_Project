@@ -1,6 +1,6 @@
+import 'package:chip_in/models/post.dart';
 import 'package:chip_in/pages/profile/edit_profile_page.dart';
 import 'package:chip_in/providers/post_provider.dart';
-import 'package:chip_in/providers/profile_post_provider.dart';
 import 'package:chip_in/widgets/project_card.dart';
 import 'package:chip_in/widgets/tag_holder.dart';
 import 'package:flutter/material.dart';
@@ -28,14 +28,14 @@ class _ProfilePageState extends State<ProfilePage> {
   final ScrollController _scrollController = ScrollController();
 
   void _onScroll() {
-    final profilePostProvider = context.read<ProfilePostProvider>();
+    final postProvider = context.read<PostProvider>();
     if (!_scrollController.hasClients) return;
 
     final thresholdReached = _scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300;
 
-    if (thresholdReached && profilePostProvider.hasMore && !profilePostProvider.isLoading) {
-      profilePostProvider.loadMore(widget.username);
+    if (thresholdReached && postProvider.profileHasMore && !postProvider.isLoading) {
+      postProvider.loadPostsByUsername(widget.username);
     }
   }
 
@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     _userFuture = profileService.getProfileByUserName(username: widget.username);
     Future.microtask(() {
-      context.read<ProfilePostProvider>().loadPostsByUsername(widget.username, refresh: true);
+      context.read<PostProvider>().loadPostsByUsername(widget.username, refresh: true);
     });
     _scrollController.addListener(_onScroll);
   }
@@ -161,9 +161,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   ),
-                  Consumer<ProfilePostProvider>(
+                  Consumer<PostProvider>(
                     builder: (context, postProvider, child) {
-                      if (postProvider.isLoading && postProvider.posts.isEmpty) {
+                      // Get posts first to check the length
+                      List<Post> profilePosts = postProvider.profilePosts;
+                      if (postProvider.isLoading && profilePosts.isEmpty) {
                         return const SliverToBoxAdapter(
                           child: Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator(color: Color(0xFFFFA500)))),
                         );
@@ -171,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (postProvider.error != null) {
                         return SliverToBoxAdapter(child: Center(child: Text(postProvider.error!)));
                       }
-                      if (postProvider.posts.isEmpty) {
+                      if (profilePosts.isEmpty) {
                         return SliverToBoxAdapter(
                           child: Column(
                             children: [
@@ -188,17 +190,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         sliver: SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
-                              if (index == postProvider.posts.length) {
-                                return postProvider.hasMore
+                              if (index == profilePosts.length) {
+                                return postProvider.profileHasMore
                                     ? const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator(color: Color(0xFFFFA500))))
                                     : Padding(padding: const EdgeInsets.all(16), child: Center(child: Text("You've reached the end!", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold))));
                               }
                               return Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 4),
-                                child: ProjectCard(post: postProvider.posts[index]),
+                                child: ProjectCard(post: profilePosts[index]),
                               );
                             },
-                            childCount: postProvider.posts.length + 1,
+                            childCount: profilePosts.length + 1,
                           ),
                         ),
                       );

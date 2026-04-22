@@ -30,8 +30,8 @@ class _FeedPageState extends State<FeedPage> {
         _scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300;
 
-    if (thresholdReached && postProvider.hasMore && !postProvider.isLoading) {
-      postProvider.loadMore(authProvider.username!);
+    if (thresholdReached && postProvider.feedHasMore && !postProvider.isLoading) {
+      postProvider.loadFeed(authProvider.username!);
     }
   }
 
@@ -62,11 +62,11 @@ class _FeedPageState extends State<FeedPage> {
         }
         else {
           return Consumer<PostProvider>(
-            builder: (context, projectsProvider, child) {
+            builder: (context, postProvider, child) {
               // Get feed posts first to check the length
-              List<Post> feedPosts = projectsProvider.posts;
+              List<Post> feedPosts = postProvider.feedPosts;
 
-              if(projectsProvider.isLoading && feedPosts.isEmpty) {
+              if(postProvider.isLoading && feedPosts.isEmpty) {
                 return AnimatedGridBackground(
                   backgroundColor: const Color(0xFFFDF8EA),
                   child: Column(
@@ -86,9 +86,9 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                 );
               }
-              else if(projectsProvider.error != null) {
+              else if(postProvider.error != null) {
                 return Center(
-                  child: Text(projectsProvider.error!),
+                  child: Text(postProvider.error!),
                 );
               }
               else {
@@ -129,12 +129,12 @@ class _FeedPageState extends State<FeedPage> {
                         itemCount: feedPosts.length + 1,
                         itemBuilder: (context, index) {
                           final posts = feedPosts;
-                          final provider = projectsProvider;
+                          final provider = postProvider;
 
                           final isLastItem = index == posts.length;
 
                           if (isLastItem) {
-                            if (provider.hasMore) {
+                            if (provider.feedHasMore) {
                               return const Padding(
                                 padding: EdgeInsets.all(16),
                                 child: Center(child: CircularProgressIndicator(

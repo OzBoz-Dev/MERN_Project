@@ -5,32 +5,51 @@ import 'package:chip_in/services/content_service.dart';
 class PostProvider extends ChangeNotifier {
   final ContentService _contentService = ContentService();
 
-  // O(1) lookup by postId
   final Map<String, Post> _posts = {};
 
-  bool _isLoading = false;
-  bool _hasLoaded = false;
-  String? _error;
+  // View-specific ID lists
+  final List<String> _feedIds = [];
+  final List<String> _profileIds = [];
+  final List<String> _likedIds = [];
 
-  List<Post> get posts => _posts.values.toList();
+  // Global UI State
+  bool _isLoading = false;
+  String? _error;
   bool get isLoading => _isLoading;
-  bool get hasLoaded => _hasLoaded;
   String? get error => _error;
 
-  // Pagination for feed
+  // Pagination states for different views
   final int _limit = 10;
-  int _offset = 0;
-  bool _hasMore = true;
-  bool get hasMore => _hasMore;
+  int _feedOffset = 0;
+  int _profileOffset = 0;
+  int _likedOffset = 0;
 
-  // Used for likes
+  bool _feedHasMore = true;
+  bool _profileHasMore = true;
+  bool _likedHasMore = true;
+
+  // Getters that map IDs back to the actual Post objects
+  List<Post> get feedPosts => _feedIds.map((id) => _posts[id]!).toList();
+  List<Post> get profilePosts => _profileIds.map((id) => _posts[id]!).toList();
+  List<Post> get likedPosts => _likedIds.map((id) => _posts[id]!).toList();
+
+  // Used for pagination when scrolling
+  bool get feedHasMore => _feedHasMore;
+  bool get profileHasMore => _profileHasMore;
+  bool get likedHasMore => _likedHasMore;
+
   Post? getPostById(String postId) => _posts[postId];
 
   // Prevents a stale feed when switcing users
   void reset() {
     _posts.clear();
+    _feedIds.clear();
+    _profileIds.clear();
+    _likedIds.clear();
+    _feedOffset = 0;
+    _profileOffset = 0;
+    _likedOffset = 0;
     _error = null;
-    _isLoading = false;
     notifyListeners();
   }
 
@@ -38,41 +57,42 @@ class PostProvider extends ChangeNotifier {
     if (_isLoading) return;
 
      if (refresh) {
-      _offset = 0;
-      _hasMore = true;
-      _posts.clear();
+      _feedOffset = 0;
+      _feedHasMore = true;
+      _feedIds.clear();
     }
 
-    if (!_hasMore) return;
+    if (!_feedHasMore) return;
 
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final fetchedPosts = await _contentService.getFeedPosts(username, _limit, _offset);
-
-      if (fetchedPosts.length < _limit) {
-        _hasMore = false;
-      }
-
-      for (final post in fetchedPosts) {
-        _posts[post.id] = post;
-      }
-
-      _offset += fetchedPosts.length;
-      _hasLoaded = true;
-    } catch (e) {
-      _error = e.toString();
-    }
-
-    _isLoading = false;
-    notifyListeners();
+    await _fetchBatch(
+      fetcher: () => _contentService.getFeedPosts(username, _limit, _feedOffset),
+      targetIds: _feedIds,
+      onComplete: (count, hasMore) {
+        _feedOffset += count;
+        _feedHasMore = hasMore;
+      },
+    );
   }
 
-  // Convenience function
-  Future<void> loadMore(String username) async {
-    await loadFeed(username);
+  Future<void> loadPostsByUsername(String username, {bool refresh = false}) async {
+    if (_isLoading) return;
+
+     if (refresh) {
+      _profileOffset = 0;
+      _profileHasMore = true;
+      _profileIds.clear();
+    }
+
+    if (!_profileHasMore) return;
+
+    await _fetchBatch(
+      fetcher: () => _contentService.getPostsByUsername(username, _limit, _profileOffset),
+      targetIds: _profileIds,
+      onComplete: (count, hasMore) {
+        _profileOffset += count;
+        _profileHasMore = hasMore;
+      },
+    );
   }
 
   Future<void> toggleLike({
@@ -80,33 +100,62 @@ class PostProvider extends ChangeNotifier {
     required String postId,
     required String username,
   }) async {
-    // Efficiently get the post by id
     final post = _posts[postId];
     if (post == null) return;
 
-    final isLiked = post.likes.contains(username); // O(1)
+    final isLiked = post.likes.contains(username);
 
-    // optimistic update
+    // Optimistic update on the reference in the Map
     if (isLiked) {
       post.likes.remove(username);
     } else {
       post.likes.add(username);
     }
 
-    notifyListeners(); // Show updates on all pages
+    notifyListeners(); // All lists (feed, profile, liked) rebuild with the new state
 
     try {
       await _contentService.likePostById(token, postId);
     } catch (e) {
-      // rollback on error
+      // Rollback
       if (isLiked) {
         post.likes.add(username);
       } else {
         post.likes.remove(username);
       }
-
       notifyListeners();
-      rethrow; // Catch in 
+      rethrow;
+    }
+  }
+
+  // Helper to reduce boilerplate
+  Future<void> _fetchBatch({
+    required Future<List<Post>> Function() fetcher,
+    required List<String> targetIds,
+    required void Function(int count, bool hasMore) onComplete,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final fetchedPosts = await fetcher();
+      
+      for (final post in fetchedPosts) {
+        // Update the central post store
+        _posts[post.id] = post;
+        // Add ID to the specific view list if not already there
+        if (!targetIds.contains(post.id)) {
+          targetIds.add(post.id);
+        }
+      }
+
+      onComplete(fetchedPosts.length, fetchedPosts.length == _limit);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 }

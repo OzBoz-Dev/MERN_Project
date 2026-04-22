@@ -202,99 +202,58 @@ class _ProjectCardState extends State<ProjectCard> {
                     const SizedBox(width: 5,),
                     // Like button
                     Consumer<PostProvider>(
-                      builder: (context, projectsProvider, child) {
-                        if(projectsProvider.posts.isNotEmpty) {
-                          // Auth provider for username
-                          final authProvider = context.read<AuthProvider>();
-                          final post = widget.post;
-
-                          // Whether this post was liked by the user
-                          bool isLiked = post.likes.contains(authProvider.username);
-
-                          return Column(
-                            children: [
-                              IconButton(
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Color(0xFFFFA500),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)
-                                  )
-                                ),
-                                onPressed: () async {
-                                  projectsProvider.toggleLike(
-                                    token: authProvider.token!,
-                                    postId: post.id,
-                                    username: authProvider.username!
+                      builder: (context, postProvider, child) {
+                        // Auth provider for username
+                        final authProvider = context.read<AuthProvider>();
+                        final post = postProvider.getPostById(widget.post.id) ?? widget.post;
+              
+                        // Whether this post was liked by the user
+                        bool isLiked = post.likes.contains(authProvider.username);
+              
+                        return Column(
+                          children: [
+                            IconButton(
+                              style: IconButton.styleFrom(
+                                backgroundColor: Color(0xFFFFA500),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6)
+                                )
+                              ),
+                              onPressed: () async {
+                                postProvider.toggleLike(
+                                  token: authProvider.token!,
+                                  postId: post.id,
+                                  username: authProvider.username!
+                                );
+                              },
+                              icon: AnimatedSwitcher(
+                                duration: Duration(milliseconds: 200),
+                                switchInCurve: Curves.easeOutBack,
+                                switchOutCurve: Curves.easeIn,
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: ScaleTransition(
+                                      scale: animation,
+                                      child: child,
+                                    ),
                                   );
                                 },
-                                icon: AnimatedSwitcher(
-                                  duration: Duration(milliseconds: 200),
-                                  switchInCurve: Curves.easeOutBack,
-                                  switchOutCurve: Curves.easeIn,
-                                  transitionBuilder: (child, animation) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: ScaleTransition(
-                                        scale: animation,
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  child: Icon(
-                                    key: ValueKey(isLiked),
-                                    isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
-                                  ),
+                                child: Icon(
+                                  key: ValueKey(isLiked),
+                                  isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
                                 ),
                               ),
-                              Text(
-                                "${post.likes.length}",
-                                style: TextStyle(
-                                  fontSize: 12
-                                ),
-                              )
-                            ],
-                          );
-                        }
-                        else {
-                          return Column(
-                            children: [
-                              IconButton(
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Color(0xFFFFA500),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)
-                                  )
-                                ),
-                                onPressed: null,
-                                icon: AnimatedSwitcher(
-                                  duration: Duration(milliseconds: 200),
-                                  switchInCurve: Curves.easeOutBack,
-                                  switchOutCurve: Curves.easeIn,
-                                  transitionBuilder: (child, animation) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: ScaleTransition(
-                                        scale: animation,
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  child: Icon(
-                                    TablerIcons.heart,
-                                  ),
-                                ),
+                            ),
+                            Text(
+                              "${post.likes.length}",
+                              style: TextStyle(
+                                fontSize: 12
                               ),
-                              Text(
-                                "0",
-                                style: TextStyle(
-                                  fontSize: 12
-                                ),
-                              )
-                            ],
-                          );
-                        }
+                            )
+                          ],
+                        );
                       },
                     )
                   ],
