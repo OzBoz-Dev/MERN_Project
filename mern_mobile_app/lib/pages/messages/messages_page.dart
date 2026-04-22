@@ -99,25 +99,73 @@ class _MessagesPageState extends State<MessagesPage> {
               }
               // We do have conversations
               else {
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: conversations.length,
-                  itemBuilder: (context, index) {
-                    final convo = conversations[index];
-                    return ConversationCard(
-                      conversation: convo,
-                      currentUsername: currentUsername,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ChatPage(
-                              conversationId: convo.id,
-                            ),
-                          ),
+                return Stack(
+                  children: [
+                    ListView.builder(
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: kToolbarHeight + 20,),
+                      itemCount: conversations.length,
+                      itemBuilder: (context, index) {
+                        final convo = conversations[index];
+                        return ConversationCard(
+                          conversation: convo,
+                          currentUsername: currentUsername,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => ChatPage(
+                                  conversationId: convo.id,
+                                ),
+                              ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: SafeArea(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 12,
+                                color: Colors.black12,
+                                offset: Offset(0, -2),
+                              )
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Center(
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    final conversationProvider = context.read<ConversationProvider>();
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => CreateConversationPage(),
+                                      )
+                                    ).then((_) => conversationProvider.getConversations());
+                                  },
+                                  icon: const Icon(TablerIcons.message_plus),
+                                  label: Text(
+                                    "Create Conversation",
+                                    style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }
             }
