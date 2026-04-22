@@ -1,7 +1,7 @@
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/pages/projects/create_project_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
-import 'package:chip_in/providers/post_provider.dart';
+import 'package:chip_in/providers/feed_provider.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
 import 'package:flutter/material.dart';
 import 'package:chip_in/widgets/project_card.dart';
@@ -21,7 +21,7 @@ class _FeedPageState extends State<FeedPage> {
   final ScrollController _scrollController = ScrollController();
 
   void _onScroll() {
-    final postProvider = context.read<PostProvider>();
+    final feedProvider = context.read<FeedProvider>();
     final authProvider = context.read<AuthProvider>();
 
     if (!_scrollController.hasClients) return;
@@ -30,8 +30,8 @@ class _FeedPageState extends State<FeedPage> {
         _scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300;
 
-    if (thresholdReached && postProvider.hasMore && !postProvider.isLoading) {
-      postProvider.loadMore(authProvider.username!);
+    if (thresholdReached && feedProvider.hasMore && !feedProvider.isLoading) {
+      feedProvider.loadMore(authProvider.username!);
     }
   }
 
@@ -61,7 +61,7 @@ class _FeedPageState extends State<FeedPage> {
           );
         }
         else {
-          return Consumer<PostProvider>(
+          return Consumer<FeedProvider>(
             builder: (context, projectsProvider, child) {
               // Get feed posts first to check the length
               List<Post> feedPosts = projectsProvider.posts;

@@ -1,5 +1,5 @@
 import 'package:chip_in/providers/conversation_provider.dart';
-import 'package:chip_in/providers/post_provider.dart';
+import 'package:chip_in/providers/feed_provider.dart';
 import 'package:chip_in/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -33,7 +33,7 @@ void main() async {
     authProvider.logout();
   }
 
-  final postProvider = PostProvider();
+  final feedProvider = FeedProvider();
   
   // Conversation Provider takes auth provider & socket service
   final socketService = SocketService();
@@ -41,7 +41,7 @@ void main() async {
 
   // Startup path: kick off the feed load before any widgets exist.
   if (authProvider.username != null) {
-    postProvider.loadFeed(authProvider.username!);
+    feedProvider.loadFeed(authProvider.username!);
     // Init socket only if logged in
     conversationProvider.initSocket();
   }
@@ -52,7 +52,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider.value(value: authProvider),
-        ChangeNotifierProvider.value(value: postProvider),
+        ChangeNotifierProvider.value(value: feedProvider),
         ChangeNotifierProvider.value(value: conversationProvider),
       ],
       child: MainApp(),

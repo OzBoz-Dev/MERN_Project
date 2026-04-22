@@ -6,7 +6,7 @@ import 'package:chip_in/pages/projects/project_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/providers/navigation_provider.dart';
-import 'package:chip_in/providers/post_provider.dart';
+import 'package:chip_in/providers/feed_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -201,7 +201,7 @@ class _ProjectCardState extends State<ProjectCard> {
                     ),
                     const SizedBox(width: 5,),
                     // Like button
-                    Consumer<PostProvider>(
+                    Consumer<FeedProvider>(
                       builder: (context, projectsProvider, child) {
                         if(projectsProvider.posts.isNotEmpty) {
                           // Auth provider for username
