@@ -29,7 +29,7 @@ class _MyBagPageState extends State<MyBagPage> {
         _scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300;
 
-    if (thresholdReached && postProvider.likedHasMore && !postProvider.isLoading) {
+    if (thresholdReached && postProvider.likedHasMore && !postProvider.isLikedLoading) {
       postProvider.loadLikedPosts(authProvider.token!);
     }
   }
@@ -71,7 +71,7 @@ class _MyBagPageState extends State<MyBagPage> {
               // Get feed posts first to check the length
               List<Post> likedPosts = postProvider.likedPosts;
 
-              if(postProvider.isLoading && likedPosts.isEmpty) {
+              if(postProvider.isLikedLoading && likedPosts.isEmpty) {
                 return AnimatedGridBackground(
                   backgroundColor: const Color(0xFFFDF8EA),
                   child: Column(
@@ -91,9 +91,9 @@ class _MyBagPageState extends State<MyBagPage> {
                   ),
                 );
               }
-              else if(postProvider.error != null) {
+              else if(postProvider.likedError != null) {
                 return Center(
-                  child: Text(postProvider.error!),
+                  child: Text(postProvider.likedError!),
                 );
               }
               else {

@@ -34,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final thresholdReached = _scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300;
 
-    if (thresholdReached && postProvider.profileHasMore && !postProvider.isLoading) {
+    if (thresholdReached && postProvider.profileHasMore && !postProvider.isProfileLoading) {
       postProvider.loadPostsByUsername(widget.username);
     }
   }
@@ -167,13 +167,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     builder: (context, postProvider, child) {
                       // Get posts first to check the length
                       List<Post> profilePosts = postProvider.profilePosts;
-                      if (postProvider.isLoading && profilePosts.isEmpty) {
+                      if (postProvider.isProfileLoading && profilePosts.isEmpty) {
                         return const SliverToBoxAdapter(
                           child: Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator(color: Color(0xFFFFA500)))),
                         );
                       }
-                      if (postProvider.error != null) {
-                        return SliverToBoxAdapter(child: Center(child: Text(postProvider.error!)));
+                      if (postProvider.profileError != null) {
+                        return SliverToBoxAdapter(child: Center(child: Text(postProvider.profileError!)));
                       }
                       if (profilePosts.isEmpty) {
                         return SliverToBoxAdapter(

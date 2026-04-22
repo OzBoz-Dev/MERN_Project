@@ -30,7 +30,7 @@ class _FeedPageState extends State<FeedPage> {
         _scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300;
 
-    if (thresholdReached && postProvider.feedHasMore && !postProvider.isLoading) {
+    if (thresholdReached && postProvider.feedHasMore && !postProvider.isFeedLoading) {
       postProvider.loadFeed(authProvider.username!);
     }
   }
@@ -72,7 +72,7 @@ class _FeedPageState extends State<FeedPage> {
               // Get feed posts first to check the length
               List<Post> feedPosts = postProvider.feedPosts;
 
-              if(postProvider.isLoading && feedPosts.isEmpty) {
+              if(postProvider.isFeedLoading && feedPosts.isEmpty) {
                 return AnimatedGridBackground(
                   backgroundColor: const Color(0xFFFDF8EA),
                   child: Column(
@@ -92,39 +92,39 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                 );
               }
-              else if(postProvider.error != null) {
+              else if(postProvider.feedError != null) {
                 return Center(
-                  child: Text(postProvider.error!),
+                  child: Text(postProvider.feedError!),
+                );
+              }
+              else if(feedPosts.isEmpty && !postProvider.isFeedLoading) {
+                return AnimatedGridBackground(
+                  backgroundColor: const Color(0xFFFDF8EA),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          TablerIcons.mood_confuzed,
+                          color: Color(0xFFFFA500),
+                          size: 48,
+                        ),
+                        const SizedBox(height: 12,),
+                        Text(
+                          textAlign: TextAlign.center,
+                          "No posts available!",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               }
               else {
-                if(feedPosts.isEmpty) {
-                  return AnimatedGridBackground(
-                    backgroundColor: const Color(0xFFFDF8EA),
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            TablerIcons.mood_confuzed,
-                            color: Color(0xFFFFA500),
-                            size: 48,
-                          ),
-                          const SizedBox(height: 12,),
-                          Text(
-                            textAlign: TextAlign.center,
-                            "No posts available!",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
                 return Stack(
                   children: [
                     AnimatedGridBackground(

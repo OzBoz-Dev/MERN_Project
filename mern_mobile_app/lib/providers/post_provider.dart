@@ -12,11 +12,19 @@ class PostProvider extends ChangeNotifier {
   final List<String> _profileIds = [];
   final List<String> _likedIds = [];
 
-  // Global UI State
-  bool _isLoading = false;
-  String? _error;
-  bool get isLoading => _isLoading;
-  String? get error => _error;
+  // UI states
+  bool _isFeedLoading = false;
+  bool _isProfileLoading = false;
+  bool _isLikedLoading = false;
+  String? _feedError;
+  String? _profileError;
+  String? _likedError;
+  bool get isFeedLoading => _isFeedLoading;
+  bool get isProfileLoading => _isProfileLoading;
+  bool get isLikedLoading => _isLikedLoading;
+  String? get feedError => _feedError;
+  String? get profileError => _profileError;
+  String? get likedError => _likedError;
 
   // Pagination states for different views
   final int _limit = 10;
@@ -51,18 +59,21 @@ class PostProvider extends ChangeNotifier {
     _profileOffset = 0;
     _likedOffset = 0;
 
-    // IMPORTANT: Reset these or the provider thinks there's nothing left to fetch!
     _feedHasMore = true;
     _profileHasMore = true;
     _likedHasMore = true;
 
-    _error = null;
-    _isLoading = false; // Just in case a logout happened during a fetch
+    _feedError = null;
+    _profileError = null;
+    _likedError = null;
+    _isFeedLoading = false;
+    _isProfileLoading = false;
+    _isLikedLoading = false;
     notifyListeners();
   }
 
   Future<void> loadFeed(String username, {bool refresh = false}) async {
-    if (_isLoading) return;
+    if (_isFeedLoading) return;
 
     if (refresh) {
       _feedOffset = 0;
@@ -73,6 +84,7 @@ class PostProvider extends ChangeNotifier {
     if (!_feedHasMore) return;
 
     await _fetchBatch(
+      state: "feed",
       fetcher: () => _contentService.getFeedPosts(username, _limit, _feedOffset),
       targetIds: _feedIds,
       onComplete: (count, hasMore) {
@@ -83,7 +95,7 @@ class PostProvider extends ChangeNotifier {
   }
 
   Future<void> loadPostsByUsername(String username, {bool refresh = false}) async {
-    if (_isLoading) return;
+    if (_isProfileLoading) return;
 
     if (refresh) {
       _profileOffset = 0;
@@ -94,6 +106,7 @@ class PostProvider extends ChangeNotifier {
     if (!_profileHasMore) return;
 
     await _fetchBatch(
+      state: "profile",
       fetcher: () => _contentService.getPostsByUsername(username, _limit, _profileOffset),
       targetIds: _profileIds,
       onComplete: (count, hasMore) {
@@ -104,7 +117,7 @@ class PostProvider extends ChangeNotifier {
   }
 
   Future<void> loadLikedPosts(String token, {bool refresh = false}) async {
-    if (_isLoading) return;
+    if (_isLikedLoading) return;
 
     if (refresh) {
       _likedOffset = 0;
@@ -115,6 +128,7 @@ class PostProvider extends ChangeNotifier {
     if (!_likedHasMore) return;
 
     await _fetchBatch(
+      state: "liked",
       fetcher: () => _contentService.getLikedPosts(token, _limit, _likedOffset),
       targetIds: _likedIds,
       onComplete: (count, hasMore) {
@@ -159,12 +173,26 @@ class PostProvider extends ChangeNotifier {
 
   // Helper to reduce boilerplate
   Future<void> _fetchBatch({
+    required String state,
     required Future<List<Post>> Function() fetcher,
     required List<String> targetIds,
     required void Function(int count, bool hasMore) onComplete,
   }) async {
-    _isLoading = true;
-    _error = null;
+
+    switch(state) {
+      case "feed":
+        _isFeedLoading = true;
+        _feedError = null;
+        break;
+      case "profile":
+        _isProfileLoading = true;
+        _profileError = null;
+        break;
+      case "liked":
+        _isLikedLoading = true;
+        _likedError = null;
+        break;
+    }
     notifyListeners();
 
     try {
@@ -181,9 +209,29 @@ class PostProvider extends ChangeNotifier {
 
       onComplete(fetchedPosts.length, fetchedPosts.length == _limit);
     } catch (e) {
-      _error = e.toString();
+      switch(state) {
+        case "feed":
+          _feedError = e.toString();
+          break;
+        case "profile":
+          _profileError = e.toString();
+          break;
+        case "liked":
+          _likedError = e.toString();
+          break;
+      }
     } finally {
-      _isLoading = false;
+      switch(state) {
+        case "feed":
+          _isFeedLoading = false;
+          break;
+        case "profile":
+         _isProfileLoading = false;
+          break;
+        case "liked":
+          _isLikedLoading = false;
+          break;
+      }
       notifyListeners();
     }
   }
