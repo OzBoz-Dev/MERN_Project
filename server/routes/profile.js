@@ -143,6 +143,11 @@ router.delete("/:username", auth, async(req, res) => {
         await Post.deleteMany({ author_username: username });
         await Comment.deleteMany({ author_username: username });
         await Message.deleteMany({ author_username: username });
+
+        await Conversation.updateMany(
+            { member_usernames: username },
+            { $pull: { member_usernames: username } }
+        );
         
         await User.findByIdAndDelete(user._id);
 
