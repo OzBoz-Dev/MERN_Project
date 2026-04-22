@@ -83,4 +83,29 @@ class ProfileService {
     }
   }
 
+  // Used to search users
+  Future<List<User>> searchProfileByUsername({
+    required String username
+  }) async {
+    final response = await http.get(
+      Uri.parse("$_baseUrl/profile/search/$username"),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    );
+    final data = jsonDecode(response.body);
+    if(response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+    else {
+      return (data as List).map((user) => User(
+        username: user['username'],
+        firstName: user['firstName'],
+        lastName: user['lastName'],
+        bio: user['bio'] ?? "",
+        tags: (user['tags'] as List<dynamic>? ?? []).map((tag) => Tag(label: tag as String)).toList()
+      )).toList();
+    }
+  }
+
 }
