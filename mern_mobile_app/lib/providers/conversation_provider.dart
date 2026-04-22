@@ -33,6 +33,7 @@ class ConversationProvider with ChangeNotifier {
   // Fetch conversations from service
   Future<void> getConversations() async {
     _isLoading = true;
+    _hasLoaded = false;
     _error = null;
     notifyListeners();
 

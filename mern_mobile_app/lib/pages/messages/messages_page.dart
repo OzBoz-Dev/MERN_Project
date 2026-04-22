@@ -1,5 +1,6 @@
 import 'package:chip_in/models/conversation.dart';
 import 'package:chip_in/pages/messages/chat_page.dart';
+import 'package:chip_in/pages/messages/create_conversation_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
@@ -78,11 +79,17 @@ class _MessagesPageState extends State<MessagesPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
+                          child: ElevatedButton.icon(
                             onPressed: () {
-                              
+                              final conversationProvider = context.read<ConversationProvider>();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CreateConversationPage(),
+                                )
+                              ).then((_) => conversationProvider.getConversations());
                             },
-                            child: Text("Start a Conversation", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
+                            icon: Icon(TablerIcons.message_plus),
+                            label: Text("Create Conversation", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
                           ),
                         ),
                       ),
