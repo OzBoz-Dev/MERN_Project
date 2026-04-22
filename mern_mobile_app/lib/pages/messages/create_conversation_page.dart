@@ -11,7 +11,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class CreateConversationPage extends StatefulWidget {
-  const CreateConversationPage({super.key});
+  final User? initialUser;
+  const CreateConversationPage({super.key, this.initialUser});
 
   @override
   State<CreateConversationPage> createState() => _CreateConversationPageState();
@@ -20,7 +21,20 @@ class CreateConversationPage extends StatefulWidget {
 class _CreateConversationPageState extends State<CreateConversationPage> {
 
   // Users that will be searched and added to conversation
-  final List<User> _users = [];
+  late List<User> _users;
+
+  @override
+  void initState() {
+    super.initState();
+    final authProvider = context.read<AuthProvider>();
+    _users = [];
+    if(widget.initialUser != null) {
+      // Don't allow adding if its the own user's username
+      if(widget.initialUser!.username != authProvider.username!) {
+        _users.add(widget.initialUser!);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
