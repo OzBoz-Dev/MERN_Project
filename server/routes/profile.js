@@ -149,6 +149,11 @@ router.delete("/:username", auth, async(req, res) => {
             { member_usernames: username },
             { $pull: { member_usernames: username } }
         );
+
+        await Post.updateMany(
+            { likes : username },
+            { $pull: { likes : username } }
+        );
         
         await User.findByIdAndDelete(user._id);
 

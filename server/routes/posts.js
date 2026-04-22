@@ -6,6 +6,7 @@ const auth = require("../middleware/auth");
 const Tag = require("../models/Tag");
 const User = require("../models/User");
 const ObjectId = require("bson");
+const Comment = require("../models/Comment")
 
 const { sendCommentNotif } = require("../utils/mailer");
 
@@ -361,7 +362,8 @@ router.delete("/:_id", auth, async (req, res) => {
         message: "User not authorized to delete post",
       });
     }
-
+    
+    await Comment.deleteMany({ post_id_belong : req.params._id })
     await Post.findByIdAndDelete(req.params._id);
 
     res.status(200).json({ message: "Post was successfully deleted" });
