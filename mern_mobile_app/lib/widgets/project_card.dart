@@ -168,10 +168,13 @@ class _ProjectCardState extends State<ProjectCard> {
                     const SizedBox(width: 5,),
                     IconButton(
                       style: IconButton.styleFrom(
-                        backgroundColor: Color(0xFFB9B9B9),
-                        foregroundColor: Colors.white,
+                        foregroundColor: Color(0xFFB9B9B9),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)
+                          borderRadius: BorderRadius.circular(6),
+                          side: const BorderSide(
+                            color: Color(0xFFB9B9B9),
+                            width: 2,
+                          ),
                         )
                       ),
                       onPressed: () {
