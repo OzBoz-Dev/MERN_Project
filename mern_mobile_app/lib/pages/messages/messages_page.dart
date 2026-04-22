@@ -34,7 +34,7 @@ class _MessagesPageState extends State<MessagesPage> {
         builder: (context, conversationProvider, child) {
           List<Conversation> conversations = conversationProvider.conversations;
           // Loading and no convos - avoid flicker
-          if(conversationProvider.isLoading) {
+          if(conversationProvider.isLoading || !conversationProvider.hasLoaded) {
             return const Center(child: CircularProgressIndicator());
           }
           else if(conversationProvider.error != null) {

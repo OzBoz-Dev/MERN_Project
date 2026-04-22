@@ -12,6 +12,7 @@ class ConversationProvider with ChangeNotifier {
 
   // State
   bool _isLoading = false;
+  bool _hasLoaded = false;
   String? _error;
   String? _activeConversationId;
 
@@ -20,6 +21,7 @@ class ConversationProvider with ChangeNotifier {
 
   // Getters
   bool get isLoading => _isLoading;
+  bool get hasLoaded => _hasLoaded;
   String? get error => _error;
   String? get activeConversationId => _activeConversationId;
   List<Conversation> get conversations => _conversations.values.toList();
@@ -36,10 +38,10 @@ class ConversationProvider with ChangeNotifier {
 
     try {
       final fetchedConversations = await messagesService.getConversations(authProvider.token!);
-      _conversations.clear();
       for(Conversation conversation in fetchedConversations) {
         _conversations[conversation.id] = conversation;
       }
+      _hasLoaded = true;
     }
     catch(e) {
       _error = e.toString().replaceFirst("Exception: ", "");
