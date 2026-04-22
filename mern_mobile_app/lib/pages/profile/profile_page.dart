@@ -195,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
                               return Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 4),
-                                child: ProjectCard(post: postProvider.posts[index], disableLikeButton: true,),
+                                child: ProjectCard(post: postProvider.posts[index]),
                               );
                             },
                             childCount: postProvider.posts.length + 1,
