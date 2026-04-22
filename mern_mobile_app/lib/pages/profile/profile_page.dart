@@ -137,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ],
                                 ),
                               const SizedBox(height: 16),
-                              ProfileSquare(firstName: user.firstName, lastName: user.lastName),
+                              ProfileSquare(username: user.username, firstName: user.firstName, lastName: user.lastName),
                               const SizedBox(height: 16),
                               Text("${user.firstName} ${user.lastName}",
                                   style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w800)),
