@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/services/content_service.dart';
 
-class FeedProvider extends ChangeNotifier {
+class PostProvider extends ChangeNotifier {
   final ContentService _contentService = ContentService();
 
   // O(1) lookup by postId

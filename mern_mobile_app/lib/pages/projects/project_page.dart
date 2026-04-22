@@ -7,7 +7,7 @@ import 'package:chip_in/pages/projects/add_comment_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/providers/navigation_provider.dart';
-import 'package:chip_in/providers/feed_provider.dart';
+import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/services/content_service.dart';
 import 'package:chip_in/widgets/comment_card.dart';
 import 'package:chip_in/widgets/tag_container.dart';
@@ -238,7 +238,7 @@ class _ProjectPageState extends State<ProjectPage> {
                 ]
               )
               :
-              Consumer<FeedProvider>(
+              Consumer<PostProvider>(
                 builder: (context, projectsProvider, child) {
                   if(projectsProvider.posts.isNotEmpty) {
                     // Auth provider for username

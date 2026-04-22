@@ -1,5 +1,5 @@
 import 'package:chip_in/pages/profile/edit_profile_page.dart';
-import 'package:chip_in/providers/feed_provider.dart';
+import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/providers/profile_post_provider.dart';
 import 'package:chip_in/widgets/project_card.dart';
 import 'package:chip_in/widgets/tag_holder.dart';
@@ -123,9 +123,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                                           ),
                                           onPressed: () async {
-                                            final feedProvider = context.read<FeedProvider>();
+                                            final postProvider = context.read<PostProvider>();
                                             await authProvider.logout();
-                                            feedProvider.reset();
+                                            postProvider.reset();
                                             if (mounted) Navigator.pop(context);
                                           },
                                           icon: const Icon(TablerIcons.logout),
