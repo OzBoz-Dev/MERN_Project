@@ -1,3 +1,4 @@
+import 'package:chip_in/pages/profile/profile_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/widgets/chat_bubble.dart';
@@ -87,37 +88,55 @@ class _ChatPageState extends State<ChatPage> {
     final items = _buildMessageList(messages).reversed.toList();
 
     final currentUsername = authProvider.username!;
-    List<String> others = ["None"];
+    List<String> others = [];
     if(conversation != null) {
       others = conversation.memberUsernames
         .where((u) => u != currentUsername)
         .toList();
     }
 
-    final headerTitle = others.isEmpty ? "You" : others.join(", ");
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
-        title: Row(
-          children: [
-            Icon(
-              others.length > 1 ? TablerIcons.users_group : TablerIcons.user,
-              color: Color(0xFFFFA500),
+        title: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Expanded(
+            child: Row(
+              children: [
+                for (int i = 0; i < others.length; i++) ...[
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProfilePage(username: others[i]),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      others[i],
+                      style: GoogleFonts.montserrat(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.underline,
+                        decorationColor: const Color(0xFFFFA500),
+                        color: const Color(0xFFFFA500),
+                      ),
+                    ),
+                  ),
+                  if (i != others.length - 1)
+                    Text(
+                      ", ",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFFFA500),
+                      ),
+                    ),
+                ]
+              ],
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                headerTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFFFFA500),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
       body: Column(
