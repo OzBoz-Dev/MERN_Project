@@ -102,7 +102,7 @@ class _MessagesPageState extends State<MessagesPage> {
                 return Stack(
                   children: [
                     ListView.builder(
-                      padding: const EdgeInsets.only(top: 4, bottom: kToolbarHeight + 20,),
+                      padding: const EdgeInsets.only(top: 6, bottom: kToolbarHeight + 20,),
                       itemCount: conversations.length,
                       itemBuilder: (context, index) {
                         final convo = conversations[index];
