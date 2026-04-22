@@ -1,8 +1,12 @@
 import 'package:chip_in/models/comment.dart';
 import 'package:chip_in/models/post.dart';
+import 'package:chip_in/models/user.dart';
+import 'package:chip_in/pages/messages/create_conversation_page.dart';
 import 'package:chip_in/pages/profile/profile_page.dart';
 import 'package:chip_in/pages/projects/add_comment_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/providers/conversation_provider.dart';
+import 'package:chip_in/providers/navigation_provider.dart';
 import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/services/content_service.dart';
 import 'package:chip_in/widgets/comment_card.dart';
@@ -166,7 +170,30 @@ class _ProjectPageState extends State<ProjectPage> {
                     borderRadius: BorderRadius.circular(6)
                   )
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  final conversationProvider = context.read<ConversationProvider>();
+                  final navProvider = context.read<NavigationProvider>();
+                  // Pop corruent page then push
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => CreateConversationPage(
+                        // don't need to fetch, we only really care about username
+                        initialUser: User(
+                          username: widget.post.authorUsername,
+                          firstName: "",
+                          lastName: "",
+                          bio: "",
+                          tags: []
+                        ),
+                      ),
+                    )
+                  ).then((_) {
+                    // Reload conversations
+                    conversationProvider.getConversations();
+                    // Navigate to messages page
+                    navProvider.onNavItemTapped(2);
+                  });
+                },
                 icon: Icon(TablerIcons.send)
               ),
               const SizedBox(width: 5,),
