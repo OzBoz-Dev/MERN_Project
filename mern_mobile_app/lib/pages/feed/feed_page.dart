@@ -131,7 +131,7 @@ class _FeedPageState extends State<FeedPage> {
                       backgroundColor: const Color(0xFFFDF8EA),
                       child: ListView.builder(
                         controller: _scrollController,
-                        padding: const EdgeInsets.only(bottom: kToolbarHeight + 20,),
+                        padding: const EdgeInsets.only(top: 4, bottom: kToolbarHeight + 20,),
                         itemCount: feedPosts.length + 1,
                         itemBuilder: (context, index) {
                           final posts = feedPosts;

@@ -102,22 +102,25 @@ class _MessagesPageState extends State<MessagesPage> {
                 return Stack(
                   children: [
                     ListView.builder(
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: kToolbarHeight + 20,),
+                      padding: const EdgeInsets.only(top: 4, bottom: kToolbarHeight + 20,),
                       itemCount: conversations.length,
                       itemBuilder: (context, index) {
                         final convo = conversations[index];
-                        return ConversationCard(
-                          conversation: convo,
-                          currentUsername: currentUsername,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ChatPage(
-                                  conversationId: convo.id,
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          child: ConversationCard(
+                            conversation: convo,
+                            currentUsername: currentUsername,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ChatPage(
+                                    conversationId: convo.id,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         );
                       },
                     ),

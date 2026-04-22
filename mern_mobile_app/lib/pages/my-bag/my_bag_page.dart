@@ -127,6 +127,7 @@ class _MyBagPageState extends State<MyBagPage> {
                 return AnimatedGridBackground(
                   backgroundColor: const Color(0xFFFDF8EA),
                   child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
                     controller: _scrollController,
                     itemCount: likedPosts.length + 1,
                     itemBuilder: (context, index) {
