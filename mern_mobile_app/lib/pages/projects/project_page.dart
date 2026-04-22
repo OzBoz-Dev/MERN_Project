@@ -21,7 +21,9 @@ import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectPage extends StatefulWidget {
   final Post post;
-  const ProjectPage({super.key, required this.post});
+  final bool? feedReferred;
+  final bool? myBagReferred;
+  const ProjectPage({super.key, required this.post, this.feedReferred, this.myBagReferred});
 
   @override
   State<ProjectPage> createState() => _ProjectPageState();
@@ -198,102 +200,103 @@ class _ProjectPageState extends State<ProjectPage> {
               ),
               const SizedBox(width: 5,),
               // Like button
-                Consumer<FeedProvider>(
-                  builder: (context, projectsProvider, child) {
-                    if(projectsProvider.posts.isNotEmpty) {
-                      // Auth provider for username
-                      final authProvider = context.read<AuthProvider>();
-                      final post = widget.post;
-            
-                      // Whether this post was liked by the user
-                      bool isLiked = post.likes.contains(authProvider.username);
-            
-                      return Column(
-                        children: [
-                          IconButton(
-                            style: IconButton.styleFrom(
-                              backgroundColor: Color(0xFFFFA500),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6)
-                              )
-                            ),
-                            onPressed: () async {
-                              projectsProvider.toggleLike(
-                                token: authProvider.token!,
-                                postId: post.id,
-                                username: authProvider.username!
+              // If referred to this page by the feed, use FeedProvider.
+              Consumer<FeedProvider>(
+                builder: (context, projectsProvider, child) {
+                  if(projectsProvider.posts.isNotEmpty) {
+                    // Auth provider for username
+                    final authProvider = context.read<AuthProvider>();
+                    final post = widget.post;
+          
+                    // Whether this post was liked by the user
+                    bool isLiked = post.likes.contains(authProvider.username);
+          
+                    return Column(
+                      children: [
+                        IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Color(0xFFFFA500),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)
+                            )
+                          ),
+                          onPressed: () async {
+                            projectsProvider.toggleLike(
+                              token: authProvider.token!,
+                              postId: post.id,
+                              username: authProvider.username!
+                            );
+                          },
+                          icon: AnimatedSwitcher(
+                            duration: Duration(milliseconds: 200),
+                            switchInCurve: Curves.easeOutBack,
+                            switchOutCurve: Curves.easeIn,
+                            transitionBuilder: (child, animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: ScaleTransition(
+                                  scale: animation,
+                                  child: child,
+                                ),
                               );
                             },
-                            icon: AnimatedSwitcher(
-                              duration: Duration(milliseconds: 200),
-                              switchInCurve: Curves.easeOutBack,
-                              switchOutCurve: Curves.easeIn,
-                              transitionBuilder: (child, animation) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: ScaleTransition(
-                                    scale: animation,
-                                    child: child,
-                                  ),
-                                );
-                              },
-                              child: Icon(
-                                key: ValueKey(isLiked),
-                                isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
-                              ),
+                            child: Icon(
+                              key: ValueKey(isLiked),
+                              isLiked ? TablerIcons.heart_filled : TablerIcons.heart,
                             ),
                           ),
-                          Text(
-                            "${post.likes.length}",
-                            style: TextStyle(
-                              fontSize: 12
-                            ),
-                          )
-                        ],
-                      );
-                    }
-                    else {
-                      return Column(
-                        children: [
-                          IconButton(
-                            style: IconButton.styleFrom(
-                              backgroundColor: Color(0xFFFFA500),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6)
-                              )
-                            ),
-                            onPressed: null,
-                            icon: AnimatedSwitcher(
-                              duration: Duration(milliseconds: 200),
-                              switchInCurve: Curves.easeOutBack,
-                              switchOutCurve: Curves.easeIn,
-                              transitionBuilder: (child, animation) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: ScaleTransition(
-                                    scale: animation,
-                                    child: child,
-                                  ),
-                                );
-                              },
-                              child: Icon(
-                                TablerIcons.heart,
-                              ),
+                        ),
+                        Text(
+                          "${post.likes.length}",
+                          style: TextStyle(
+                            fontSize: 12
+                          ),
+                        )
+                      ],
+                    );
+                  }
+                  else {
+                    return Column(
+                      children: [
+                        IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Color(0xFFFFA500),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)
+                            )
+                          ),
+                          onPressed: null,
+                          icon: AnimatedSwitcher(
+                            duration: Duration(milliseconds: 200),
+                            switchInCurve: Curves.easeOutBack,
+                            switchOutCurve: Curves.easeIn,
+                            transitionBuilder: (child, animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: ScaleTransition(
+                                  scale: animation,
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: Icon(
+                              TablerIcons.heart,
                             ),
                           ),
-                          Text(
-                            "0",
-                            style: TextStyle(
-                              fontSize: 12
-                            ),
-                          )
-                        ],
-                      );
-                    }
-                  },
-                )
+                        ),
+                        Text(
+                          "0",
+                          style: TextStyle(
+                            fontSize: 12
+                          ),
+                        )
+                      ],
+                    );
+                  }
+                },
+              )
             ],
           ),
           const SizedBox(height: 12,),

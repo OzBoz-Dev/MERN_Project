@@ -1,5 +1,6 @@
 import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/providers/feed_provider.dart';
+import 'package:chip_in/providers/profile_post_provider.dart';
 import 'package:chip_in/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -54,6 +55,7 @@ void main() async {
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider.value(value: feedProvider),
         ChangeNotifierProvider.value(value: conversationProvider),
+        ChangeNotifierProvider(create: (_) => ProfilePostProvider())
       ],
       child: MainApp(),
     )
