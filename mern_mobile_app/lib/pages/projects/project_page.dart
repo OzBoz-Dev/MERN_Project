@@ -21,9 +21,8 @@ import 'package:timeago_flutter/timeago_flutter.dart' as timeago;
 
 class ProjectPage extends StatefulWidget {
   final Post post;
-  final bool? feedReferred;
-  final bool? myBagReferred;
-  const ProjectPage({super.key, required this.post, this.feedReferred, this.myBagReferred});
+  final bool? disableLikeButton;
+  const ProjectPage({super.key, required this.post, this.disableLikeButton});
 
   @override
   State<ProjectPage> createState() => _ProjectPageState();
@@ -200,7 +199,45 @@ class _ProjectPageState extends State<ProjectPage> {
               ),
               const SizedBox(width: 5,),
               // Like button
-              // If referred to this page by the feed, use FeedProvider.
+              widget.disableLikeButton == true ?
+              Column(
+                children: [
+                  IconButton(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Color(0xFFFFA500),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)
+                      )
+                    ),
+                    onPressed: null,
+                    icon: AnimatedSwitcher(
+                      duration: Duration(milliseconds: 200),
+                      switchInCurve: Curves.easeOutBack,
+                      switchOutCurve: Curves.easeIn,
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Icon(
+                        TablerIcons.heart
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "${widget.post.likes.length}",
+                    style: TextStyle(
+                      fontSize: 12
+                    ),
+                  )
+                ]
+              )
+              :
               Consumer<FeedProvider>(
                 builder: (context, projectsProvider, child) {
                   if(projectsProvider.posts.isNotEmpty) {
