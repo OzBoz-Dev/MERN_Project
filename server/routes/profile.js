@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const Post = require("../models/Post");
 const Message = require("../models/Message");
 const Comment = require("../models/Comment");
+const Conversation = require("../models/Conversation");
 
 router.get("/:username", async(req, res) => {
   try {
