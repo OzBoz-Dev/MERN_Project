@@ -213,7 +213,7 @@ export default function FeedClient({ disableSearch, bagMode, displayUser }: Prop
               tags={item.array_tags}
               likes={item.likes}
               datePosted={item.datePosted}
-              onUnlike={disableSearch ? handleUnlike : undefined}
+              onUnlike={bagMode ? handleUnlike : undefined}
             />
           )}
         </Transition>

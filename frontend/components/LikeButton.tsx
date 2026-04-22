@@ -64,23 +64,15 @@ export default function LikeButton({
   onUnlike
 }: Props) {
   const [likeCount, setLikeCount] = useState(likes);
-  const [clicked, setClicked] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Use initial like value
-  useEffect(() => {
-    const username = getCookie("username")
-    setIsLoggedIn(username != undefined);
-    if (username && likedBy.includes(username)) {
-      setClicked(true);
-    }
-  }, [likedBy]);
+  const username = getCookie("username");
+  const [clicked, setClicked] = useState(() => 
+    username ? likedBy.includes(username as string) : false
+  );
 
   return (
     <Flex direction={"column"} gap={3} align={"center"}>
       <Button
         aria-label="Like"
-        disabled={!isLoggedIn} // disable when not logged in
         title={
           // tooltip
           getCookie("username") != undefined

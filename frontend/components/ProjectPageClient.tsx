@@ -1,21 +1,22 @@
 "use client";
 
 import { designTokens } from "@/app/GlobalTheme";
-import { Stack, Group, Title, Divider, Text, Paper, Transition } from "@mantine/core";
-import { IconUser } from "@tabler/icons-react";
+import { Stack, Group, Title, Divider, Text, Paper, Transition, Button } from "@mantine/core";
+import { IconTrash, IconUser } from "@tabler/icons-react";
 import TimeAgo from "react-timeago";
 import CommentsSection from "./CommentsSection";
 import LikeButton from "./LikeButton";
 import MessageButton from "./MessageButton";
 import TagHolder from "./TagHolder";
 import { Post } from "@/types/Post";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PostComment } from "@/types/PostComment";
 import { useEffect, useState } from "react";
-import EditButton from "./EditButton";
+import EditButton from "./EditPostButton";
 import PostEditor from "./PostEditor";
 import { getCookie } from "cookies-next/client";
+import DeletePostModal from "./DeletePostModal";
 
 type Props = {
   post: Post | null;
@@ -25,6 +26,8 @@ type Props = {
 export default function ProjectPageClient({ post, comments }: Props) {
   const [edit, setEdit] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -35,6 +38,13 @@ export default function ProjectPageClient({ post, comments }: Props) {
   ) : (
     edit ? <PostEditor originalPost={post} edit={edit} setEdit={setEdit}/> :
     <div className="animated-grid">
+      <DeletePostModal
+        isOpen={deleting}
+        postId={post._id}
+        onClose={() => setDeleting(false)}
+        onFail={(msg) => console.error(msg)}
+        onSuccess={() => router.push('/feed')}
+      />
       <Transition mounted={mounted} transition='pop' duration={500}>
         {(styles) => (
           <div style={styles}>
@@ -49,6 +59,14 @@ export default function ProjectPageClient({ post, comments }: Props) {
       <Stack w="100%" gap="md">
         <Group justify="space-between" align="center">
           <Title order={1}>{post.title}</Title>
+            {getCookie("username") === post.author_username && 
+              <Group gap='sm'>
+                <EditButton edit={edit} setEdit={setEdit}/>
+                <Button color="red" radius='md' style={{ width: 40, height: 36, padding: 0 }} onClick={() => setDeleting(true)}>
+                  <IconTrash/>
+                </Button>
+              </Group>
+            }
         </Group>
 
         <Text size="sm" c={designTokens.colors.textMuted}>
@@ -72,7 +90,6 @@ export default function ProjectPageClient({ post, comments }: Props) {
             postId={post._id}
             likedBy={post.likes}
           />
-          {getCookie("username") === post.author_username && <EditButton edit={edit} setEdit={setEdit}/>}
         </Group>
       </Stack>
       <Divider mt="lg" mb="xl" w={"100%"} />
