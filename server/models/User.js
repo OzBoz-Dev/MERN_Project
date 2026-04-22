@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema(
             trim: true,
             minlength: [3, 'Username must be at least 3 characters'],
             maxlength: [30, 'Username cannot exceed 30 characters'],
+            index: {
+                collation: { locale: 'en', strength: 2 }
+            }
         },
         email: {
             type: String,
@@ -17,7 +20,7 @@ const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
             lowercase: true,
-            match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
+            match: [/^\S+@\S+\.\S+$/, 'Ensure provided email is valid'],
         },
         password: {
             type: String,
@@ -25,6 +28,39 @@ const userSchema = new mongoose.Schema(
             minlength: [6, 'Password must be at least 6 characters'],
             select: false,
         },
+        tags: [{
+            type: String
+        }],
+        verified: {
+            type: Boolean,
+            default: false
+        },
+        verificationToken: {
+            type: String,
+            select: false
+        },
+        passwordResetToken: {
+            type: String,
+            select: false
+        },
+        passwordResetExpiry: {
+            type: Date,
+            select: false
+        },
+        firstName: {
+            type: String,
+            required: [true, 'First Name is required']
+        },
+        lastName: {
+            type: String,
+            required: [true, 'Last Name is required']
+        },
+        bio: {
+            type: String
+        },
+        profilePicture: {
+            type: String
+        }
     },
     { timestamps: true }
 )
@@ -40,5 +76,6 @@ userSchema.pre('save', async function () {
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password)
 }
+
 
 module.exports = mongoose.model('User', userSchema)

@@ -1,11 +1,16 @@
-import { Group, PasswordInput, Anchor } from "@mantine/core";
-import { useState } from "react";
+import { Group, PasswordInput, Anchor, PasswordInputProps } from "@mantine/core";
+import { MouseEventHandler, useState } from "react";
 import input from './FloatingLabelInput.module.css'
 
-export function ForgotPasswordInput() {
+interface ForgotPasswordInputProps {
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onClick: MouseEventHandler<HTMLAnchorElement>;
+}
+
+export function ForgotPasswordInput( { value, onChange, onClick } : ForgotPasswordInputProps ) {
   const [focused, setFocused] = useState(false);
-  const [value, setValue] = useState('');
-  const floating = value.trim().length !== 0 || focused || undefined;
+  const floating = (value as string).trim().length !== 0 || focused || undefined;
   return (
     <>
       <PasswordInput
@@ -14,15 +19,15 @@ export function ForgotPasswordInput() {
           required
           classNames={input}
           value={value}
-          onChange={(event) => setValue(event.currentTarget.value)}
+          onChange={onChange}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          mt="xl"
+          mt="md"
           autoComplete="nope"
           data-floating={floating}
           labelProps={{ 'data-floating': floating }}
       />
-      <Anchor href="#" onClick={(event) => event.preventDefault()} pt={2} fw={500} fz="xs">
+      <Anchor onClick={onClick} pt={2} fw={500} fz="xs">
         Forgot your password?
       </Anchor>
     </>

@@ -1,0 +1,32 @@
+"use client";
+
+import { designTokens } from "@/app/GlobalTheme";
+import { Button, Container } from "@mantine/core";
+import { IconPencil } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+
+export default function CreateProjectButton() {
+  const router = useRouter();
+
+  return (
+    <Button
+      aria-label="Create Post"
+      size="lg"
+      radius="md"
+      style={{
+        padding: 0,
+        position: "fixed",
+        height: 50,
+        width: 50,
+        bottom: 20,
+        right: 20,
+        zIndex: 1000,
+      }}
+      justify="center"
+      color={designTokens.colors.buttonPrimary}
+      onClick={() => router.push("/projects/create")}
+    >
+      <IconPencil style={{ verticalAlign: "center" }} />
+    </Button>
+  );
+}

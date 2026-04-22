@@ -3,7 +3,10 @@ import { createTheme, MantineThemeOverride } from "@mantine/core";
 export const designTokens = {
   colors: {
     cardBackground: "#FFFEFB",
+    cardBackgroundOther: "#fce49c",
     cardBorder: "#ffe082", // yellow border highlight
+    cardBorderOther: "#ff8282",
+    cardBorderSelf: "#82c9ff",
     cardShadow: "0 2px 8px rgba(0,0,0,0.05)",
     tagBackground: "#f0f0ff", // light purple/blue for tags
     tagText: "#4b4be6",       // blue for tag text

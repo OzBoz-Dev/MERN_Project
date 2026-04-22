@@ -16,8 +16,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
+      args:
+        - NEXT_PUBLIC_API_ENTRYPOINT=${API_ENTRYPOINT}
+        - API_SERVER_ENTRYPOINT=${API_SERVER_ENTRYPOINT}
     ports:
       - "3000:3000"   
+    environment:
+      - NEXT_PUBLIC_API_ENTRYPOINT=${API_ENTRYPOINT}
+      - API_SERVER_ENTRYPOINT=${API_SERVER_ENTRYPOINT}
+      - FRONTEND_URL=${FRONTEND_URL}
     depends_on:
       - nodebackend
     networks:
@@ -33,8 +40,11 @@ services:
         condition: service_healthy
     environment:
       - MONGO_URI=mongodb://db:27017/finder_db # It's local!
-      - JWT_SECRET=change_this_to_a_real_secret_in_production
+      - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=7d
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - API_ENTRYPOINT=${API_ENTRYPOINT}
+      - FRONTEND_URL=${FRONTEND_URL}
     networks:
       - mern_net
   db:

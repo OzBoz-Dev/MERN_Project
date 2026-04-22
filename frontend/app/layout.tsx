@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
+import "@mantine/tiptap/styles.css";
 import {
   ColorSchemeScript,
   MantineProvider,
@@ -10,10 +11,18 @@ import {
 } from "@mantine/core";
 import { NavTabs } from "@/components/NavTabs";
 import { theme } from './GlobalTheme';
+import { LayoutWrapper } from "./layoutWrapper";
 
 export const metadata: Metadata = {
-  title: "My Mantine App",
-  description: "Hope I did it right lol",
+  icons: {
+    icon: '/chip.svg',
+    apple: '/chip.png'
+  },
+  title: {
+    template: "%s | ChipIn",
+    default: "ChipIn"
+  },
+  description: "Find and \"Chip In\" on projects!",
 };
 
 const geistSans = Geist({
@@ -46,7 +55,9 @@ export default function RootLayout({
           <header>
             <NavTabs />
           </header>
-          <main>{children}</main>
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
         </MantineProvider>
       </body>
     </html>
