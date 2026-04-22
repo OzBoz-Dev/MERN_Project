@@ -56,7 +56,7 @@ class PostProvider extends ChangeNotifier {
   Future<void> loadFeed(String username, {bool refresh = false}) async {
     if (_isLoading) return;
 
-     if (refresh) {
+    if (refresh) {
       _feedOffset = 0;
       _feedHasMore = true;
       _feedIds.clear();
@@ -77,7 +77,7 @@ class PostProvider extends ChangeNotifier {
   Future<void> loadPostsByUsername(String username, {bool refresh = false}) async {
     if (_isLoading) return;
 
-     if (refresh) {
+    if (refresh) {
       _profileOffset = 0;
       _profileHasMore = true;
       _profileIds.clear();
@@ -91,6 +91,27 @@ class PostProvider extends ChangeNotifier {
       onComplete: (count, hasMore) {
         _profileOffset += count;
         _profileHasMore = hasMore;
+      },
+    );
+  }
+
+  Future<void> loadLikedPosts(String token, {bool refresh = false}) async {
+    if (_isLoading) return;
+
+    if (refresh) {
+      _likedOffset = 0;
+      _likedHasMore = true;
+      _likedIds.clear();
+    }
+
+    if (!_likedHasMore) return;
+
+    await _fetchBatch(
+      fetcher: () => _contentService.getLikedPosts(token, _limit, _likedOffset),
+      targetIds: _likedIds,
+      onComplete: (count, hasMore) {
+        _likedOffset += count;
+        _likedHasMore = hasMore;
       },
     );
   }

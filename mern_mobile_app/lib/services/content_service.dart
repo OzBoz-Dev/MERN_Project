@@ -78,6 +78,40 @@ class ContentService {
     }
   }
 
+  // Get posts a user has liked
+  Future<List<Post>> getLikedPosts(String token, int limit, int offset) async {
+    final response = await http.get(
+      Uri.parse("$_baseUrl/my-projects/liked?limit=$limit&offset=$offset"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      }
+    );
+    final data = jsonDecode(response.body);
+    if(response.statusCode != 200) {
+      throw Exception(data['error'] ?? data['message']);
+    }
+    else {
+      try {
+        final List<Post> userPosts = (data as List).map(
+          (post) => Post(
+            id: post['_id'],
+            title: post['title'],
+            body: post['body'],
+            likes: (post['likes'] as List).map((usernameLiked) => usernameLiked as String).toSet(),
+            tags: (post['array_tags'] as List).map((tag) => Tag(label: tag)).toList(),
+            authorUsername: post['author_username'],
+            datePosted: ObjectId.fromHexString(post['_id']).timestamp
+          )
+        ).toList();
+        return userPosts;
+      }
+      catch(e) {
+        rethrow;
+      }
+    }
+  }
+
   // Likes a post
   Future<void> likePostById(String token, String postId) async {
     final response = await http.post(
