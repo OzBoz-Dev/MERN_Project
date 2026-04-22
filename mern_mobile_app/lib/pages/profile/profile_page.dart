@@ -125,7 +125,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                           onPressed: () async {
                                             final postProvider = context.read<PostProvider>();
                                             await authProvider.logout();
+                                            // Reset feed
                                             postProvider.reset();
+                                            
                                             if (mounted) Navigator.pop(context);
                                           },
                                           icon: const Icon(TablerIcons.logout),

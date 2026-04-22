@@ -46,10 +46,18 @@ class PostProvider extends ChangeNotifier {
     _feedIds.clear();
     _profileIds.clear();
     _likedIds.clear();
+    
     _feedOffset = 0;
     _profileOffset = 0;
     _likedOffset = 0;
+
+    // IMPORTANT: Reset these or the provider thinks there's nothing left to fetch!
+    _feedHasMore = true;
+    _profileHasMore = true;
+    _likedHasMore = true;
+
     _error = null;
+    _isLoading = false; // Just in case a logout happened during a fetch
     notifyListeners();
   }
 

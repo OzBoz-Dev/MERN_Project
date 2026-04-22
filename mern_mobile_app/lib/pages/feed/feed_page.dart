@@ -38,6 +38,12 @@ class _FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     super.initState();
+    final authProvider = context.read<AuthProvider>();
+    final username = authProvider.username!;
+    // Get feed
+    Future.microtask(() {
+      context.read<PostProvider>().loadFeed(username);
+    });
     _scrollController.addListener(_onScroll);
   }
 

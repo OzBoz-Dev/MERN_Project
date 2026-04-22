@@ -33,8 +33,6 @@ void main() async {
   if(authProvider.token != null && JwtDecoder.isExpired(authProvider.token!)) {
     authProvider.logout();
   }
-
-  final postProvider = PostProvider();
   
   // Conversation Provider takes auth provider & socket service
   final socketService = SocketService();
@@ -42,7 +40,6 @@ void main() async {
 
   // Startup path: kick off the feed load before any widgets exist.
   if (authProvider.username != null) {
-    postProvider.loadFeed(authProvider.username!);
     // Init socket only if logged in
     conversationProvider.initSocket();
   }
@@ -53,7 +50,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider.value(value: authProvider),
-        ChangeNotifierProvider.value(value: postProvider),
+        ChangeNotifierProvider(create: (_) => PostProvider()),
         ChangeNotifierProvider.value(value: conversationProvider),
         ChangeNotifierProvider(create: (_) => ProfilePostProvider())
       ],

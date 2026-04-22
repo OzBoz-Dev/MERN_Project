@@ -1,5 +1,4 @@
 import 'package:chip_in/models/post.dart';
-import 'package:chip_in/pages/projects/create_project_page.dart';
 import 'package:chip_in/providers/auth_provider.dart';
 import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/widgets/animated_grid_background.dart';
@@ -125,94 +124,46 @@ class _MyBagPageState extends State<MyBagPage> {
                     ),
                   );
                 }
-                return Stack(
-                  children: [
-                    AnimatedGridBackground(
-                      backgroundColor: const Color(0xFFFDF8EA),
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.only(bottom: kToolbarHeight + 20,),
-                        itemCount: likedPosts.length + 1,
-                        itemBuilder: (context, index) {
-                          final posts = likedPosts;
-                          final provider = postProvider;
-
-                          final isLastItem = index == posts.length;
-
-                          if (isLastItem) {
-                            if (provider.feedHasMore) {
-                              return const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Center(child: CircularProgressIndicator(
-                                  color: Color(0xFFFFA500)
-                                )),
-                              );
-                            } else {
-                              return Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Center(
-                                  child: Text(
-                                    "You've reached the end!",
-                                    style: GoogleFonts.montserrat(
-                                      fontWeight: FontWeight.bold
-                                    ),
-                                  )
-                                ),
-                              );
-                            }
-                          }
-
+                return AnimatedGridBackground(
+                  backgroundColor: const Color(0xFFFDF8EA),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: likedPosts.length + 1,
+                    itemBuilder: (context, index) {
+                      final posts = likedPosts;
+                      final provider = postProvider;
+                
+                      final isLastItem = index == posts.length;
+                
+                      if (isLastItem) {
+                        if (provider.feedHasMore) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Center(child: CircularProgressIndicator(
+                              color: Color(0xFFFFA500)
+                            )),
+                          );
+                        } else {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                            child: ProjectCard(post: posts[index]),
+                            padding: EdgeInsets.all(16),
+                            child: Center(
+                              child: Text(
+                                "You've reached the end!",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.bold
+                                ),
+                              )
+                            ),
                           );
                         }
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: SafeArea(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 12,
-                                color: Colors.black12,
-                                offset: Offset(0, -2),
-                              )
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Center(
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => CreateProjectPage(),
-                                      )
-                                    );
-                                  },
-                                  icon: const Icon(TablerIcons.pencil),
-                                  label: Text(
-                                    "Create Project",
-                                    style: GoogleFonts.montserrat(
-                                      fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                      }
+                
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        child: ProjectCard(post: posts[index]),
+                      );
+                    }
+                  ),
                 );
               }
             },
