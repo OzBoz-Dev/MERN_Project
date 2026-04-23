@@ -259,6 +259,13 @@ class _FeedPageState extends State<FeedPage> {
     _scrollController.addListener(_onScroll);
   }
 
+  // Stop focusing search bar
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    FocusScope.of(context).unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
