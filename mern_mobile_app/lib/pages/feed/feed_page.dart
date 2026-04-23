@@ -11,7 +11,9 @@ import 'package:chip_in/widgets/project_card.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -31,11 +33,11 @@ class _FeedPageState extends State<FeedPage> {
   DateTime? _searchStartDate;
   DateTime? _searchEndDate;
 
-  // Used to control whether to show searched posts from provider
-  bool _hasSearched = false;
+  final DateRangePickerController _dateController = DateRangePickerController();
 
   // Tells if we have any filters active
-  bool get filtersActive => _searchQuery.isNotEmpty ||
+  // Used to control search view vs feed view
+  bool get searchActive => _searchQuery.isNotEmpty ||
     _searchTags.isNotEmpty ||
     (_searchStartDate != null &&
     _searchEndDate != null);
@@ -47,7 +49,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget _buildAdvancedSearchDialog() {
     return Dialog(
       backgroundColor: Colors.white,
-      insetPadding: EdgeInsets.all(8),
+      insetPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
       child: StatefulBuilder(
         builder: (context, setDialogState) {
           return SingleChildScrollView(
@@ -68,7 +70,12 @@ class _FeedPageState extends State<FeedPage> {
                   const SizedBox(height: 24,),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Search by Tag")
+                    child: Text(
+                      "Search by Tag",
+                      style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.bold
+                      ),
+                    )
                   ),
                   const SizedBox(height: 12,),
                   TypeAheadField<Tag>(
@@ -123,23 +130,88 @@ class _FeedPageState extends State<FeedPage> {
                     },
                   ),
                   const SizedBox(height: 24,),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Filter by Date",
+                      style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.bold
+                      ),
+                    )
+                  ),
+                  const SizedBox(height: 12,),
+                  (_searchStartDate != null && _searchEndDate != null)
+                    ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "${DateFormat("MMMM d, yyyy").format(_searchStartDate!)} - ${DateFormat("MMMM d, yyyy").format(_searchEndDate!)}"
+                      )
+                    )
+                    : Align(alignment: Alignment.centerLeft, child: Text("No Dates Selected")),
+                  const SizedBox(height: 12,),
+                  SfDateRangePicker(
+                    controller: _dateController,
+                    maxDate: DateTime.now(),
+                    headerStyle: DateRangePickerHeaderStyle(
+                      backgroundColor: Colors.white,
+                      textStyle: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    selectionColor: const Color(0xFFFFA500),
+                    startRangeSelectionColor: const Color(0xFFFFA500),
+                    endRangeSelectionColor: const Color(0xFFFFA500),
+                    rangeSelectionColor: const Color(0x33FFA500),
+                    todayHighlightColor: Colors.orange,
+                    backgroundColor: Colors.white,
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    initialSelectedRange: _searchStartDate != null && _searchEndDate != null
+                        ? PickerDateRange(_searchStartDate, _searchEndDate)
+                        : null,
+                    onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                      final value = args.value;
+                      if (value is PickerDateRange) {
+                        setState(() {
+                          _searchStartDate = value.startDate;
+                          _searchEndDate = value.endDate;
+                        });
+                        setDialogState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _searchStartDate = null;
+                          _searchEndDate = null;
+                          _dateController.selectedRange = null;
+                        });
+                        setDialogState((){});
+                      },
+                      child: Text("Clear Date Selection", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
+                    ),
+                  ),
+                  const SizedBox(height: 12,),
+                  Divider(),
+                  const SizedBox(height: 12,),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
                         // No filters active - switch back to feed view
-                        if(!filtersActive) {
-                          setState(() {
-                            _hasSearched = false;
-                          });
+                        if(!searchActive) {
+                          Navigator.of(context).pop();
                           return;
                         }
-                        // Otherwise, switch to search view and carry out the search
-                        setState(() {
-                          _hasSearched = true;
-                        });
                         // Search with given filters
                         await postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
+                        if(mounted) Navigator.of(context).pop();
                       },
                       child: Text("Apply Filters", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
                     ),
@@ -162,7 +234,7 @@ class _FeedPageState extends State<FeedPage> {
         _scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 300;
     
-    if(_searchQuery.isEmpty) {
+    if(!searchActive) {
       if (thresholdReached && postProvider.feedHasMore && !postProvider.isFeedLoading) {
         postProvider.loadFeed(authProvider.username!);
       }
@@ -214,11 +286,11 @@ class _FeedPageState extends State<FeedPage> {
                   // Get feed posts first to check the length
                   // Determine posts based on whether search query is not empty
                   List<Post> posts;
-                  _hasSearched ? posts = postProvider.searchedPosts : posts = postProvider.feedPosts;
+                  searchActive ? posts = postProvider.searchedPosts : posts = postProvider.feedPosts;
               
                   // Switch loading & error state based on search query
-                  bool isLoading = _hasSearched ? postProvider.isSearchLoading : postProvider.isFeedLoading;
-                  String? error = _hasSearched ? postProvider.searchError : postProvider.feedError;
+                  bool isLoading = searchActive ? postProvider.isSearchLoading : postProvider.isFeedLoading;
+                  String? error = searchActive ? postProvider.searchError : postProvider.feedError;
               
                   if(isLoading && posts.isEmpty) {
                     return AnimatedGridBackground(
@@ -261,7 +333,7 @@ class _FeedPageState extends State<FeedPage> {
                             const SizedBox(height: 12,),
                             Text(
                               textAlign: TextAlign.center,
-                              _searchQuery.isEmpty ?
+                              !searchActive ?
                               "No posts available!"
                               : "No results found...",
                               style: GoogleFonts.montserrat(
@@ -405,7 +477,6 @@ class _FeedPageState extends State<FeedPage> {
                                       }
                                       setState(() {
                                         _searchQuery = query;
-                                        _hasSearched = true; // switch to search view
                                       });
                                       // Search with this query
                                       await postProvider.searchPosts(query, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
@@ -420,18 +491,10 @@ class _FeedPageState extends State<FeedPage> {
                                         // Clear search query
                                         _searchQuery = "";
                                       });
-
-                                      // If after clearing the search query there are no more filters active,
-                                      // we can switch back to normal feed view
-                                      if(!filtersActive) {
-                                        setState(() {
-                                          _hasSearched = false;
-                                        });
-                                        return;
+                                      // If any other filters are still active, we have to re-apply filters without the query
+                                      if(searchActive) {
+                                        await postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                                       }
-
-                                      // Otherwise, we have to re-apply filters without the query
-                                      await postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                                     },
                                     icon: Icon(TablerIcons.x)
                                   )

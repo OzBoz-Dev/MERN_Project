@@ -28,6 +28,7 @@ dependencies:
   vsc_quill_delta_to_html: ^1.0.5
   intl: ^0.20.2
   socket_io_client: ^3.1.4
+  syncfusion_flutter_datepicker: ^33.2.3
 
 dev_dependencies:
   flutter_test:

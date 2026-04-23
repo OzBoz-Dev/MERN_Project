@@ -84,9 +84,9 @@ class ContentService {
     if(startDate != null && endDate != null) {
       uri = Uri.parse(
         "$_baseUrl/posts/search?q=$searchQuery&limit=$limit&offset=$offset&startDate=${
-          startDate.toIso8601String()
+          startDate.millisecondsSinceEpoch.toString()
         }&endDate=${
-          endDate.toIso8601String()
+          endDate.millisecondsSinceEpoch.toString()
         }&tags=${
           tags.map((tag) => tag.label).toList().join(",")
         }"
