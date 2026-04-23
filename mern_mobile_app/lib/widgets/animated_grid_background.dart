@@ -38,12 +38,12 @@ class _AnimatedGridBackgroundState extends State<AnimatedGridBackground>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: widget.backgroundColor,
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return CustomPaint(
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Container(
+          color: widget.backgroundColor,
+          child: CustomPaint(
             painter: _GridPainter(
               progress: _controller.value,
               gridColor: widget.gridColor,
@@ -51,9 +51,9 @@ class _AnimatedGridBackgroundState extends State<AnimatedGridBackground>
             child: SizedBox.expand(
               child: widget.child,
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
