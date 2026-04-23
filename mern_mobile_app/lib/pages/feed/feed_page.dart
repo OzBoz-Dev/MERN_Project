@@ -28,6 +28,7 @@ class _FeedPageState extends State<FeedPage> {
 
   // For search
   final _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode(canRequestFocus: false);
   final List<Tag> _searchTags = [];
   String _searchQuery = "";
   DateTime? _searchStartDate;
@@ -465,6 +466,24 @@ class _FeedPageState extends State<FeedPage> {
                             Expanded(
                               child: TextField(
                                 controller: _searchController,
+                                focusNode: _searchFocusNode,
+                                onTap: () {
+                                  // Manually enable and request focus when the user intends to type
+                                  if (!_searchFocusNode.canRequestFocus) {
+                                    setState(() {
+                                      _searchFocusNode.canRequestFocus = true;
+                                    });
+                                  }
+                                  _searchFocusNode.requestFocus();
+                                },
+                                onTapOutside: (event) {
+                                  // Disable it again when they click away 
+                                  // so it doesn't grab focus on the next dialog pop
+                                  _searchFocusNode.unfocus();
+                                  setState(() {
+                                    _searchFocusNode.canRequestFocus = false;
+                                  });
+                                },
                                 decoration: InputDecoration(
                                   hint: Text("Search for posts..."),
                                   suffixIcon: _searchController.text.isEmpty ? IconButton(
@@ -533,6 +552,7 @@ class _FeedPageState extends State<FeedPage> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 }
