@@ -100,42 +100,40 @@ class _ChatPageState extends State<ChatPage> {
         elevation: 1,
         title: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Expanded(
-            child: Row(
-              children: [
-                for (int i = 0; i < others.length; i++) ...[
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProfilePage(username: others[i]),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      others[i],
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline,
-                        decorationColor: const Color(0xFFFFA500),
-                        color: const Color(0xFFFFA500),
+          child: Row(
+            children: [
+              for (int i = 0; i < others.length; i++) ...[
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProfilePage(username: others[i]),
                       ),
+                    );
+                  },
+                  child: Text(
+                    others[i],
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                      decorationColor: const Color(0xFFFFA500),
+                      color: const Color(0xFFFFA500),
                     ),
                   ),
-                  if (i != others.length - 1)
-                    Text(
-                      ", ",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFFFFA500),
-                      ),
+                ),
+                if (i != others.length - 1)
+                  Text(
+                    ", ",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFFFA500),
                     ),
-                ]
-              ],
-            ),
+                  ),
+              ]
+            ],
           ),
         ),
       ),
