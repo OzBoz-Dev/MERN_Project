@@ -78,6 +78,59 @@ class ContentService {
     }
   }
 
+  // Search posts
+  Future<List<Post>> searchPosts(String searchQuery, int limit, int offset, List<Tag> tags, DateTime? startDate, DateTime? endDate) async {
+    final Uri uri;
+    if(startDate != null && endDate != null) {
+      uri = Uri.parse(
+        "$_baseUrl/posts/search?q=$searchQuery&limit=$limit&offset=$offset&startDate=${
+          startDate.toIso8601String()
+        }&endDate=${
+          endDate.toIso8601String()
+        }&tags=${
+          tags.map((tag) => tag.label).toList().join(",")
+        }"
+      );
+    }
+    else {
+      uri = Uri.parse(
+        "$_baseUrl/posts/search?q=$searchQuery&limit=$limit&offset=$offset&tags=${
+          tags.map((tag) => tag.label).toList().join(",")
+        }"
+      );
+    }
+    final response = await http.get(
+      uri,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    );
+    final data = jsonDecode(response.body);
+    if(response.statusCode != 200) {
+      throw Exception(data['error'] ?? data['message']);
+    }
+    else {
+      try {
+        final List<Post> userPosts = (data as List).map(
+          (post) => Post(
+            id: post['_id'],
+            title: post['title'],
+            body: post['body'],
+            likes: (post['likes'] as List).map((usernameLiked) => usernameLiked as String).toSet(),
+            tags: (post['array_tags'] as List).map((tag) => Tag(label: tag)).toList(),
+            authorUsername: post['author_username'],
+            datePosted: ObjectId.fromHexString(post['_id']).timestamp
+          )
+        ).toList();
+        return userPosts;
+      }
+      catch(e) {
+        rethrow;
+      }
+    }
+  }
+
+
   // Get posts a user has liked
   Future<List<Post>> getLikedPosts(String token, int limit, int offset) async {
     final response = await http.get(

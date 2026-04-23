@@ -1,3 +1,4 @@
+import 'package:chip_in/models/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/services/content_service.dart';
@@ -11,40 +12,51 @@ class PostProvider extends ChangeNotifier {
   final List<String> _feedIds = [];
   final List<String> _profileIds = [];
   final List<String> _likedIds = [];
+  final List<String> _searchedIds = [];
 
   // UI states
   bool _isFeedLoading = false;
   bool _isProfileLoading = false;
   bool _isLikedLoading = false;
+  bool _isSearchLoading = false;
   String? _feedError;
   String? _profileError;
   String? _likedError;
+  String? _searchError;
+
+  // UI State getters
   bool get isFeedLoading => _isFeedLoading;
   bool get isProfileLoading => _isProfileLoading;
   bool get isLikedLoading => _isLikedLoading;
+  bool get isSearchLoading => _isSearchLoading;
   String? get feedError => _feedError;
   String? get profileError => _profileError;
   String? get likedError => _likedError;
+  String? get searchError => _searchError;
 
   // Pagination states for different views
   final int _limit = 10;
   int _feedOffset = 0;
   int _profileOffset = 0;
   int _likedOffset = 0;
+  int _searchOffset = 0;
 
   bool _feedHasMore = true;
   bool _profileHasMore = true;
   bool _likedHasMore = true;
+  bool _searchHasMore = true;
 
   // Getters that map IDs back to the actual Post objects
   List<Post> get feedPosts => _feedIds.map((id) => _posts[id]!).toList();
   List<Post> get profilePosts => _profileIds.map((id) => _posts[id]!).toList();
   List<Post> get likedPosts => _likedIds.map((id) => _posts[id]!).toList();
+  List<Post> get searchedPosts => _searchedIds.map((id) => _posts[id]!).toList();
 
   // Used for pagination when scrolling
   bool get feedHasMore => _feedHasMore;
   bool get profileHasMore => _profileHasMore;
   bool get likedHasMore => _likedHasMore;
+  bool get searchHasMore => _searchHasMore;
 
   Post? getPostById(String postId) => _posts[postId];
 
@@ -54,21 +66,26 @@ class PostProvider extends ChangeNotifier {
     _feedIds.clear();
     _profileIds.clear();
     _likedIds.clear();
+    _searchedIds.clear();
     
     _feedOffset = 0;
     _profileOffset = 0;
     _likedOffset = 0;
+    _searchOffset = 0;
 
     _feedHasMore = true;
     _profileHasMore = true;
     _likedHasMore = true;
+    _searchHasMore = true;
 
     _feedError = null;
     _profileError = null;
     _likedError = null;
+    _searchError = null;
     _isFeedLoading = false;
     _isProfileLoading = false;
     _isLikedLoading = false;
+    _isSearchLoading = false;
     notifyListeners();
   }
 
@@ -138,6 +155,28 @@ class PostProvider extends ChangeNotifier {
     );
   }
 
+  Future<void> searchPosts(String searchQuery, List<Tag> tags, DateTime? startDate, DateTime? endDate, {bool refresh = false}) async {
+    if (_isSearchLoading) return;
+
+    if (refresh) {
+      _searchOffset = 0;
+      _searchHasMore = true;
+      _searchedIds.clear();
+    }
+
+    if (!_searchHasMore) return;
+
+    await _fetchBatch(
+      state: "search",
+      fetcher: () => _contentService.searchPosts(searchQuery, _limit, _searchOffset, tags, startDate, endDate),
+      targetIds: _searchedIds,
+      onComplete: (count, hasMore) {
+        _searchOffset += count;
+        _searchHasMore = hasMore;
+      },
+    );
+  }
+
   Future<void> toggleLike({
     required String token,
     required String postId,
@@ -192,6 +231,10 @@ class PostProvider extends ChangeNotifier {
         _isLikedLoading = true;
         _likedError = null;
         break;
+      case "search":
+        _isSearchLoading = true;
+        _searchError = null;
+        break;
     }
     notifyListeners();
 
@@ -219,6 +262,9 @@ class PostProvider extends ChangeNotifier {
         case "liked":
           _likedError = e.toString();
           break;
+        case "search":
+          _searchError = e.toString();
+          break;
       }
     } finally {
       switch(state) {
@@ -230,6 +276,9 @@ class PostProvider extends ChangeNotifier {
           break;
         case "liked":
           _isLikedLoading = false;
+          break;
+        case "search":
+          _isSearchLoading = false;
           break;
       }
       notifyListeners();
