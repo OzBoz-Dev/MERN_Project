@@ -288,10 +288,10 @@ class _FeedPageState extends State<FeedPage> {
                   // Determine posts based on whether search query is not empty
                   List<Post> posts;
                   searchActive ? posts = postProvider.searchedPosts : posts = postProvider.feedPosts;
-              
                   // Switch loading & error state based on search query
                   bool isLoading = searchActive ? postProvider.isSearchLoading : postProvider.isFeedLoading;
                   String? error = searchActive ? postProvider.searchError : postProvider.feedError;
+                  bool hasMore = searchActive ? postProvider.searchHasMore : postProvider.feedHasMore;
               
                   if(isLoading && posts.isEmpty) {
                     return AnimatedGridBackground(
@@ -359,12 +359,10 @@ class _FeedPageState extends State<FeedPage> {
                               padding: const EdgeInsets.only(top: 80, bottom: kToolbarHeight + 20,),
                               itemCount: posts.length + 1,
                               itemBuilder: (context, index) {
-                                final provider = postProvider;
-                          
                                 final isLastItem = index == posts.length;
                           
                                 if (isLastItem) {
-                                  if (provider.feedHasMore) {
+                                  if (hasMore) {
                                     return const Padding(
                                       padding: EdgeInsets.all(16),
                                       child: Center(child: CircularProgressIndicator(
