@@ -116,13 +116,14 @@ class _MessagesPageState extends State<MessagesPage> {
                               conversation: convo,
                               currentUsername: currentUsername,
                               onTap: () {
+                                final conversationProvider = context.read<ConversationProvider>();
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (_) => ChatPage(
                                       conversationId: convo.id,
                                     ),
                                   ),
-                                );
+                                ).then((_) => conversationProvider.getConversations());
                               },
                             ),
                           );
