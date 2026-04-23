@@ -7,13 +7,13 @@
 ChipIn is a collaborative platform for technical project builders who are looking for contributors. With ChipIn, users can post about their ongoing technical projects and others can browse and chip in with their skills, feedback, and expertise.
 
 ## The Team:
-- Ozair Ahmed: Project Manager/Frontend
-- Haani-Mohamed Lalji: Frontend/Mobile
-- Armin Delmo: Frontend
-- Nicole Baez Espinosa: API
-- Nickie Sethi: API
-- Dylan Wilkins: API
-- Asim Siddiqui: Database
+- [Ozair Ahmed](https://github.com/OzBoz-Dev/): Project Manager/Frontend
+- [Haani-Mohamed Lalji](https://github.com/hml786): Frontend/Mobile
+- [Armin Delmo](https://github.com/del0m): Frontend
+- [Nicole Baez Espinosa](https://github.com/Nicole-Baez): API
+- [Nickie Sethi](https://github.com/nickiesethi): API
+- [Dylan Wilkins](https://github.com/dylandhw): API
+- [Asim Siddiqui](https://github.com/therealsimcard): Database
 
 ## Tech Stack
 
