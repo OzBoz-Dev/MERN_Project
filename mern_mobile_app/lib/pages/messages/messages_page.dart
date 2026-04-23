@@ -22,6 +22,9 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   void initState() {
     super.initState();
+    final conversationProvider = context.read<ConversationProvider>();
+    // Init sockets on this page
+    conversationProvider.initSocket();
     Future.microtask(() {
       context.read<ConversationProvider>().getConversations();
     });

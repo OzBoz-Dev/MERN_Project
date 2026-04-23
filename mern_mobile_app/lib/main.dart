@@ -36,12 +36,6 @@ void main() async {
   // Conversation Provider takes auth provider & socket service
   final socketService = SocketService();
   final conversationProvider = ConversationProvider(authProvider: authProvider, socketService: socketService);
-
-  // Startup path: kick off the feed load before any widgets exist.
-  if (authProvider.username != null) {
-    // Init socket only if logged in
-    conversationProvider.initSocket();
-  }
   
 
   runApp(
