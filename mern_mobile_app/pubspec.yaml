@@ -1,0 +1,60 @@
+name: chip_in
+description: "Chip In on projects!"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_dotenv: ^6.0.0
+  flutter_html: ^3.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_quill: ^11.5.0
+  flutter_tabler_icons: ^1.43.0
+  flutter_typeahead: ^6.0.0
+  google_fonts: ^6.2.1
+  html: ^0.15.6
+  http: ^1.6.0
+  jwt_decoder: ^2.0.1
+  material_symbols_icons: ^4.2928.1
+  objectid: ^4.0.3
+  password_strength_checker: ^1.3.2
+  provider: ^6.1.5+1
+  shared_preferences: ^2.5.5
+  timeago_flutter: ^3.7.0
+  vsc_quill_delta_to_html: ^1.0.5
+  intl: ^0.20.2
+  socket_io_client: ^3.1.4
+  syncfusion_flutter_datepicker: ^33.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/chip.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/chip.png"
+  adaptive_icon_foreground_inset: 24
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/chipin_logo.png
+    - assets/chip.png
+    - assets/bag.png

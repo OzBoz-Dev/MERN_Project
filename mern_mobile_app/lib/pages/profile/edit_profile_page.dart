@@ -1,0 +1,408 @@
+import 'package:chip_in/models/tag.dart';
+import 'package:chip_in/models/user.dart';
+import 'package:chip_in/providers/auth_provider.dart';
+import 'package:chip_in/services/content_service.dart';
+import 'package:chip_in/services/profile_service.dart';
+import 'package:chip_in/widgets/animated_grid_background.dart';
+import 'package:chip_in/widgets/tag_holder.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+class EditProfilePage extends StatefulWidget {
+  final User user;
+  const EditProfilePage({super.key, required this.user});
+
+  @override
+  State<EditProfilePage> createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+
+  // Text editing controllers
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+  late TextEditingController _bioController;
+
+  // Tags to appear and edit in tag holder
+  late List<Tag> _tags;
+
+  @override
+  void initState() {
+    super.initState();
+    _tags = List<Tag>.from(widget.user.tags); // populate with user's initial tags
+    _firstNameController = TextEditingController(text: widget.user.firstName);
+    _lastNameController = TextEditingController(text: widget.user.lastName);
+    _bioController = TextEditingController(text: widget.user.bio);
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Edit Profile"), centerTitle: true,),
+      body: AnimatedGridBackground(
+        backgroundColor: const Color(0xFFFDF8EA),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "${widget.user.username}'s Profile",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(height: 16,),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Example fields
+                          TextField(
+                            controller: _firstNameController,
+                            decoration: InputDecoration(
+                              labelText: "First Name",
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _lastNameController,
+                            decoration: InputDecoration(
+                              labelText: "Last Name",
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _bioController,
+                            maxLength: 300,
+                            maxLines: 6,
+                            decoration: InputDecoration(
+                              labelText: "Bio",
+                              alignLabelWithHint: true,
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Divider(),
+                          const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Tags - tap to delete, search to add")
+                          ),
+                          const SizedBox(height: 12,),
+                          TypeAheadField<Tag>(
+                            itemBuilder: (context, Tag tag) {
+                              return ListTile(
+                                title: Text(tag.label),
+                              );
+                            },
+                            onSelected: (tag) {
+                              final alreadyExists = _tags.any((t) => t.label == tag.label);
+                              if(alreadyExists) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Your profile already has this tag!"),
+                                  )
+                                );
+                              }
+                              else {
+                                setState(() {
+                                  _tags.add(tag);
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Tag added!"),
+                                  )
+                                );
+                              }
+                            },
+                            suggestionsCallback: (pattern) async {
+                              if (pattern.isEmpty) return [];
+                              final contentService = ContentService();
+                              return await contentService.searchTagsByValue(pattern);
+                            },
+                            builder: (context, controller, focusNode) {
+                              return TextField(
+                                controller: controller,
+                                focusNode: focusNode,
+                                decoration: InputDecoration(
+                                  labelText: 'Search tags to add',
+                                  border: OutlineInputBorder(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 12,),
+                          _tags.isEmpty ? Text("No tags") : TagHolder(
+                            tags: _tags,
+                            onDelete: (deletedTag) {
+                              setState(() {
+                                _tags.remove(deletedTag);
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                final authService = context.read<AuthProvider>();
+                                final profileService = ProfileService();
+
+                                // Collect fields
+                                final firstName = _firstNameController.text.trim();
+                                final lastName = _lastNameController.text.trim();
+                                final bio = _bioController.text.trim();
+
+                                try {
+                                  await profileService.editProfile(
+                                    token: authService.token ?? '',
+                                    username: widget.user.username,
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    bio: bio,
+                                    tags: _tags.map((tag) => tag.label).toList()
+                                  );
+                                }
+                                catch(e) {
+                                  if(mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          e.toString()
+                                        ),
+                                      )
+                                    );
+                                  }
+                                }
+
+                                if(mounted) Navigator.pop(context, true);
+                              },
+                              child: Text(
+                                "Save",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Divider(),
+                          const SizedBox(height: 12),
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(TablerIcons.alert_triangle, color: Colors.red, size: 18,),
+                                const SizedBox(width: 6,),
+                                Text(
+                                  "Danger Zone",
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) {
+
+                                  final passwordController = TextEditingController();
+                                  bool isPasswordObscured = true;
+
+                                  // To stop from canceling when deletion is in progress
+                                  bool deletionInProgress = false;
+
+                                  return StatefulBuilder(
+                                    builder: (context, setDialogState) {
+                                      return AlertDialog(
+                                        backgroundColor: Colors.white,
+                                        title: Text(
+                                          "Confirm Account Deletion",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        ),
+                                        content: SingleChildScrollView(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              RichText(
+                                                textAlign: TextAlign.center,
+                                                text: TextSpan(
+                                                  style: GoogleFonts.montserrat(
+                                                    fontSize: 16,
+                                                    color: Colors.black
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: "Type your password to confirm deletion of your account. All of your posts and comments will be deleted.\n\n",
+                                                    ),
+                                                    TextSpan(
+                                                      text: "This action is permanent.",
+                                                      style: GoogleFonts.montserrat(
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.red
+                                                      )
+                                                    )
+                                                  ]
+                                                ),
+                                              ),
+                                              const SizedBox(height: 24,),
+                                              TextField(
+                                                controller: passwordController,
+                                                style: TextStyle(
+                                                  fontSize: 14
+                                                ),
+                                                obscureText: isPasswordObscured,
+                                                onChanged: (value) {
+                                                  setDialogState(() {}); 
+                                                },
+                                                decoration: InputDecoration(
+                                                  labelText: "Password",
+                                                  prefixIcon: Icon(TablerIcons.password),
+                                                  suffixIcon: IconButton(
+                                                    onPressed: () {
+                                                      setDialogState(() {
+                                                        isPasswordObscured = !isPasswordObscured;
+                                                      });
+                                                    },
+                                                    icon: Icon(isPasswordObscured ? TablerIcons.eye : TablerIcons.eye_off)
+                                                  )
+                                                ),
+                                              ),
+                                              const SizedBox(height: 15,),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.red,
+                                                    foregroundColor: Colors.white
+                                                  ),
+                                                  onPressed: passwordController.text.isNotEmpty ? () async {
+                                          
+                                                    // Show that deletion is in progress
+                                                    setDialogState(() {
+                                                      deletionInProgress = true;
+                                                    });
+                                          
+                                                    final authProvider = context.read<AuthProvider>();
+                                                    final profileService = ProfileService();
+                                                    final token = authProvider.token;
+                                                    final username = widget.user.username;
+                                                    final password = passwordController.text;
+                                          
+                                                    try {
+                                                      // Delete the profile
+                                                      await profileService.deleteProfile(
+                                                        token: token!,
+                                                        username: username,
+                                                        password: password
+                                                      );
+                                          
+                                                      // Once done, logout
+                                                      await authProvider.logout();
+                                          
+                                                      // Pop until
+                                                      if (context.mounted) {
+                                                        Navigator.pushNamedAndRemoveUntil(
+                                                          context, 
+                                                          '/login', 
+                                                          (route) => false,
+                                                        );
+                                                      }
+                                                    }
+                                                    catch(e) {
+                                                      // Error occurred
+                                                      setDialogState(() {
+                                                        deletionInProgress = false;
+                                                      });
+                                                      if(mounted) {
+                                                        // Close dialog
+                                                        Navigator.of(context).pop();
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          SnackBar(
+                                                            backgroundColor: Colors.red,
+                                                            content: Text(
+                                                              e.toString().replaceFirst("Exception: ", ""),
+                                                              style: TextStyle(
+                                                                color: Colors.white
+                                                              ),
+                                                            ),
+                                                          )
+                                                        );
+                                                      }
+                                                    }
+                                                  } : null,
+                                                  child: deletionInProgress ?  SizedBox(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: CircularProgressIndicator(
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                                  : Text("Delete Account", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 5,),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  onPressed: !deletionInProgress ? () {
+                                                    Navigator.pop(context);
+                                                  } : null,
+                                                  child: Text("Cancel", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  );
+                                }
+                              );
+                            },
+                            child: Text(
+                              "Delete Account",
+                              style: GoogleFonts.montserrat(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
