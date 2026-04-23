@@ -26,10 +26,16 @@ ChipIn is a collaborative platform for technical project builders who are lookin
 
 ## To run the stack
 
-Install Docker on your device and run this command.
+Requires Docker Compose v2 and buildx
 
+For a localhost deployment, simply run:
 ```
 docker compose up --build
+```
+
+For a server deployment, add the production flag:
+```
+docker compose --profile prod up --build
 ```
 
 MongoDB is web scale
