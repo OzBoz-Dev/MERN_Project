@@ -203,14 +203,14 @@ class _FeedPageState extends State<FeedPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () async {
+                      onPressed: () {
                         // No filters active - switch back to feed view
                         if(!searchActive) {
                           Navigator.of(context).pop();
                           return;
                         }
                         // Search with given filters
-                        await postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
+                        postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                         if(mounted) Navigator.of(context).pop();
                       },
                       child: Text("Apply Filters", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
@@ -257,13 +257,6 @@ class _FeedPageState extends State<FeedPage> {
       context.read<PostProvider>().loadFeed(username);
     });
     _scrollController.addListener(_onScroll);
-  }
-
-  // Stop focusing search bar
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    FocusScope.of(context).unfocus();
   }
 
   @override
@@ -475,7 +468,7 @@ class _FeedPageState extends State<FeedPage> {
                                 decoration: InputDecoration(
                                   hint: Text("Search for posts..."),
                                   suffixIcon: _searchController.text.isEmpty ? IconButton(
-                                    onPressed: () async {
+                                    onPressed: () {
                                       // Collect query from search field
                                       final query = _searchController.text.trim();
                                       // If empty query, don't use it
@@ -486,13 +479,13 @@ class _FeedPageState extends State<FeedPage> {
                                         _searchQuery = query;
                                       });
                                       // Search with this query
-                                      await postProvider.searchPosts(query, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
+                                      postProvider.searchPosts(query, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                                     },
                                     icon: Icon(TablerIcons.search)
                                   )
                                   :
                                   IconButton(
-                                    onPressed: () async {
+                                    onPressed: () {
                                       _searchController.clear();
                                       setState(() {
                                         // Clear search query
@@ -500,7 +493,7 @@ class _FeedPageState extends State<FeedPage> {
                                       });
                                       // If any other filters are still active, we have to re-apply filters without the query
                                       if(searchActive) {
-                                        await postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
+                                        postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                                       }
                                     },
                                     icon: Icon(TablerIcons.x)
