@@ -1,5 +1,6 @@
 import 'package:chip_in/models/post.dart';
 import 'package:chip_in/pages/profile/edit_profile_page.dart';
+import 'package:chip_in/providers/conversation_provider.dart';
 import 'package:chip_in/providers/post_provider.dart';
 import 'package:chip_in/widgets/project_card.dart';
 import 'package:chip_in/widgets/tag_holder.dart';
@@ -125,9 +126,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ),
                                             onPressed: () async {
                                               final postProvider = context.read<PostProvider>();
+                                              final conversationProvider = context.read<ConversationProvider>();
                                               await authProvider.logout();
                                               // Reset feed
                                               postProvider.reset();
+                                              // Reset convos
+                                              conversationProvider.reset();
                                               
                                               if (mounted) Navigator.pop(context);
                                             },
