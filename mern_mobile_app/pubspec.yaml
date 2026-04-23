@@ -29,6 +29,7 @@ dependencies:
   intl: ^0.20.2
   socket_io_client: ^3.1.4
   syncfusion_flutter_datepicker: ^33.2.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

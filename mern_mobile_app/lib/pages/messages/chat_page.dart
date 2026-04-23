@@ -137,125 +137,127 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: messages.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(
-                      TablerIcons.message_dots,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      "No messages yet",
-                      style: TextStyle(
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: messages.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        TablerIcons.message_dots,
+                        size: 48,
                         color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        "No messages yet",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        "Start the conversation!",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                )
+               : ListView.builder(
+                reverse: true,
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  if (item is DateTime) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(child: Divider()),
+                          const SizedBox(width: 12,),
+                          Text(_formatMessageDate(item)),
+                          const SizedBox(width: 12,),
+                          Expanded(child: Divider())
+                        ],
+                      ),
+                    );
+                  }
+                  else {
+                    final isSelf = item.authorUsername == currentUsername;
+                    return ChatBubble(message: item, isSelf: isSelf);
+                  }
+                },
+              )
+            ),
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    top: BorderSide(color: Colors.grey.shade300),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _inputController,
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) {},
+                        decoration: InputDecoration(
+                          hintText: "Type a message...",
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(color: Color(0xFFFFA500)),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(height: 6),
-                    Text(
-                      "Start the conversation!",
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                    const SizedBox(width: 6),
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFA500)
+                      ),
+                      onPressed: () async {
+                        final text = _inputController.text.trim();
+                        if (text.isEmpty) return;
+        
+                        _inputController.clear();
+        
+                        await context
+                            .read<ConversationProvider>()
+                            .sendMessage(widget.conversationId, text);
+        
+                        _scrollToBottom();
+                      },
+                      icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                    )
                   ],
                 ),
-              )
-             : ListView.builder(
-              reverse: true,
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                if (item is DateTime) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(child: Divider()),
-                        const SizedBox(width: 12,),
-                        Text(_formatMessageDate(item)),
-                        const SizedBox(width: 12,),
-                        Expanded(child: Divider())
-                      ],
-                    ),
-                  );
-                }
-                else {
-                  final isSelf = item.authorUsername == currentUsername;
-                  return ChatBubble(message: item, isSelf: isSelf);
-                }
-              },
-            )
-          ),
-          SafeArea(
-            top: false,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(color: Colors.grey.shade300),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _inputController,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) {},
-                      decoration: InputDecoration(
-                        hintText: "Type a message...",
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(color: Color(0xFFFFA500)),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  IconButton(
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFA500)
-                    ),
-                    onPressed: () async {
-                      final text = _inputController.text.trim();
-                      if (text.isEmpty) return;
-
-                      _inputController.clear();
-
-                      await context
-                          .read<ConversationProvider>()
-                          .sendMessage(widget.conversationId, text);
-
-                      _scrollToBottom();
-                    },
-                    icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
-                  )
-                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

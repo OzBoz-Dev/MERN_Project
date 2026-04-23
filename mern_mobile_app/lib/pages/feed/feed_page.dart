@@ -28,6 +28,7 @@ class _FeedPageState extends State<FeedPage> {
 
   // For search
   final _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode(canRequestFocus: false);
   final List<Tag> _searchTags = [];
   String _searchQuery = "";
   DateTime? _searchStartDate;
@@ -203,14 +204,14 @@ class _FeedPageState extends State<FeedPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () async {
+                      onPressed: () {
                         // No filters active - switch back to feed view
                         if(!searchActive) {
                           Navigator.of(context).pop();
                           return;
                         }
                         // Search with given filters
-                        await postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
+                        postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                         if(mounted) Navigator.of(context).pop();
                       },
                       child: Text("Apply Filters", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),),
@@ -287,10 +288,10 @@ class _FeedPageState extends State<FeedPage> {
                   // Determine posts based on whether search query is not empty
                   List<Post> posts;
                   searchActive ? posts = postProvider.searchedPosts : posts = postProvider.feedPosts;
-              
                   // Switch loading & error state based on search query
                   bool isLoading = searchActive ? postProvider.isSearchLoading : postProvider.isFeedLoading;
                   String? error = searchActive ? postProvider.searchError : postProvider.feedError;
+                  bool hasMore = searchActive ? postProvider.searchHasMore : postProvider.feedHasMore;
               
                   if(isLoading && posts.isEmpty) {
                     return AnimatedGridBackground(
@@ -358,12 +359,10 @@ class _FeedPageState extends State<FeedPage> {
                               padding: const EdgeInsets.only(top: 80, bottom: kToolbarHeight + 20,),
                               itemCount: posts.length + 1,
                               itemBuilder: (context, index) {
-                                final provider = postProvider;
-                          
                                 final isLastItem = index == posts.length;
                           
                                 if (isLastItem) {
-                                  if (provider.feedHasMore) {
+                                  if (hasMore) {
                                     return const Padding(
                                       padding: EdgeInsets.all(16),
                                       child: Center(child: CircularProgressIndicator(
@@ -465,10 +464,28 @@ class _FeedPageState extends State<FeedPage> {
                             Expanded(
                               child: TextField(
                                 controller: _searchController,
+                                focusNode: _searchFocusNode,
+                                onTap: () {
+                                  // Manually enable and request focus when the user intends to type
+                                  if (!_searchFocusNode.canRequestFocus) {
+                                    setState(() {
+                                      _searchFocusNode.canRequestFocus = true;
+                                    });
+                                  }
+                                  _searchFocusNode.requestFocus();
+                                },
+                                onTapOutside: (event) {
+                                  // Disable it again when they click away 
+                                  // so it doesn't grab focus on the next dialog pop
+                                  _searchFocusNode.unfocus();
+                                  setState(() {
+                                    _searchFocusNode.canRequestFocus = false;
+                                  });
+                                },
                                 decoration: InputDecoration(
                                   hint: Text("Search for posts..."),
                                   suffixIcon: _searchController.text.isEmpty ? IconButton(
-                                    onPressed: () async {
+                                    onPressed: () {
                                       // Collect query from search field
                                       final query = _searchController.text.trim();
                                       // If empty query, don't use it
@@ -479,13 +496,13 @@ class _FeedPageState extends State<FeedPage> {
                                         _searchQuery = query;
                                       });
                                       // Search with this query
-                                      await postProvider.searchPosts(query, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
+                                      postProvider.searchPosts(query, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                                     },
                                     icon: Icon(TablerIcons.search)
                                   )
                                   :
                                   IconButton(
-                                    onPressed: () async {
+                                    onPressed: () {
                                       _searchController.clear();
                                       setState(() {
                                         // Clear search query
@@ -493,7 +510,7 @@ class _FeedPageState extends State<FeedPage> {
                                       });
                                       // If any other filters are still active, we have to re-apply filters without the query
                                       if(searchActive) {
-                                        await postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
+                                        postProvider.searchPosts(_searchQuery, _searchTags, _searchStartDate, _searchEndDate, refresh: true);
                                       }
                                     },
                                     icon: Icon(TablerIcons.x)
@@ -533,6 +550,7 @@ class _FeedPageState extends State<FeedPage> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 }

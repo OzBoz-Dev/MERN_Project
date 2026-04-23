@@ -16,6 +16,9 @@ class ConversationProvider with ChangeNotifier {
   String? _error;
   String? _activeConversationId;
 
+  // To prevent initializing multiple sockets
+  bool _isSocketInitialized = false;
+
   // Maps convo ids to their conversation
   Map<String, Conversation> _conversations = {};
 
@@ -24,9 +27,13 @@ class ConversationProvider with ChangeNotifier {
   bool get hasLoaded => _hasLoaded;
   String? get error => _error;
   String? get activeConversationId => _activeConversationId;
-  List<Conversation> get conversations => _conversations.values.toList();
+  List<Conversation> get conversations {
+    final list = _conversations.values.toList();
+    // Sort descending: newest timestamps first
+    list.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    return list;
+  }
   Conversation? getConversationById(String id) => _conversations[id];
-
   // Service
   final messagesService = MessagesService();
 
@@ -62,6 +69,8 @@ class ConversationProvider with ChangeNotifier {
 
   // Chat with sockets
   void initSocket() {
+    if (_isSocketInitialized) return;
+
     socketService.connect(authProvider.token!);
 
     socketService.onNewMessage((data) {
@@ -81,6 +90,8 @@ class ConversationProvider with ChangeNotifier {
       convo.messages.add(message);
       notifyListeners();
     });
+
+    _isSocketInitialized = true;
   }
 
   void joinConversation(String conversationId) {
@@ -90,6 +101,21 @@ class ConversationProvider with ChangeNotifier {
   Future<void> sendMessage(String conversationId, String text) async {
     socketService.sendMessage(conversationId, text);
     await messagesService.sendMessage(authProvider.token!, conversationId, text);
+  }
+
+  // For when the user logs out
+  void disposeSocket() {
+    socketService.dispose();
+    _isSocketInitialized = false;
+  }
+
+  void reset() {
+    disposeSocket();
+    _conversations = {}; // clears old messages
+    _hasLoaded = false;
+    _error = null;
+    _activeConversationId = null;
+    notifyListeners();
   }
 
 }

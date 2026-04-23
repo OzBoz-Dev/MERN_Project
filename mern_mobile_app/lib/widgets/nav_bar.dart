@@ -105,10 +105,12 @@ class _NavBarState extends State<NavBar> {
         ],
         
       ),
-      body: PageView(
-        controller: navProvider.controller,
-        onPageChanged: navProvider.onPageChanged,
-        children: _pages,
+      body: SafeArea(
+        child: PageView(
+          controller: navProvider.controller,
+          onPageChanged: navProvider.onPageChanged,
+          children: _pages,
+        ),
       ),
     );
   }

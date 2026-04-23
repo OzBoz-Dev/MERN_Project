@@ -10,74 +10,76 @@ class VerificationSentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedGridBackground(
-        backgroundColor: const Color(0xFFFDF8EA),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Card(
-                color: Theme.of(context).cardTheme.color!.withAlpha(255),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: Colors.grey[300]!,
-                    width: 1,
+      body: SafeArea(
+        child: AnimatedGridBackground(
+          backgroundColor: const Color(0xFFFDF8EA),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Card(
+                  color: Theme.of(context).cardTheme.color!.withAlpha(255),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: Colors.grey[300]!,
+                      width: 1,
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        TablerIcons.mail_check,
-                        size: 64,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Check Your Email',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          TablerIcons.mail_check,
+                          size: 64,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        email == null ?
-                        'We\'ve sent a verification link to your email. '
-                        'Please check your inbox and click the link to verify '
-                        'your account before logging in.'
-                        :
-                        'We\'ve sent a verification link to $email. '
-                        'Please check your inbox and click the link to verify '
-                        'your account before logging in.',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          color: Colors.grey[700],
-                          height: 1.5,
+                        const SizedBox(height: 24),
+                        Text(
+                          'Check Your Email',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          },
-                          child: Text(
-                            'Go to Login',
-                            style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.bold,
+                        const SizedBox(height: 16),
+                        Text(
+                          email == null ?
+                          'We\'ve sent a verification link to your email. '
+                          'Please check your inbox and click the link to verify '
+                          'your account before logging in.'
+                          :
+                          'We\'ve sent a verification link to $email. '
+                          'Please check your inbox and click the link to verify '
+                          'your account before logging in.',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                            child: Text(
+                              'Go to Login',
+                              style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
